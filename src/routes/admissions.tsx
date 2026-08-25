@@ -58,7 +58,7 @@ function Admissions() {
               <ol className="mt-8 space-y-4">
                 {STEPS.map((s, i) => (
                   <li key={s.t} className="flex gap-5 rounded-2xl border border-border bg-card p-5 shadow-soft">
-                    <span className="grid size-9 shrink-0 place-items-center rounded-full bg-secondary font-display text-sm font-bold text-teal-deep">
+                    <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-light-blue font-display text-sm font-bold text-brand">
                       {i + 1}
                     </span>
                     <div>
@@ -107,8 +107,8 @@ function Admissions() {
           </div>
 
           <aside className="h-fit space-y-5">
-            <div className="rounded-2xl border border-border gradient-ice p-6">
-              <h2 className="font-display text-sm font-bold tracking-wide text-teal-deep uppercase">
+            <div className="rounded-2xl border border-border bg-surface p-6">
+              <h2 className="font-display text-sm font-bold tracking-wide text-navy uppercase">
                 Important dates
               </h2>
               <ul className="mt-4 space-y-3 text-sm text-muted-foreground">
@@ -121,7 +121,7 @@ function Admissions() {
               </ul>
             </div>
             <div className="rounded-2xl border border-border bg-card p-6 shadow-soft">
-              <h2 className="font-display text-sm font-bold tracking-wide text-teal-deep uppercase">
+              <h2 className="font-display text-sm font-bold tracking-wide text-navy uppercase">
                 Fee structure
               </h2>
               <p className="mt-3 text-sm text-muted-foreground">
@@ -129,7 +129,7 @@ function Admissions() {
               </p>
               <Link
                 to="/notices"
-                className="mt-5 inline-flex min-h-11 items-center rounded-full bg-primary px-5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-teal-deep"
+                className="mt-5 inline-flex min-h-11 items-center rounded-lg bg-primary px-5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-brand-deep"
               >
                 Admission notices
               </Link>

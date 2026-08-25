@@ -35,14 +35,17 @@ function Campus() {
         title="Learn. Build. Innovate. Lead."
         intro="A compact, well-equipped campus where laboratory practice and student life sit side by side."
       />
-      <section className="section-y">
+      <section className="bg-white section-y">
         <div className="container-page">
           <div className="grid gap-5 md:grid-cols-2">
             {[
               { src: heroImg, alt: "Students working in the electronics laboratory", w: 1920, h: 1088 },
               { src: campusImg, alt: "Campus building against the mountains", w: 1400, h: 1000 },
             ].map((img) => (
-              <div key={img.alt} className="aspect-[4/3] overflow-hidden rounded-3xl shadow-raised">
+              <div
+                key={img.alt}
+                className="aspect-[4/3] overflow-hidden rounded-3xl border border-border bg-card shadow-raised transition-all duration-300 hover:scale-[1.01] hover:border-brand/30"
+              >
                 <img
                   src={img.src}
                   alt={img.alt}
@@ -72,12 +75,12 @@ function Campus() {
             ))}
           </div>
 
-          <div className="mt-16 rounded-3xl border border-border gradient-ice p-10 text-center">
+          <div className="mt-16 rounded-3xl border border-border bg-surface p-10 text-center">
             <h2 className="font-display text-2xl font-extrabold text-navy">Explore Our Campus</h2>
             <p className="mx-auto mt-3 max-w-lg text-sm text-muted-foreground">
               A 360° virtual tour and interactive campus map are being prepared by the institute.
             </p>
-            <span className="mt-6 inline-flex rounded-full border border-teal px-5 py-2 text-sm font-semibold text-teal-deep">
+            <span className="mt-6 inline-flex rounded-lg border border-brand px-5 py-2 text-sm font-semibold text-brand">
               Virtual tour — coming soon
             </span>
           </div>

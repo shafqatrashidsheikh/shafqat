@@ -44,10 +44,10 @@ function Academics() {
                 role="tab"
                 aria-selected={filter === f}
                 onClick={() => setFilter(f)}
-                className={`min-h-11 rounded-full border px-5 text-sm font-medium transition-colors ${
+                className={`min-h-11 rounded-lg border px-5 text-sm font-medium transition-colors ${
                   filter === f
-                    ? "border-teal bg-teal text-primary-foreground"
-                    : "border-border bg-card text-navy hover:bg-secondary"
+                    ? "border-brand bg-brand text-primary-foreground"
+                    : "border-border bg-surface text-navy hover:bg-light-blue"
                 }`}
               >
                 {f}
@@ -66,7 +66,7 @@ function Academics() {
                   key={p.name}
                   className="group flex flex-col rounded-2xl border border-border bg-card p-7 shadow-soft transition-all duration-300 hover:-translate-y-1.5 hover:shadow-raised"
                 >
-                  <p className="text-[11px] font-semibold tracking-[0.14em] text-teal uppercase">{p.dept}</p>
+                  <p className="text-[11px] font-semibold tracking-[0.14em] text-brand uppercase">{p.dept}</p>
                   <h2 className="mt-3 font-display text-lg font-bold text-navy">{p.name}</h2>
                   <p className="mt-3 flex-1 text-sm leading-relaxed text-muted-foreground">{p.overview}</p>
                   <dl className="mt-5 space-y-2 border-t border-border pt-5 text-xs text-muted-foreground">
@@ -74,7 +74,7 @@ function Academics() {
                     <Row k="Eligibility" v={p.eligibility} />
                     <Row k="Intake" v={p.seats} />
                   </dl>
-                  <span className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-teal">
+                  <span className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-brand">
                     Explore Program
                     <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
                   </span>
@@ -85,7 +85,7 @@ function Academics() {
 
           <div className="mt-16 grid gap-5 md:grid-cols-3">
             {["Academic Calendar", "Curriculum & Syllabus", "Examination & Regulations"].map((t) => (
-              <div key={t} className="rounded-2xl border border-border gradient-ice p-7">
+              <div key={t} className="rounded-2xl border border-border bg-surface p-7">
                 <h3 className="font-display text-base font-bold text-navy">{t}</h3>
                 <p className="mt-2 text-sm text-muted-foreground">
                   [ADD OFFICIAL DOCUMENTS] — published by the institute in the download centre.

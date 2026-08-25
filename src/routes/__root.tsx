@@ -7,22 +7,21 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
-import { useEffect, type ReactNode } from "react";
+import { type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
-import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 
 function NotFoundComponent() {
   return (
-    <div className="gradient-ice flex min-h-[70vh] items-center justify-center px-4 py-24">
+    <div className="flex min-h-[70vh] items-center justify-center bg-background px-4 py-24">
       <div className="max-w-xl text-center">
-        <svg viewBox="0 0 200 60" className="mx-auto h-16 w-56 text-mint-deep" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+        <svg viewBox="0 0 200 60" className="mx-auto h-16 w-56 text-brand" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
           <path d="M4 52 L52 14 L84 42 L116 10 L164 52" strokeLinejoin="round" />
           <path d="M0 56h200" />
         </svg>
-        <p className="mt-6 font-display text-sm font-semibold tracking-[0.2em] text-teal uppercase">Error 404</p>
+        <p className="mt-6 font-display text-sm font-semibold tracking-[0.2em] text-brand uppercase">Error 404</p>
         <h1 className="mt-3 font-display text-3xl font-extrabold text-navy sm:text-4xl">
           Looks like you've taken a wrong turn.
         </h1>
@@ -32,13 +31,13 @@ function NotFoundComponent() {
         <div className="mt-7 flex flex-wrap justify-center gap-3">
           <Link
             to="/"
-            className="inline-flex items-center justify-center rounded-md bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-teal-deep"
+            className="inline-flex items-center justify-center rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-brand-deep"
           >
             Back to Home
           </Link>
           <Link
             to="/academics"
-            className="inline-flex items-center justify-center rounded-md border border-input bg-card px-5 py-2.5 text-sm font-medium text-navy transition-colors hover:bg-secondary"
+            className="inline-flex items-center justify-center rounded-lg border border-border bg-surface px-5 py-2.5 text-sm font-medium text-navy transition-colors hover:bg-light-blue"
           >
             Explore Programs
           </Link>
@@ -52,9 +51,6 @@ function NotFoundComponent() {
 function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   console.error(error);
   const router = useRouter();
-  useEffect(() => {
-    reportLovableError(error, { boundary: "tanstack_root_error_component" });
-  }, [error]);
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
@@ -110,7 +106,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap",
       },
-      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+      { rel: "preload", href: "/gpw-srinagar-logo.jpg", as: "image" },
+      { rel: "icon", href: "/gpw-srinagar-logo.jpg", type: "image/jpeg" },
+      { rel: "apple-touch-icon", href: "/gpw-srinagar-logo.jpg" },
     ],
     scripts: [
       {
@@ -157,7 +155,7 @@ function RootComponent() {
         Skip to content
       </a>
       <Header />
-      <main id="main">
+      <main id="main" className="relative z-0 min-w-0 overflow-x-clip">
         {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
         <Outlet />
       </main>

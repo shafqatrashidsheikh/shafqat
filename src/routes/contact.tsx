@@ -66,7 +66,7 @@ function Contact() {
       />
       <section className="section-y">
         <div className="container-page grid gap-12 lg:grid-cols-[1fr_360px]">
-          <form onSubmit={onSubmit} noValidate className="rounded-3xl border border-border bg-card p-8 shadow-soft">
+          <form onSubmit={onSubmit} noValidate className="rounded-3xl border border-border bg-surface p-8 shadow-soft">
             <h2 className="font-display text-xl font-extrabold text-navy">Enquiry form</h2>
             <div className="mt-6 grid gap-5 sm:grid-cols-2">
               <Field id="name" label="Full name" error={errors["name"] ?? ""} />
@@ -80,22 +80,22 @@ function Contact() {
                 {errors["message"] && <p className="mt-1.5 text-xs text-destructive">{errors["message"]}</p>}
               </div>
             </div>
-            <Button type="submit" className="mt-7 min-h-11 rounded-full px-7">Submit enquiry</Button>
+            <Button type="submit" className="mt-7 min-h-11 rounded-lg px-7">Submit enquiry</Button>
           </form>
 
           <aside className="space-y-5">
-            <div className="rounded-2xl border border-border gradient-ice p-6">
-              <h2 className="font-display text-sm font-bold tracking-wide text-teal-deep uppercase">
+            <div className="rounded-2xl border border-border bg-surface p-6">
+              <h2 className="font-display text-sm font-bold tracking-wide text-navy uppercase">
                 Institute office
               </h2>
               <ul className="mt-4 space-y-3 text-sm text-muted-foreground">
-                <li className="flex gap-2.5"><MapPin className="mt-0.5 size-4 shrink-0 text-teal" />{INSTITUTE.address}</li>
-                <li className="flex gap-2.5"><Phone className="mt-0.5 size-4 shrink-0 text-teal" />{INSTITUTE.phone}</li>
-                <li className="flex gap-2.5"><Mail className="mt-0.5 size-4 shrink-0 text-teal" />{INSTITUTE.email}</li>
+                <li className="flex gap-2.5"><MapPin className="mt-0.5 size-4 shrink-0 text-brand" />{INSTITUTE.address}</li>
+                <li className="flex gap-2.5"><Phone className="mt-0.5 size-4 shrink-0 text-brand" />{INSTITUTE.phone}</li>
+                <li className="flex gap-2.5"><Mail className="mt-0.5 size-4 shrink-0 text-brand" />{INSTITUTE.email}</li>
               </ul>
             </div>
             <div className="rounded-2xl border border-border bg-card p-6 shadow-soft">
-              <h2 className="font-display text-sm font-bold tracking-wide text-teal-deep uppercase">
+              <h2 className="font-display text-sm font-bold tracking-wide text-navy uppercase">
                 Support cells
               </h2>
               <ul className="mt-4 space-y-2.5 text-sm text-muted-foreground">

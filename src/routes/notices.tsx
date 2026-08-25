@@ -36,8 +36,8 @@ const NOTICES: Notice[] = [
 const CATEGORIES = ["All", "Admissions", "Academics", "Examination", "Circulars", "Tenders", "Notices"];
 
 const PRIORITY_STYLES: Record<Notice["priority"], string> = {
-  Urgent: "bg-navy text-on-dark",
-  Important: "bg-secondary text-secondary-foreground",
+  Urgent: "bg-red/10 text-red ring-1 ring-red/25",
+  Important: "bg-light-blue text-navy ring-1 ring-border",
   General: "bg-muted text-muted-foreground",
 };
 
@@ -71,10 +71,10 @@ function Notices() {
                   key={c}
                   onClick={() => setCat(c)}
                   aria-pressed={cat === c}
-                  className={`min-h-11 rounded-full border px-4 text-sm font-medium transition-colors ${
+                  className={`min-h-11 rounded-lg border px-4 text-sm font-medium transition-colors ${
                     cat === c
-                      ? "border-teal bg-teal text-primary-foreground"
-                      : "border-border bg-card text-navy hover:bg-secondary"
+                      ? "border-brand bg-brand text-primary-foreground"
+                      : "border-border bg-surface text-navy hover:bg-light-blue"
                   }`}
                 >
                   {c}
@@ -105,20 +105,20 @@ function Notices() {
               {list.map((n) => (
                 <li
                   key={n.title}
-                  className="flex flex-col gap-4 rounded-2xl border border-border bg-card p-5 shadow-soft transition-colors hover:border-teal/50 sm:flex-row sm:items-center sm:justify-between"
+                  className="flex flex-col gap-4 rounded-2xl border border-border bg-surface p-5 shadow-soft transition-colors hover:border-brand sm:flex-row sm:items-center sm:justify-between"
                 >
                   <div>
                     <div className="flex flex-wrap items-center gap-2 text-[11px] font-semibold">
                       <span className={`rounded-md px-2 py-0.5 ${PRIORITY_STYLES[n.priority]}`}>
                         {n.priority}
                       </span>
-                      <span className="text-teal">{n.cat}</span>
+                      <span className="text-brand">{n.cat}</span>
                       <span className="text-muted-foreground">{n.date}</span>
                     </div>
                     <h2 className="mt-2 font-display text-base font-bold text-navy">{n.title}</h2>
                     <p className="mt-1 text-xs text-muted-foreground">{n.file}</p>
                   </div>
-                  <button className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-full border border-border px-5 text-sm font-semibold text-teal-deep transition-colors hover:bg-secondary">
+                  <button className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-lg border border-border px-5 text-sm font-semibold text-brand transition-colors hover:bg-light-blue">
                     <Download className="size-4" />
                     Download
                   </button>

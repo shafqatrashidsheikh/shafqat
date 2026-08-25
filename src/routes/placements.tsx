@@ -29,23 +29,14 @@ function Placements() {
       />
       <section className="section-y">
         <div className="container-page">
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {["Placement Rate", "Students Placed", "Internships", "Recruiting Organisations"].map((m) => (
-              <div key={m} className="rounded-2xl border border-border bg-card p-6 shadow-soft">
-                <p className="font-display text-2xl font-extrabold text-teal-deep">[ADD VERIFIED DATA]</p>
-                <p className="mt-2 text-sm text-muted-foreground">{m}</p>
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-14 grid gap-6 md:grid-cols-2">
+          <div className="grid gap-6 md:grid-cols-2">
             {[
               { t: "Placement Process", d: "Registration, pre-placement training, aptitude and technical preparation, employer drives and offer coordination." },
               { t: "Internship Opportunities", d: "Semester and vacation internships with organisations in engineering, construction, electronics and IT." },
               { t: "Career Development", d: "Communication skills, resume building, interview practice and professional etiquette sessions." },
               { t: "Industry Interaction", d: "Guest lectures, industrial visits and collaborative student projects with partner organisations." },
             ].map((c) => (
-              <div key={c.t} className="rounded-2xl border border-border gradient-ice p-7">
+              <div key={c.t} className="rounded-2xl border border-border bg-surface p-7">
                 <h2 className="font-display text-lg font-bold text-navy">{c.t}</h2>
                 <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{c.d}</p>
               </div>

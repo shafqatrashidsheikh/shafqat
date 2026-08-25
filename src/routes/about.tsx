@@ -57,7 +57,7 @@ function About() {
                 { t: "Core Values", d: "Integrity, inclusion, curiosity and service to the community." },
               ].map((c) => (
                 <div key={c.t} className="rounded-2xl border border-border bg-card p-6 shadow-soft">
-                  <h3 className="font-display text-sm font-bold tracking-wide text-teal-deep uppercase">{c.t}</h3>
+                  <h3 className="font-display text-sm font-bold tracking-wide text-brand uppercase">{c.t}</h3>
                   <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{c.d}</p>
                 </div>
               ))}
@@ -70,14 +70,14 @@ function About() {
               officers, committees and governing bodies.
             </Block>
           </div>
-          <aside className="h-fit rounded-2xl border border-border gradient-ice p-6">
-            <h2 className="font-display text-sm font-bold tracking-wide text-teal-deep uppercase">
+          <aside className="h-fit rounded-2xl border border-border bg-surface p-6">
+            <h2 className="font-display text-sm font-bold tracking-wide text-navy uppercase">
               Related links
             </h2>
             <ul className="mt-4 space-y-2.5 text-sm text-muted-foreground">
               {["Academic Calendar", "Mandatory Disclosures", "Achievements", "Organizational Structure", "Contact Offices"].map(
                 (l) => (
-                  <li key={l} className="transition-colors hover:text-teal">{l}</li>
+                  <li key={l} className="transition-colors hover:text-brand">{l}</li>
                 ),
               )}
             </ul>
