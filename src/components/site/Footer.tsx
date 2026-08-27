@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { Mail, MapPin, Phone } from "lucide-react";
-import { INSTITUTE } from "@/lib/site-data";
+import { INSTITUTE, UTILITY_STRIP } from "@/lib/site-data";
 import { CollegeLogo } from "./CollegeLogo";
 
 const COLUMNS: { title: string; links: { label: string; to: string }[] }[] = [
@@ -9,8 +9,7 @@ const COLUMNS: { title: string; links: { label: string; to: string }[] }[] = [
     links: [
       { label: "About", to: "/about" },
       { label: "Admissions", to: "/admissions" },
-      { label: "Notices", to: "/notices" },
-      { label: "Contact", to: "/contact" },
+      ...UTILITY_STRIP.map((link) => ({ label: link.label, to: link.to })),
     ],
   },
   {
@@ -36,8 +35,8 @@ export function Footer() {
             <div className="min-w-0">
               <p className="font-display text-lg font-bold leading-snug text-on-dark">{INSTITUTE.name}</p>
               <p className="mt-3 max-w-sm text-sm leading-relaxed text-on-dark-muted">
-                Quality technical education for women in engineering and technology.
-              </p>
+            Quality technical education for women in engineering and technology.
+          </p>
             </div>
           </div>
         </div>
@@ -79,8 +78,8 @@ export function Footer() {
         </div>
       </div>
 
-      <div className="border-t border-on-dark/15">
-        <div className="container-page flex flex-col gap-3 py-5 text-xs text-on-dark-muted/80 sm:flex-row sm:items-center sm:justify-between">
+      <div className="border-t border-on-dark/20">
+        <div className="container-page flex flex-col gap-3 py-5 text-xs text-on-dark-muted sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-wrap gap-x-4 gap-y-1">
             {MANDATORY.map((m) => (
               <span key={m}>{m}</span>

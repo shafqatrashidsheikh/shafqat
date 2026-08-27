@@ -10,9 +10,11 @@ type CollegeLogoProps = {
 };
 
 const containerSizes: Record<NonNullable<CollegeLogoProps["variant"]>, string> = {
-  header: "h-12 w-12 sm:h-[52px] sm:w-[52px] md:h-14 md:w-14 lg:h-16 lg:w-16",
-  "header-compact": "h-11 w-11 sm:h-12 sm:w-12 md:h-[52px] md:w-[52px] lg:h-14 lg:w-14",
-  footer: "h-24 w-24 sm:h-28 sm:w-28",
+  header:
+    "h-[56px] w-[56px] sm:h-[64px] sm:w-[64px] md:h-[72px] md:w-[72px] lg:h-[80px] lg:w-[80px] xl:h-[88px] xl:w-[88px]",
+  "header-compact":
+    "h-[48px] w-[48px] sm:h-[56px] sm:w-[56px] md:h-[64px] md:w-[64px] lg:h-[72px] lg:w-[72px] xl:h-[76px] xl:w-[76px]",
+  footer: "h-20 w-20 sm:h-24 sm:w-24",
 };
 
 export function CollegeLogo({

@@ -12,6 +12,9 @@ import { type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
+import { PagePreloader } from "@/components/site/PagePreloader";
+import { RouteTransition } from "@/components/site/RouteTransition";
+import { ScrollReveal } from "@/components/site/ScrollReveal";
 
 function NotFoundComponent() {
   return (
@@ -148,6 +151,7 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <PagePreloader />
       <a
         href="#main"
         className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-md focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-foreground"
@@ -155,12 +159,14 @@ function RootComponent() {
         Skip to content
       </a>
       <Header />
-      <main id="main" className="relative z-0 min-w-0 overflow-x-clip">
-        {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-        <Outlet />
+      <main id="main" className="relative z-0 min-w-0 overflow-x-clip bg-background">
+        <RouteTransition>
+          {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+          <Outlet />
+        </RouteTransition>
       </main>
+      <ScrollReveal />
       <Footer />
     </QueryClientProvider>
-
   );
 }

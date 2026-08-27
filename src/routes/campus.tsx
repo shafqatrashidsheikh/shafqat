@@ -35,7 +35,7 @@ function Campus() {
         title="Learn. Build. Innovate. Lead."
         intro="A compact, well-equipped campus where laboratory practice and student life sit side by side."
       />
-      <section className="bg-white section-y">
+      <section className="section-y">
         <div className="container-page">
           <div className="grid gap-5 md:grid-cols-2">
             {[

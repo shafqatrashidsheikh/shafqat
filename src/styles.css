@@ -6,7 +6,7 @@
 
 /*
  * Design system — Government Polytechnic for Women, Srinagar
- * Final brand: monochromatic blue (#B5C7EB environment)
+ * Competition final: misty institutional blue (#D9E2F5)
  */
 
 @theme inline {
@@ -39,7 +39,6 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
   --color-ring-offset-background: var(--background);
-  /* Final brand tokens */
   --color-surface: var(--surface);
   --color-surface-white: var(--surface-white);
   --color-light-blue: var(--light-blue);
@@ -47,7 +46,6 @@
   --color-deep-blue: var(--deep-blue);
   --color-text-primary: var(--text-primary);
   --color-text-secondary: var(--text-secondary);
-  /* Semantic aliases used across components */
   --color-misty: var(--background);
   --color-misty-soft: var(--light-blue);
   --color-misty-medium: var(--border);
@@ -69,7 +67,7 @@
   --color-chart-3: var(--border);
   --color-chart-4: var(--deep-blue);
   --color-chart-5: var(--background);
-  --color-sidebar: var(--surface);
+  --color-sidebar: var(--surface-white);
   --color-sidebar-foreground: var(--text-primary);
   --color-sidebar-primary: var(--primary-blue);
   --color-sidebar-primary-foreground: var(--surface-white);
@@ -80,18 +78,18 @@
 }
 
 :root {
-  --radius: 0.625rem;
+  --radius: 0.6875rem;
 
-  /* Final brand tokens */
-  --background: #b5c7eb;
-  --surface: #f8faff;
+  /* Final competition palette */
+  --background: #d9e2f5;
+  --surface: #ffffff;
   --surface-white: #ffffff;
-  --primary-blue: #234a78;
-  --deep-blue: #163451;
-  --text-primary: #182b3a;
-  --text-secondary: #43586b;
-  --light-blue: #dce7f8;
-  --border: #9fb6dd;
+  --primary-blue: #2457a6;
+  --deep-blue: #17365d;
+  --text-primary: #344b63;
+  --text-secondary: #62748a;
+  --light-blue: #eaf0fa;
+  --border: #b8c9e3;
   --alert: #8b3a42;
 
   /* Semantic aliases */
@@ -109,14 +107,14 @@
   --teal: var(--primary-blue);
   --teal-deep: var(--deep-blue);
   --on-dark: var(--surface-white);
-  --text-on-dark: var(--light-blue);
+  --text-on-dark: var(--background);
   --text-body: var(--text-primary);
   --text-muted: var(--text-secondary);
 
   --foreground: var(--text-primary);
-  --card: var(--surface);
+  --card: var(--surface-white);
   --card-foreground: var(--deep-blue);
-  --popover: var(--surface);
+  --popover: var(--surface-white);
   --popover-foreground: var(--text-primary);
   --primary: var(--primary-blue);
   --primary-foreground: var(--surface-white);
@@ -131,10 +129,10 @@
   --input: var(--border);
   --ring: var(--primary-blue);
 
-  --gradient-ice: linear-gradient(180deg, var(--surface-white) 0%, var(--surface) 100%);
-  --shadow-soft: 0 1px 2px rgb(22 52 81 / 0.05), 0 10px 28px -16px rgb(22 52 81 / 0.12);
-  --shadow-raised: 0 2px 6px rgb(22 52 81 / 0.07), 0 22px 50px -24px rgb(22 52 81 / 0.14);
-  --shadow-header: 0 4px 20px -10px rgb(22 52 81 / 0.1);
+  --gradient-ice: linear-gradient(180deg, var(--surface-white) 0%, var(--light-blue) 100%);
+  --shadow-soft: 0 1px 2px rgb(23 54 93 / 0.04), 0 8px 24px -12px rgb(23 54 93 / 0.1);
+  --shadow-raised: 0 2px 4px rgb(23 54 93 / 0.05), 0 16px 40px -20px rgb(23 54 93 / 0.12);
+  --shadow-header: 0 4px 18px -8px rgb(23 54 93 / 0.08);
   --transition-smooth: 320ms cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
@@ -146,13 +144,13 @@
   html {
     width: 100%;
     max-width: 100%;
-    overflow-x: clip;
+    overflow-x: hidden;
   }
 
   body {
     width: 100%;
     max-width: 100%;
-    overflow-x: clip;
+    overflow-x: hidden;
     background-color: var(--background);
     color: var(--foreground);
     font-family: var(--font-sans);
@@ -189,6 +187,40 @@
     background: var(--light-blue);
     color: var(--deep-blue);
   }
+
+  /* Clean professional scrollbars — hide arrows, prevent side gap */
+  html {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) var(--surface-white);
+  }
+
+  html::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  html::-webkit-scrollbar-button {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+  }
+
+  html::-webkit-scrollbar-track {
+    background: var(--surface-white);
+  }
+
+  html::-webkit-scrollbar-thumb {
+    background-color: var(--border);
+    border-radius: 9999px;
+    border: 2px solid var(--surface-white);
+  }
+
+  html::-webkit-scrollbar-thumb:hover {
+    background-color: var(--primary-blue);
+  }
+
+  html::-webkit-scrollbar-corner {
+    background: var(--surface-white);
+  }
 }
 
 @utility bg-background {
@@ -196,7 +228,7 @@
 }
 
 @utility bg-surface {
-  background-color: var(--surface);
+  background-color: var(--surface-white);
 }
 
 @utility bg-surface-white {
@@ -236,7 +268,7 @@
 }
 
 @utility text-on-dark-muted {
-  color: var(--light-blue);
+  color: var(--background);
 }
 
 @utility border-misty {
@@ -284,20 +316,113 @@
 }
 
 @utility section-y {
-  padding-block: 5rem;
+  padding-block: 3.5rem;
+  background-color: var(--background);
   @media (min-width: 1024px) {
-    padding-block: 7rem;
+    padding-block: 5.5rem;
   }
 }
 
-/* Breathing room between sticky navigation and homepage hero */
-@utility hero-nav-gap {
-  padding-top: 1.25rem; /* 20px mobile */
-  @media (min-width: 768px) {
-    padding-top: 1.5rem; /* 24px tablet */
+@utility section-white {
+  background-color: var(--background);
+}
+
+@utility section-misty {
+  background-color: var(--background);
+}
+
+@utility card-premium {
+  border-radius: 1.25rem;
+  border: 1px solid var(--border);
+  background-color: var(--surface-white);
+  box-shadow: var(--shadow-soft);
+  transition:
+    transform 320ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    box-shadow 320ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    border-color 320ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  &:hover {
+    transform: translateY(-2px);
   }
-  @media (min-width: 1024px) {
-    padding-top: 2rem; /* 32px desktop */
+}
+
+@utility btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  border-radius: 0.6875rem;
+  background-color: var(--primary-blue);
+  padding-inline: 1.5rem;
+  padding-block: 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--surface-white);
+  transition:
+    background-color var(--transition-smooth),
+    transform 180ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  &:hover {
+    background-color: var(--deep-blue);
+    transform: translateY(-1px);
+  }
+  &:active {
+    transform: scale(0.985);
+  }
+}
+
+@utility btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  border-radius: 0.6875rem;
+  border: 1px solid var(--primary-blue);
+  background-color: var(--surface-white);
+  padding-inline: 1.5rem;
+  padding-block: 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--primary-blue);
+  transition:
+    background-color var(--transition-smooth),
+    color var(--transition-smooth),
+    transform 180ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  &:hover {
+    background-color: var(--primary-blue);
+    color: var(--surface-white);
+    transform: translateY(-1px);
+  }
+  &:active {
+    transform: scale(0.985);
+  }
+}
+
+@utility link-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--primary-blue);
+  transition:
+    color var(--transition-smooth),
+    transform 180ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  &:hover {
+    color: var(--deep-blue);
+  }
+  &:hover svg {
+    transform: translateX(2px);
+  }
+  & svg {
+    transition: transform 180ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+}
+
+@utility hero-nav-gap {
+  padding-top: 0.375rem;
+  @media (min-width: 768px) {
+    padding-top: 0.5rem;
   }
 }
 
@@ -320,12 +445,57 @@
 
 @utility reveal {
   animation: reveal-up 700ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
+  animation-delay: var(--reveal-delay, 0ms);
+}
+
+.reveal-hero-image {
+  animation: reveal-hero-image 820ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
+  animation-delay: var(--reveal-delay, 340ms);
+}
+
+/* Scroll-triggered motion — applied via ScrollReveal, design unchanged */
+html.js-motion main [data-motion="in"],
+html.js-motion footer [data-motion="in"] {
+  opacity: 0;
+  transform: translate3d(0, 14px, 0);
+  transition:
+    opacity 650ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    transform 650ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  transition-delay: var(--motion-delay, 0ms);
+  will-change: opacity, transform;
+}
+
+html.js-motion main [data-motion="in"][data-motion-dir="left"],
+html.js-motion footer [data-motion="in"][data-motion-dir="left"] {
+  transform: translate3d(-16px, 0, 0);
+}
+
+html.js-motion main [data-motion="in"][data-motion-dir="right"],
+html.js-motion footer [data-motion="in"][data-motion-dir="right"] {
+  transform: translate3d(16px, 0, 0);
+}
+
+html.js-motion main [data-motion="in"].motion-visible,
+html.js-motion footer [data-motion="in"].motion-visible {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
 }
 
 @keyframes reveal-up {
   from {
     opacity: 0;
     transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes reveal-hero-image {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
   }
   to {
     opacity: 1;
@@ -347,6 +517,10 @@
   width: max-content;
   animation: marquee-x 38s linear infinite;
   will-change: transform;
+}
+
+.marquee-viewport:hover .marquee-track {
+  animation-play-state: paused;
 }
 
 @utility marquee-viewport {
@@ -372,6 +546,74 @@
 
 .explore-scroll::-webkit-scrollbar {
   display: none;
+}
+
+.announcement-scroll {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.announcement-scroll::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+.announcement-scroll::-webkit-scrollbar-button {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+@keyframes preloader-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.preloader-ring {
+  animation: preloader-spin 1.15s linear infinite;
+}
+
+@keyframes route-enter {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.route-enter {
+  animation: route-enter 180ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.js-motion main [data-motion="in"],
+  html.js-motion footer [data-motion="in"] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .reveal,
+  .reveal-hero-image {
+    animation: none;
+  }
+
+  .card-premium:hover {
+    transform: none;
+  }
+
+  .preloader-ring {
+    animation: none;
+  }
+
+  .route-enter {
+    animation: none;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

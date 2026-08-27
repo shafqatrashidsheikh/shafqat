@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { EXPLORE_CARDS, type ExploreCard } from "@/lib/explore-data";
 import { cn } from "@/lib/utils";
@@ -64,8 +64,8 @@ function FeatureCard({
         to={card.href}
         draggable={false}
         className={cn(
-          "grid h-full min-h-[320px] overflow-hidden rounded-2xl border border-border bg-card shadow-soft sm:min-h-[360px]",
-          "transition-all duration-300 ease-out hover:-translate-y-1 hover:border-brand hover:bg-light-blue hover:shadow-raised",
+          "grid h-full min-h-[320px] overflow-hidden rounded-[20px] border border-border bg-surface-white shadow-soft sm:min-h-[360px]",
+          "transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-brand/30 hover:shadow-raised",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2",
           card.imagePosition === "left" ? "sm:grid-cols-[42%_1fr]" : "sm:grid-cols-[1fr_42%]",
         )}
@@ -96,15 +96,6 @@ export function ExploreGPWSrinagar() {
 
     return () => observer.disconnect();
   }, []);
-
-  const scrollByCard = (direction: -1 | 1) => {
-    const el = scrollerRef.current;
-    if (!el) return;
-    const card = el.querySelector("article");
-    const gap = 24;
-    const distance = (card?.clientWidth ?? 560) + gap;
-    el.scrollBy({ left: direction * distance, behavior: "smooth" });
-  };
 
   const onPointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
     const el = scrollerRef.current;
@@ -147,7 +138,7 @@ export function ExploreGPWSrinagar() {
   return (
     <section
       aria-labelledby="explore-gpw-heading"
-      className="overflow-x-clip py-16 lg:py-20"
+      className="section-misty overflow-x-clip section-y !pt-0"
     >
       <div className="container-page min-w-0">
         <div
@@ -164,8 +155,7 @@ export function ExploreGPWSrinagar() {
             Explore GPW Srinagar
           </h2>
           <p className="mt-4 max-w-2xl text-base leading-relaxed text-muted-foreground">
-            Discover our academic programs, departments, campus facilities, student opportunities and
-            the journey beyond the classroom.
+            A focused path through academics, campus life, admissions and careers at GPW Srinagar.
           </p>
         </div>
 
@@ -188,29 +178,6 @@ export function ExploreGPWSrinagar() {
             {EXPLORE_CARDS.map((card, index) => (
               <FeatureCard key={card.id} card={card} index={index} visible={visible} />
             ))}
-          </div>
-
-          <div className="mt-8 flex items-center gap-3 sm:gap-4">
-            <div className="h-px min-w-0 flex-1 rounded-full bg-border" aria-hidden="true" />
-
-            <div className="flex shrink-0 items-center gap-2">
-              <button
-                type="button"
-                aria-label="Scroll explore cards left"
-                onClick={() => scrollByCard(-1)}
-                className="grid size-9 place-items-center rounded-lg border border-border bg-card text-navy shadow-soft transition-colors hover:border-brand/40 hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand sm:size-10"
-              >
-                <ChevronLeft className="size-4 sm:size-5" />
-              </button>
-              <button
-                type="button"
-                aria-label="Scroll explore cards right"
-                onClick={() => scrollByCard(1)}
-                className="grid size-9 place-items-center rounded-lg border border-border bg-card text-navy shadow-soft transition-colors hover:border-brand/40 hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand sm:size-10"
-              >
-                <ChevronRight className="size-4 sm:size-5" />
-              </button>
-            </div>
           </div>
         </div>
       </div>
