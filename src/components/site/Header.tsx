@@ -6,13 +6,20 @@ import { Button } from "@/components/ui/button";
 import {
   HeaderCtaMobileGroups,
   HeaderCtaPills,
-  HEADER_APPLY,
 } from "@/components/site/HeaderCtaPills";
-import { INSTITUTE } from "@/lib/site-data";
+import { HeaderAuthButtons } from "@/components/site/HeaderAuthButtons";
+import { INSTITUTE, type HeaderCtaPill } from "@/lib/site-data";
+import type { InstituteSettings } from "@/lib/supabase/types";
 import { cn } from "@/lib/utils";
 import { CollegeLogo } from "./CollegeLogo";
 
-export function Header() {
+type HeaderProps = {
+  institute?: InstituteSettings;
+  headerNav?: HeaderCtaPill[];
+};
+
+export function Header({ institute = INSTITUTE, headerNav }: HeaderProps) {
+  const pills = headerNav ?? undefined;
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -24,36 +31,47 @@ export function Header() {
   }, []);
 
   return (
-    <header className="sticky top-0 z-[60] w-full bg-background px-2 pt-1.5 sm:px-3 sm:pt-2">
+    <header className="sticky top-0 z-[60] w-full min-w-0 bg-background px-3 pt-2.5 sm:px-4 sm:pt-3 lg:px-5">
       <div
         className={cn(
-          "flex w-full items-center justify-between gap-3 rounded-2xl border border-border bg-surface-white px-3 shadow-soft transition-[min-height,box-shadow] duration-300 sm:gap-4 sm:px-4",
-          scrolled ? "min-h-[80px] lg:min-h-[92px]" : "min-h-[88px] lg:min-h-[108px] xl:min-h-[112px]",
+          "grid w-full min-w-0 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-3.5 rounded-2xl border border-border bg-surface-white px-3 shadow-soft transition-[box-shadow,padding] duration-300 sm:gap-x-4 sm:px-4 lg:px-5 xl:gap-x-5 xl:px-6 2xl:gap-x-6 2xl:px-7",
+          "py-2.5 sm:py-3 xl:py-3.5",
           scrolled && "shadow-raised",
         )}
       >
+        {/* Column 1 — logo */}
         <Link
-            to="/"
-            aria-label="Government Polytechnic for Women, Srinagar — Home"
-            className="flex min-w-0 shrink-0 items-center gap-3 sm:gap-3.5 lg:gap-4"
-          >
-            <CollegeLogo variant={scrolled ? "header-compact" : "header"} priority />
-            <span className="min-w-0 leading-tight">
-              <span className="block font-display text-[13px] font-extrabold text-navy sm:text-sm lg:text-base xl:text-lg">
-                {INSTITUTE.name}
-              </span>
-              <span className="mt-0.5 block text-[10px] font-medium tracking-[0.14em] text-muted-foreground uppercase sm:text-[11px]">
-                Since {INSTITUTE.established}
-              </span>
-            </span>
-          </Link>
+          to="/"
+          aria-label="Government Polytechnic for Women, Srinagar — Home"
+          className="col-start-1 shrink-0 self-center"
+        >
+          <CollegeLogo variant={scrolled ? "header-compact" : "header"} priority />
+        </Link>
 
-          <div className="hidden min-w-0 items-center lg:flex">
-            <HeaderCtaPills />
-            <Link to="/admissions" className={cn(HEADER_APPLY, "ml-6 xl:ml-7")}>
-              Apply Now
-            </Link>
-          </div>
+        {/* Column 2 — college name (flexible, never overlaps nav) */}
+        <Link
+          to="/"
+          className="col-start-2 min-w-0 self-center px-1 sm:px-0"
+        >
+          <span className="block min-w-0 leading-tight">
+            <span className="block whitespace-normal font-display text-[clamp(0.875rem,0.34vw+0.72rem,1.25rem)] font-bold leading-snug text-navy xl:whitespace-nowrap xl:text-[1.125rem] 2xl:text-[1.3125rem]">
+              {institute.name}
+            </span>
+            <span className="mt-0.5 block text-[11px] font-semibold tracking-[0.14em] text-muted-foreground uppercase xl:text-xs">
+              Since {institute.established}
+            </span>
+          </span>
+        </Link>
+
+        {/* Column 3 — navigation or mobile menu */}
+        <div className="col-start-3 flex shrink-0 items-center justify-end self-center pl-1 xl:pl-3 2xl:pl-4">
+          <nav
+            aria-label="Primary navigation"
+            className="hidden items-center gap-2 xl:flex 2xl:gap-2.5"
+          >
+            <HeaderCtaPills pills={pills} />
+            <HeaderAuthButtons />
+          </nav>
 
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
@@ -61,30 +79,28 @@ export function Header() {
                 variant="outline"
                 size="icon"
                 aria-label="Open menu"
-                className="size-10 shrink-0 rounded-full border-border text-navy lg:hidden"
+                className="size-10 shrink-0 rounded-full border-border text-navy xl:hidden"
               >
                 <Menu />
               </Button>
             </SheetTrigger>
             <SheetContent
               side="right"
-              className="w-[min(88vw,20rem)] overflow-y-auto border-border bg-surface-white p-0"
+              className="z-[70] w-[min(100vw-1rem,20rem)] overflow-y-auto border-border bg-surface-white p-0"
             >
               <SheetTitle className="border-b border-border px-5 py-4 font-display text-base font-bold text-navy">
                 Menu
               </SheetTitle>
-              <HeaderCtaMobileGroups onNavigate={() => setOpen(false)} />
-              <div className="border-t border-border p-4">
-                <Link
-                  to="/admissions"
-                  onClick={() => setOpen(false)}
-                  className={cn(HEADER_APPLY, "w-full")}
-                >
-                  Apply Now
-                </Link>
+              <HeaderCtaMobileGroups pills={pills} onNavigate={() => setOpen(false)} />
+              <div className="border-t border-border px-4 py-4">
+                <HeaderAuthButtons
+                  className="w-full flex-col gap-2.5 [&>*]:w-full"
+                  onNavigate={() => setOpen(false)}
+                />
               </div>
             </SheetContent>
           </Sheet>
+        </div>
       </div>
     </header>
   );

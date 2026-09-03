@@ -4,17 +4,19 @@ export const OFFICIAL_LOGO_SRC = "/gpw-srinagar-logo.jpg";
 export const OFFICIAL_LOGO_ALT = "Government Polytechnic for Women, Srinagar";
 
 type CollegeLogoProps = {
-  variant?: "header" | "header-compact" | "footer";
+  variant?: "header" | "header-compact" | "footer" | "loader";
   className?: string;
   priority?: boolean;
 };
 
-const containerSizes: Record<NonNullable<CollegeLogoProps["variant"]>, string> = {
+/** Square frame — identical circular emblem in header, footer, and loader. */
+const sizeClasses: Record<NonNullable<CollegeLogoProps["variant"]>, string> = {
   header:
-    "h-[56px] w-[56px] sm:h-[64px] sm:w-[64px] md:h-[72px] md:w-[72px] lg:h-[80px] lg:w-[80px] xl:h-[88px] xl:w-[88px]",
+    "h-[3.75rem] w-[3.75rem] sm:h-16 sm:w-16 md:h-[4.5rem] md:w-[4.5rem] xl:h-[5.25rem] xl:w-[5.25rem] 2xl:h-[5.5rem] 2xl:w-[5.5rem]",
   "header-compact":
-    "h-[48px] w-[48px] sm:h-[56px] sm:w-[56px] md:h-[64px] md:w-[64px] lg:h-[72px] lg:w-[72px] xl:h-[76px] xl:w-[76px]",
+    "h-14 w-14 sm:h-[3.75rem] sm:w-[3.75rem] md:h-16 md:w-16 xl:h-20 xl:w-20 2xl:h-[5.25rem] 2xl:w-[5.25rem]",
   footer: "h-20 w-20 sm:h-24 sm:w-24",
+  loader: "h-[clamp(4.5rem,16vw,6rem)] w-[clamp(4.5rem,16vw,6rem)]",
 };
 
 export function CollegeLogo({
@@ -23,23 +25,16 @@ export function CollegeLogo({
   priority = false,
 }: CollegeLogoProps) {
   return (
-    <span
-      className={cn(
-        "relative inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-transparent",
-        containerSizes[variant],
-        className,
-      )}
-      aria-hidden={variant !== "footer"}
-    >
+    <span className={cn("college-logo-wrap", sizeClasses[variant], className)}>
       <img
         src={OFFICIAL_LOGO_SRC}
-        alt={variant === "footer" ? OFFICIAL_LOGO_ALT : ""}
+        alt={OFFICIAL_LOGO_ALT}
         width={512}
         height={512}
         decoding="async"
         fetchPriority={priority ? "high" : "auto"}
         draggable={false}
-        className="h-auto max-h-full w-auto max-w-full object-contain"
+        className="college-logo-img"
       />
     </span>
   );

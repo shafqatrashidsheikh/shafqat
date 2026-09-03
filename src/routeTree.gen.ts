@@ -15,8 +15,20 @@ import { Route as AcademicsRouteImport } from './routes/academics'
 import { Route as AdmissionsRouteImport } from './routes/admissions'
 import { Route as CampusRouteImport } from './routes/campus'
 import { Route as ContactRouteImport } from './routes/contact'
+import { Route as LoginRouteImport } from './routes/login'
 import { Route as NoticesRouteImport } from './routes/notices'
 import { Route as PlacementsRouteImport } from './routes/placements'
+import { Route as PrincipalMessageRouteImport } from './routes/principal-message'
+import { Route as SignupRouteImport } from './routes/signup'
+import { Route as AdminIndexRouteImport } from './routes/admin/index'
+import { Route as AdminLoginRouteImport } from './routes/admin/login'
+import { Route as ApiChatRouteImport } from './routes/api/chat'
+import { Route as AuthCallbackRouteImport } from './routes/auth/callback'
+import { Route as PortalIndexRouteImport } from './routes/portal/index'
+import { Route as StudentIndexRouteImport } from './routes/student/index'
+import { Route as StudentOnboardingRouteImport } from './routes/student/onboarding'
+import { Route as StudentPendingRouteImport } from './routes/student/pending'
+import { Route as AcademicsDepartmentsSlugRouteImport } from './routes/academics_.departments.$slug'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -48,6 +60,11 @@ const ContactRoute = ContactRouteImport.update({
   path: '/contact',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const NoticesRoute = NoticesRouteImport.update({
   id: '/notices',
   path: '/notices',
@@ -58,6 +75,62 @@ const PlacementsRoute = PlacementsRouteImport.update({
   path: '/placements',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PrincipalMessageRoute = PrincipalMessageRouteImport.update({
+  id: '/principal-message',
+  path: '/principal-message',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SignupRoute = SignupRouteImport.update({
+  id: '/signup',
+  path: '/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/admin/',
+  path: '/admin/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminLoginRoute = AdminLoginRouteImport.update({
+  id: '/admin/login',
+  path: '/admin/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiChatRoute = ApiChatRouteImport.update({
+  id: '/api/chat',
+  path: '/api/chat',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthCallbackRoute = AuthCallbackRouteImport.update({
+  id: '/auth/callback',
+  path: '/auth/callback',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PortalIndexRoute = PortalIndexRouteImport.update({
+  id: '/portal/',
+  path: '/portal/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StudentIndexRoute = StudentIndexRouteImport.update({
+  id: '/student/',
+  path: '/student/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StudentOnboardingRoute = StudentOnboardingRouteImport.update({
+  id: '/student/onboarding',
+  path: '/student/onboarding',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StudentPendingRoute = StudentPendingRouteImport.update({
+  id: '/student/pending',
+  path: '/student/pending',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AcademicsDepartmentsSlugRoute =
+  AcademicsDepartmentsSlugRouteImport.update({
+    id: '/academics_/departments/$slug',
+    path: '/academics/departments/$slug',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -66,8 +139,20 @@ export interface FileRoutesByFullPath {
   '/admissions': typeof AdmissionsRoute
   '/campus': typeof CampusRoute
   '/contact': typeof ContactRoute
+  '/login': typeof LoginRoute
   '/notices': typeof NoticesRoute
   '/placements': typeof PlacementsRoute
+  '/principal-message': typeof PrincipalMessageRoute
+  '/signup': typeof SignupRoute
+  '/admin/login': typeof AdminLoginRoute
+  '/api/chat': typeof ApiChatRoute
+  '/auth/callback': typeof AuthCallbackRoute
+  '/student/onboarding': typeof StudentOnboardingRoute
+  '/student/pending': typeof StudentPendingRoute
+  '/admin/': typeof AdminIndexRoute
+  '/portal/': typeof PortalIndexRoute
+  '/student/': typeof StudentIndexRoute
+  '/academics/departments/$slug': typeof AcademicsDepartmentsSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -76,8 +161,20 @@ export interface FileRoutesByTo {
   '/admissions': typeof AdmissionsRoute
   '/campus': typeof CampusRoute
   '/contact': typeof ContactRoute
+  '/login': typeof LoginRoute
   '/notices': typeof NoticesRoute
   '/placements': typeof PlacementsRoute
+  '/principal-message': typeof PrincipalMessageRoute
+  '/signup': typeof SignupRoute
+  '/admin/login': typeof AdminLoginRoute
+  '/api/chat': typeof ApiChatRoute
+  '/auth/callback': typeof AuthCallbackRoute
+  '/student/onboarding': typeof StudentOnboardingRoute
+  '/student/pending': typeof StudentPendingRoute
+  '/admin': typeof AdminIndexRoute
+  '/portal': typeof PortalIndexRoute
+  '/student': typeof StudentIndexRoute
+  '/academics/departments/$slug': typeof AcademicsDepartmentsSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -87,8 +184,20 @@ export interface FileRoutesById {
   '/admissions': typeof AdmissionsRoute
   '/campus': typeof CampusRoute
   '/contact': typeof ContactRoute
+  '/login': typeof LoginRoute
   '/notices': typeof NoticesRoute
   '/placements': typeof PlacementsRoute
+  '/principal-message': typeof PrincipalMessageRoute
+  '/signup': typeof SignupRoute
+  '/admin/login': typeof AdminLoginRoute
+  '/api/chat': typeof ApiChatRoute
+  '/auth/callback': typeof AuthCallbackRoute
+  '/student/onboarding': typeof StudentOnboardingRoute
+  '/student/pending': typeof StudentPendingRoute
+  '/admin/': typeof AdminIndexRoute
+  '/portal/': typeof PortalIndexRoute
+  '/student/': typeof StudentIndexRoute
+  '/academics_/departments/$slug': typeof AcademicsDepartmentsSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -99,8 +208,20 @@ export interface FileRouteTypes {
     | '/admissions'
     | '/campus'
     | '/contact'
+    | '/login'
     | '/notices'
     | '/placements'
+    | '/principal-message'
+    | '/signup'
+    | '/admin/login'
+    | '/api/chat'
+    | '/auth/callback'
+    | '/student/onboarding'
+    | '/student/pending'
+    | '/admin/'
+    | '/portal/'
+    | '/student/'
+    | '/academics/departments/$slug'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -109,8 +230,20 @@ export interface FileRouteTypes {
     | '/admissions'
     | '/campus'
     | '/contact'
+    | '/login'
     | '/notices'
     | '/placements'
+    | '/principal-message'
+    | '/signup'
+    | '/admin/login'
+    | '/api/chat'
+    | '/auth/callback'
+    | '/student/onboarding'
+    | '/student/pending'
+    | '/admin'
+    | '/portal'
+    | '/student'
+    | '/academics/departments/$slug'
   id:
     | '__root__'
     | '/'
@@ -119,8 +252,20 @@ export interface FileRouteTypes {
     | '/admissions'
     | '/campus'
     | '/contact'
+    | '/login'
     | '/notices'
     | '/placements'
+    | '/principal-message'
+    | '/signup'
+    | '/admin/login'
+    | '/api/chat'
+    | '/auth/callback'
+    | '/student/onboarding'
+    | '/student/pending'
+    | '/admin/'
+    | '/portal/'
+    | '/student/'
+    | '/academics_/departments/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -130,8 +275,20 @@ export interface RootRouteChildren {
   AdmissionsRoute: typeof AdmissionsRoute
   CampusRoute: typeof CampusRoute
   ContactRoute: typeof ContactRoute
+  LoginRoute: typeof LoginRoute
   NoticesRoute: typeof NoticesRoute
   PlacementsRoute: typeof PlacementsRoute
+  PrincipalMessageRoute: typeof PrincipalMessageRoute
+  SignupRoute: typeof SignupRoute
+  AdminLoginRoute: typeof AdminLoginRoute
+  ApiChatRoute: typeof ApiChatRoute
+  AuthCallbackRoute: typeof AuthCallbackRoute
+  StudentOnboardingRoute: typeof StudentOnboardingRoute
+  StudentPendingRoute: typeof StudentPendingRoute
+  AdminIndexRoute: typeof AdminIndexRoute
+  PortalIndexRoute: typeof PortalIndexRoute
+  StudentIndexRoute: typeof StudentIndexRoute
+  AcademicsDepartmentsSlugRoute: typeof AcademicsDepartmentsSlugRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -178,6 +335,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ContactRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/notices': {
       id: '/notices'
       path: '/notices'
@@ -192,6 +356,83 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PlacementsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/principal-message': {
+      id: '/principal-message'
+      path: '/principal-message'
+      fullPath: '/principal-message'
+      preLoaderRoute: typeof PrincipalMessageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/signup': {
+      id: '/signup'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof SignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/': {
+      id: '/admin/'
+      path: '/admin'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/login': {
+      id: '/admin/login'
+      path: '/admin/login'
+      fullPath: '/admin/login'
+      preLoaderRoute: typeof AdminLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/chat': {
+      id: '/api/chat'
+      path: '/api/chat'
+      fullPath: '/api/chat'
+      preLoaderRoute: typeof ApiChatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/callback': {
+      id: '/auth/callback'
+      path: '/auth/callback'
+      fullPath: '/auth/callback'
+      preLoaderRoute: typeof AuthCallbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/portal/': {
+      id: '/portal/'
+      path: '/portal'
+      fullPath: '/portal/'
+      preLoaderRoute: typeof PortalIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/student/': {
+      id: '/student/'
+      path: '/student'
+      fullPath: '/student/'
+      preLoaderRoute: typeof StudentIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/student/onboarding': {
+      id: '/student/onboarding'
+      path: '/student/onboarding'
+      fullPath: '/student/onboarding'
+      preLoaderRoute: typeof StudentOnboardingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/student/pending': {
+      id: '/student/pending'
+      path: '/student/pending'
+      fullPath: '/student/pending'
+      preLoaderRoute: typeof StudentPendingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/academics_/departments/$slug': {
+      id: '/academics_/departments/$slug'
+      path: '/academics/departments/$slug'
+      fullPath: '/academics/departments/$slug'
+      preLoaderRoute: typeof AcademicsDepartmentsSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -202,8 +443,20 @@ const rootRouteChildren: RootRouteChildren = {
   AdmissionsRoute: AdmissionsRoute,
   CampusRoute: CampusRoute,
   ContactRoute: ContactRoute,
+  LoginRoute: LoginRoute,
   NoticesRoute: NoticesRoute,
   PlacementsRoute: PlacementsRoute,
+  PrincipalMessageRoute: PrincipalMessageRoute,
+  SignupRoute: SignupRoute,
+  AdminLoginRoute: AdminLoginRoute,
+  ApiChatRoute: ApiChatRoute,
+  AuthCallbackRoute: AuthCallbackRoute,
+  StudentOnboardingRoute: StudentOnboardingRoute,
+  StudentPendingRoute: StudentPendingRoute,
+  AdminIndexRoute: AdminIndexRoute,
+  PortalIndexRoute: PortalIndexRoute,
+  StudentIndexRoute: StudentIndexRoute,
+  AcademicsDepartmentsSlugRoute: AcademicsDepartmentsSlugRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

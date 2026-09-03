@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { mediaAspectFromDimensions } from "@/lib/media-aspect";
 import { cn } from "@/lib/utils";
 
 export type MediaFit = "cover" | "contain" | "auto";
@@ -18,7 +19,7 @@ type AdaptiveMediaProps = {
 };
 
 /**
- * Reusable institutional media frame.
+ * Reusable institutional media frame for images.
  * Detects intrinsic aspect ratio and avoids aggressive cropping when possible.
  */
 export function AdaptiveMedia({
@@ -32,9 +33,15 @@ export function AdaptiveMedia({
   width,
   height,
 }: AdaptiveMediaProps) {
-  const [ratio, setRatio] = useState<number | null>(null);
+  const [ratio, setRatio] = useState<number | null>(
+    width && height ? width / height : null,
+  );
 
   useEffect(() => {
+    if (width && height) {
+      setRatio(width / height);
+      return;
+    }
     let cancelled = false;
     const img = new Image();
     img.onload = () => {
@@ -45,17 +52,29 @@ export function AdaptiveMedia({
     return () => {
       cancelled = true;
     };
-  }, [src]);
+  }, [src, width, height]);
 
-  const isPortrait = ratio !== null && ratio < 0.95;
-  const isSquare = ratio !== null && ratio >= 0.95 && ratio <= 1.05;
+  const meta = ratio
+    ? mediaAspectFromDimensions(
+        ratio >= 1 ? Math.round(ratio * 1000) : 1000,
+        ratio >= 1 ? 1000 : Math.round(1000 / ratio),
+      )
+    : null;
+  const isPortrait = meta?.orientation === "portrait";
+  const isSquare = meta?.orientation === "square";
   const objectFit =
-    fit === "auto" ? (isPortrait || isSquare ? "object-contain" : "object-cover") : fit === "contain" ? "object-contain" : "object-cover";
+    fit === "auto"
+      ? isPortrait || isSquare
+        ? "object-contain"
+        : "object-cover"
+      : fit === "contain"
+        ? "object-contain"
+        : "object-cover";
 
   return (
     <div
       className={cn(
-        "relative overflow-hidden bg-light-blue",
+        "relative overflow-hidden rounded-3xl border border-border bg-light-blue shadow-soft",
         frameAspect && "w-full",
         className,
       )}
@@ -69,7 +88,7 @@ export function AdaptiveMedia({
         loading={priority ? "eager" : "lazy"}
         fetchPriority={priority ? "high" : "auto"}
         decoding="async"
-        className={cn("size-full", objectFit, imgClassName)}
+        className={cn("size-full transition-transform duration-500 ease-out", objectFit, imgClassName)}
       />
     </div>
   );

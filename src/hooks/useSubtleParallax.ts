@@ -1,6 +1,6 @@
 import { useEffect, type RefObject } from "react";
 
-/** Applies a very subtle vertical parallax via transform — no layout change */
+/** Very subtle vertical parallax via transform — no layout change */
 export function useSubtleParallax<T extends HTMLElement>(
   ref: RefObject<T | null>,
   factor = 0.06,

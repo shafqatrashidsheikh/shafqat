@@ -5,13 +5,15 @@ import { z } from "zod";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
 import { PageHeader } from "@/components/site/PageHeader";
+import { LocationMap } from "@/components/site/LocationMap";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { INSTITUTE } from "@/lib/site-data";
+import { fetchInstituteSettings } from "@/server/cda/site-extended";
 
 export const Route = createFileRoute("/contact")({
+  loader: () => fetchInstituteSettings(),
   head: () => ({
     meta: [
       { title: "Contact & Grievance — GPW Srinagar" },
@@ -37,6 +39,7 @@ const schema = z.object({
 });
 
 function Contact() {
+  const institute = Route.useLoaderData();
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -62,11 +65,11 @@ function Contact() {
       <PageHeader
         crumb="Contact"
         title="Contact & Grievance"
-        intro="Reach the institute office, departmental contacts, grievance redressal cell or website support."
+        intro="Reach the institute office for admissions queries, grievance redressal or general enquiries."
       />
       <section className="section-y">
-        <div className="container-page grid gap-12 lg:grid-cols-[1fr_360px]">
-          <form onSubmit={onSubmit} noValidate className="rounded-3xl border border-border bg-surface p-8 shadow-soft">
+        <div className="container-page grid min-w-0 gap-8 lg:grid-cols-[minmax(0,1fr)_min(360px,34%)] lg:gap-12">
+          <form onSubmit={onSubmit} noValidate className="min-w-0 rounded-3xl border border-border bg-surface p-5 shadow-soft sm:p-8">
             <h2 className="font-display text-xl font-extrabold text-navy">Enquiry form</h2>
             <div className="mt-6 grid gap-5 sm:grid-cols-2">
               <Field id="name" label="Full name" error={errors["name"] ?? ""} />
@@ -80,32 +83,43 @@ function Contact() {
                 {errors["message"] && <p className="mt-1.5 text-xs text-destructive">{errors["message"]}</p>}
               </div>
             </div>
-            <Button type="submit" className="mt-7 min-h-11 rounded-lg px-7">Submit enquiry</Button>
+            <Button type="submit" className="mt-7 min-h-11 w-full rounded-lg px-7 sm:w-auto">Submit enquiry</Button>
           </form>
 
-          <aside className="space-y-5">
-            <div className="rounded-2xl border border-border bg-surface p-6">
+          <aside className="min-w-0 space-y-6">
+            <div className="rounded-2xl border border-border bg-surface p-5 sm:p-6">
               <h2 className="font-display text-sm font-bold tracking-wide text-navy uppercase">
                 Institute office
               </h2>
               <ul className="mt-4 space-y-3 text-sm text-muted-foreground">
-                <li className="flex gap-2.5"><MapPin className="mt-0.5 size-4 shrink-0 text-brand" />{INSTITUTE.address}</li>
-                <li className="flex gap-2.5"><Phone className="mt-0.5 size-4 shrink-0 text-brand" />{INSTITUTE.phone}</li>
-                <li className="flex gap-2.5"><Mail className="mt-0.5 size-4 shrink-0 text-brand" />{INSTITUTE.email}</li>
+                <li className="flex min-w-0 gap-2.5">
+                  <MapPin className="mt-0.5 size-4 shrink-0 text-brand" aria-hidden="true" />
+                  <span className="min-w-0 break-words">{institute.address}</span>
+                </li>
+                <li className="flex min-w-0 gap-2.5">
+                  <Phone className="mt-0.5 size-4 shrink-0 text-brand" aria-hidden="true" />
+                  <a href="tel:+911942491176" className="link-underline min-w-0 break-words hover:text-navy">
+                    {institute.phone}
+                  </a>
+                </li>
+                <li className="flex min-w-0 gap-2.5">
+                  <Mail className="mt-0.5 size-4 shrink-0 text-brand" aria-hidden="true" />
+                  <a href={`mailto:${institute.email}`} className="link-underline min-w-0 break-words hover:text-navy">
+                    {institute.email}
+                  </a>
+                </li>
               </ul>
+              <p className="mt-4 text-xs text-muted-foreground">
+                Office hours and departmental extensions are published through official notices when updated.
+              </p>
             </div>
-            <div className="rounded-2xl border border-border bg-card p-6 shadow-soft">
-              <h2 className="font-display text-sm font-bold tracking-wide text-navy uppercase">
-                Support cells
-              </h2>
-              <ul className="mt-4 space-y-2.5 text-sm text-muted-foreground">
-                {["Grievance Redressal Cell", "Anti-Ragging Committee", "Internal Complaints Committee", "Women Safety & Support", "Website Support / IT Cell"].map((c) => (
-                  <li key={c}>{c} — [ADD CONTACT]</li>
-                ))}
-              </ul>
-            </div>
-            <div className="grid h-56 place-items-center rounded-2xl border border-dashed border-border text-sm text-muted-foreground">
-              [ADD GOOGLE MAPS EMBED]
+
+            <div className="rounded-2xl border border-border bg-surface p-5 sm:p-6">
+              <h2 className="font-display text-sm font-bold tracking-wide text-navy uppercase">Location</h2>
+              <p className="mt-3 text-sm text-muted-foreground">
+                Bemina, near State Board of School Education, Srinagar — PIN 190018
+              </p>
+              <LocationMap className="mt-4" size="contact" />
             </div>
           </aside>
         </div>

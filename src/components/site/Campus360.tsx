@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState, type PointerEvent } from "react";
 import { Link } from "@tanstack/react-router";
 import { Compass, Hand, Maximize2 } from "lucide-react";
-import campusImg from "@/assets/campus.jpg";
+import { CAMPUS_IMAGES } from "@/lib/campus-images";
 import { cn } from "@/lib/utils";
 
 export type CampusHotspot = {
@@ -30,7 +30,7 @@ type Campus360Props = {
  */
 export function Campus360({
   src = null,
-  posterSrc = campusImg,
+  posterSrc = CAMPUS_IMAGES.main,
   title = "Explore Our Campus",
   hotspots = [],
   className,
@@ -84,23 +84,19 @@ export function Campus360({
           <div className="mt-3 h-0.5 w-10 rounded-full bg-brand" />
           <h2
             id="campus-360-heading"
-            className="mt-3 font-display text-2xl font-extrabold text-navy sm:text-3xl lg:text-4xl"
+            className="heading-section mt-3 font-display font-extrabold text-balance text-navy"
           >
             {title}
           </h2>
           <p className="mt-4 text-base leading-relaxed text-muted-foreground sm:text-lg">
-            Experience GPW Srinagar from every angle — laboratories, workshops and campus grounds.
+            Campus photographs of Government Polytechnic for Women, Srinagar at Bemina.
           </p>
         </div>
 
         <div
           ref={stageRef}
           role="region"
-          aria-label={
-            has360
-              ? "Interactive 360 degree campus view. Drag to look around."
-              : "Campus preview. A full 360 degree viewer will activate when an official 360 image is added."
-          }
+          aria-label="Campus photograph of Government Polytechnic for Women, Srinagar"
           tabIndex={0}
           onPointerDown={onPointerDown}
           onPointerMove={onPointerMove}
@@ -137,12 +133,10 @@ export function Campus360({
                 <div className="text-on-dark">
                   <p className="inline-flex items-center gap-2 text-xs font-semibold tracking-[0.14em] uppercase">
                     <Compass className="size-3.5" aria-hidden="true" />
-                    {has360 ? "360° Campus View" : "360° Ready"}
+                    Campus View
                   </p>
                   <p className="mt-1 max-w-md text-sm text-on-dark/90">
-                    {has360
-                      ? "Drag or swipe to look around the campus."
-                      : "Connect an official equirectangular campus image to enable immersive look-around."}
+                    Main institute building at Bemina, Srinagar.
                   </p>
                 </div>
                 <div className="flex flex-wrap gap-2">

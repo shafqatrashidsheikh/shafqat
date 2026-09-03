@@ -18,10 +18,10 @@ export function Counter({ value, suffix = "" }: { value: number; suffix?: string
 
         io.disconnect();
         const start = performance.now();
-        const duration = 1200;
+        const duration = 1400;
         const tick = (now: number) => {
           const p = Math.min((now - start) / duration, 1);
-          const eased = 1 - Math.pow(1 - p, 3);
+          const eased = 1 - Math.pow(1 - p, 4);
           setDisplay(Math.round(value * eased));
           if (p < 1) requestAnimationFrame(tick);
         };

@@ -10,16 +10,24 @@ import {
 import { type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
+import { loadSiteChrome } from "@/lib/loaders/site-chrome";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
+import { GPWAssistant } from "@/components/gpw-assistant/GPWAssistant";
 import { PagePreloader } from "@/components/site/PagePreloader";
+import { BOOKS_ART_SRC, GRADUATION_ART_SRC, LOADER_LOGO_SRC } from "@/lib/loader-assets";
+import { ContextualBack, InternalRouteMemory } from "@/components/site/ContextualBack";
 import { RouteTransition } from "@/components/site/RouteTransition";
 import { ScrollReveal } from "@/components/site/ScrollReveal";
 
 function NotFoundComponent() {
   return (
-    <div className="flex min-h-[70vh] items-center justify-center bg-background px-4 py-24">
-      <div className="max-w-xl text-center">
+    <div className="bg-background">
+      <div className="container-page pt-8 sm:pt-10">
+        <ContextualBack />
+      </div>
+      <div className="flex min-h-[70vh] items-center justify-center px-4 py-24">
+        <div className="max-w-xl text-center">
         <svg viewBox="0 0 200 60" className="mx-auto h-16 w-56 text-brand" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
           <path d="M4 52 L52 14 L84 42 L116 10 L164 52" strokeLinejoin="round" />
           <path d="M0 56h200" />
@@ -36,7 +44,7 @@ function NotFoundComponent() {
             to="/"
             className="inline-flex items-center justify-center rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-brand-deep"
           >
-            Back to Home
+            Institute Home
           </Link>
           <Link
             to="/academics"
@@ -44,6 +52,7 @@ function NotFoundComponent() {
           >
             Explore Programs
           </Link>
+        </div>
         </div>
       </div>
     </div>
@@ -56,30 +65,40 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   const router = useRouter();
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
-      <div className="max-w-md text-center">
-        <h1 className="text-xl font-semibold tracking-tight text-foreground">
-          This page didn't load
-        </h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Something went wrong on our end. You can try refreshing or head back home.
-        </p>
-        <div className="mt-6 flex flex-wrap justify-center gap-2">
-          <button
-            onClick={() => {
-              router.invalidate();
-              reset();
-            }}
-            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-          >
-            Try again
-          </button>
-          <a
-            href="/"
-            className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
-          >
-            Go home
-          </a>
+    <div className="bg-background">
+      <div className="container-page pt-8 sm:pt-10">
+        <ContextualBack />
+      </div>
+      <div className="flex min-h-[60vh] items-center justify-center px-4 py-16">
+        <div className="max-w-md text-center">
+          <h1 className="text-xl font-semibold tracking-tight text-foreground">
+            This page didn't load
+          </h1>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Something went wrong on our end. You can try refreshing or head back home.
+          </p>
+          {import.meta.env.DEV && (
+            <p className="mt-4 rounded-md border border-destructive/30 bg-destructive/5 px-3 py-2 text-left font-mono text-xs text-destructive break-words">
+              {error.message}
+            </p>
+          )}
+          <div className="mt-6 flex flex-wrap justify-center gap-2">
+            <button
+              onClick={() => {
+                router.invalidate();
+                reset();
+              }}
+              className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+            >
+              Try again
+            </button>
+            <a
+              href="/"
+              className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
+            >
+              Institute Home
+            </a>
+          </div>
         </div>
       </div>
     </div>
@@ -87,6 +106,7 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
 }
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
+  loader: () => loadSiteChrome(),
   head: () => ({
     meta: [
       { charSet: "utf-8" },
@@ -110,8 +130,34 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         href: "https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap",
       },
       { rel: "preload", href: "/gpw-srinagar-logo.jpg", as: "image" },
-      { rel: "icon", href: "/gpw-srinagar-logo.jpg", type: "image/jpeg" },
-      { rel: "apple-touch-icon", href: "/gpw-srinagar-logo.jpg" },
+      { rel: "preload", href: LOADER_LOGO_SRC, as: "image" },
+      { rel: "preload", href: BOOKS_ART_SRC, as: "image" },
+      { rel: "preload", href: GRADUATION_ART_SRC, as: "image" },
+      { rel: "icon", href: "/favicon.ico?v=2", sizes: "any" },
+      {
+        rel: "icon",
+        href: "/favicon-32x32.png?v=2",
+        sizes: "32x32",
+        type: "image/png",
+      },
+      {
+        rel: "icon",
+        href: "/favicon-16x16.png?v=2",
+        sizes: "16x16",
+        type: "image/png",
+      },
+      {
+        rel: "icon",
+        href: "/favicon-48x48.png?v=2",
+        sizes: "48x48",
+        type: "image/png",
+      },
+      {
+        rel: "apple-touch-icon",
+        href: "/apple-touch-icon.png?v=2",
+        sizes: "180x180",
+      },
+      { rel: "manifest", href: "/site.webmanifest?v=2" },
     ],
     scripts: [
       {
@@ -121,7 +167,16 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           "@type": "EducationalOrganization",
           name: "Government Polytechnic for Women, Srinagar",
           foundingDate: "1986",
-          address: { "@type": "PostalAddress", addressLocality: "Srinagar", addressRegion: "Jammu & Kashmir", addressCountry: "IN" },
+          address: {
+            "@type": "PostalAddress",
+            streetAddress: "Bemina",
+            addressLocality: "Srinagar",
+            addressRegion: "Jammu & Kashmir",
+            postalCode: "190018",
+            addressCountry: "IN",
+          },
+          telephone: "+91-194-2491176",
+          email: "wpolysgr@yahoo.co.in",
         }),
       },
     ],
@@ -148,17 +203,19 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const siteChrome = Route.useLoaderData();
 
   return (
     <QueryClientProvider client={queryClient}>
       <PagePreloader />
+      <InternalRouteMemory />
       <a
         href="#main"
         className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-md focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-foreground"
       >
         Skip to content
       </a>
-      <Header />
+      <Header institute={siteChrome.institute} headerNav={siteChrome.headerNav} />
       <main id="main" className="relative z-0 min-w-0 overflow-x-clip bg-background">
         <RouteTransition>
           {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
@@ -166,7 +223,8 @@ function RootComponent() {
         </RouteTransition>
       </main>
       <ScrollReveal />
-      <Footer />
+      <Footer institute={siteChrome.institute} navLinks={siteChrome.navLinks} />
+      <GPWAssistant />
     </QueryClientProvider>
   );
 }

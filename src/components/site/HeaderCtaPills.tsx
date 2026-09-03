@@ -8,17 +8,20 @@ import {
   useState,
   type KeyboardEvent as ReactKeyboardEvent,
 } from "react";
-import { HEADER_CTA_PILLS, type HeaderCtaPill } from "@/lib/site-data";
+import { HEADER_CTA_PILLS, type HeaderCtaPill, type HeaderCtaPillItem } from "@/lib/site-data";
 import { cn } from "@/lib/utils";
 
-/** Individual nav pills — clear spacing, no visual merging */
+/** Shared pill style for all header navigation buttons (nav + auth). */
 export const HEADER_PILL =
-  "inline-flex h-10 shrink-0 cursor-pointer items-center justify-center gap-1.5 whitespace-nowrap rounded-full border border-border bg-surface-white px-4 text-sm font-medium text-navy shadow-sm transition-[background-color,border-color,color,transform] duration-200 ease-out hover:-translate-y-px hover:border-brand/40 hover:bg-light-blue hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 active:translate-y-0";
+  "inline-flex h-9 min-h-9 shrink-0 cursor-pointer items-center justify-center gap-1 whitespace-nowrap rounded-full border border-border bg-surface-white px-3 text-[12.5px] font-semibold text-navy shadow-sm transition-[background-color,border-color,box-shadow] duration-200 ease-out hover:border-brand/40 hover:bg-light-blue hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 xl:h-10 xl:min-h-10 xl:px-4 xl:text-[13px] 2xl:h-11 2xl:min-h-11 2xl:px-5 2xl:text-sm";
 
-export const HEADER_APPLY =
-  "inline-flex h-10 shrink-0 cursor-pointer items-center justify-center whitespace-nowrap rounded-full border border-border bg-surface-white px-6 text-sm font-semibold text-navy shadow-sm transition-[background-color,border-color,color,transform] duration-200 ease-out hover:-translate-y-px hover:border-brand/40 hover:bg-light-blue hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 active:translate-y-0";
+export const HEADER_PILL_OPEN =
+  "border-brand/40 bg-light-blue shadow-md";
 
-const CLOSE_DELAY_MS = 180;
+export const HEADER_PILL_ACTIVE =
+  "border-brand/35 bg-light-blue/70 shadow-[inset_0_-2px_0_0_#2457A6]";
+
+const CLOSE_DELAY_MS = 150;
 
 function useFineHover() {
   const [fineHover, setFineHover] = useState(false);
@@ -35,25 +38,70 @@ function useFineHover() {
 }
 
 function isRouteActive(pathname: string, to: string) {
-  if (to === "/") return pathname === "/";
-  return pathname === to || pathname.startsWith(`${to}/`);
+  const base = to.split("#")[0] || "/";
+  if (base === "/") return pathname === "/";
+  return pathname === base || pathname.startsWith(`${base}/`);
 }
 
 type NavItemProps = {
   pill: HeaderCtaPill;
   open: boolean;
+  alignEnd: boolean;
   onOpen: () => void;
   onClose: () => void;
   onScheduleClose: () => void;
+  onCancelClose: () => void;
   fineHover: boolean;
 };
+
+function DropdownItem({
+  item,
+  open,
+  itemRef,
+  onClose,
+}: {
+  item: HeaderCtaPillItem;
+  open: boolean;
+  itemRef: (el: HTMLAnchorElement | null) => void;
+  onClose: () => void;
+}) {
+  if (item.comingSoon || !item.to) {
+    return (
+      <span
+        className="block cursor-default rounded-xl px-3.5 py-2.5 text-sm text-muted-foreground"
+        aria-disabled="true"
+      >
+        {item.label}
+      </span>
+    );
+  }
+
+  return (
+    <Link
+      ref={itemRef}
+      role="menuitem"
+      to={item.to}
+      tabIndex={open ? 0 : -1}
+      onClick={onClose}
+      className={cn(
+        "block cursor-pointer rounded-xl px-3.5 py-2.5 text-sm transition-[background-color,color] duration-150 ease-out",
+        "text-navy hover:bg-light-blue hover:text-brand focus-visible:bg-light-blue focus-visible:text-brand focus-visible:outline-none",
+        item.primary && "font-semibold text-brand",
+      )}
+    >
+      {item.label}
+    </Link>
+  );
+}
 
 function HoverNavItem({
   pill,
   open,
+  alignEnd,
   onOpen,
   onClose,
   onScheduleClose,
+  onCancelClose,
   fineHover,
 }: NavItemProps) {
   const menuId = useId();
@@ -71,13 +119,6 @@ function HoverNavItem({
         e.preventDefault();
         onOpen();
         requestAnimationFrame(() => itemRefs.current[0]?.focus());
-      }
-      // Enter on Link: allow default navigation when not forcing open-only
-      if (e.key === "Enter" && !open) {
-        // Let Link navigate; also open is optional
-      }
-      if (e.key === "Enter" && open) {
-        // already open — Link navigates
       }
     }
   };
@@ -107,15 +148,19 @@ function HoverNavItem({
 
   return (
     <div
-      className="relative"
+      className={cn("relative", open && "z-[100]")}
       onMouseEnter={() => {
+        onCancelClose();
         if (fineHover) onOpen();
       }}
       onMouseLeave={() => {
         if (fineHover) onScheduleClose();
       }}
-      onFocus={() => onOpen()}
-      onBlur={(e) => {
+      onFocusCapture={() => {
+        onCancelClose();
+        onOpen();
+      }}
+      onBlurCapture={(e) => {
         if (!e.currentTarget.contains(e.relatedTarget as Node | null)) {
           onScheduleClose();
         }
@@ -125,15 +170,14 @@ function HoverNavItem({
         to={pill.to}
         className={cn(
           HEADER_PILL,
-          open && "border-brand/40 bg-light-blue text-brand",
-          active && "border-brand/40 text-brand shadow-[inset_0_-2px_0_0_#2457A6]",
+          open && HEADER_PILL_OPEN,
+          active && !open && HEADER_PILL_ACTIVE,
         )}
         aria-expanded={open}
         aria-haspopup="menu"
         aria-controls={menuId}
         onKeyDown={onTriggerKeyDown}
         onClick={(e) => {
-          // Touch / no-hover: first tap opens menu; second tap (when open) navigates
           if (!fineHover) {
             if (!open) {
               e.preventDefault();
@@ -141,15 +185,13 @@ function HoverNavItem({
             } else {
               onClose();
             }
-          } else {
-            onClose();
           }
         }}
       >
         {pill.label}
         <ChevronDown
           className={cn(
-            "size-3.5 shrink-0 opacity-70 transition-transform duration-200 ease-out",
+            "size-4 shrink-0 opacity-70 transition-transform duration-200 ease-out xl:size-[1.125rem]",
             open && "rotate-180",
           )}
           aria-hidden="true"
@@ -162,36 +204,33 @@ function HoverNavItem({
         aria-label={`${pill.label} menu`}
         aria-hidden={!open}
         className={cn(
-          "absolute top-full left-1/2 z-[80] w-[15.5rem] -translate-x-1/2 pt-2 transition-[opacity,transform,visibility] duration-[180ms] ease-[cubic-bezier(0.22,1,0.36,1)]",
+          "absolute top-[calc(100%-2px)] z-[100] w-[min(15rem,calc(100vw-2rem))] pt-2 transition-[opacity,transform,visibility] duration-200 ease-out motion-reduce:transition-none",
+          alignEnd ? "right-0 left-auto" : "left-0",
           open
             ? "visible translate-y-0 opacity-100"
-            : "invisible pointer-events-none -translate-y-1 opacity-0",
+            : "pointer-events-none invisible -translate-y-1 opacity-0",
         )}
-        onKeyDown={onMenuKeyDown}
         onMouseEnter={() => {
+          onCancelClose();
           if (fineHover) onOpen();
         }}
+        onMouseLeave={() => {
+          if (fineHover) onScheduleClose();
+        }}
+        onKeyDown={onMenuKeyDown}
       >
-        <div className="rounded-2xl border border-border bg-surface-white p-2 shadow-[0_8px_28px_rgba(23,54,93,0.1)]">
+        <div className="rounded-xl border border-border bg-surface-white p-1.5 shadow-[0_10px_32px_rgba(23,54,93,0.1)]">
           <ul className="m-0 list-none p-0">
             {pill.items.map((item, index) => (
               <li key={item.label} role="none">
-                <Link
-                  ref={(el) => {
+                <DropdownItem
+                  item={item}
+                  open={open}
+                  onClose={onClose}
+                  itemRef={(el) => {
                     itemRefs.current[index] = el;
                   }}
-                  role="menuitem"
-                  to={item.to}
-                  tabIndex={open ? 0 : -1}
-                  onClick={onClose}
-                  className={cn(
-                    "block cursor-pointer rounded-xl px-3.5 py-2.5 text-sm transition-[background-color,color] duration-150 ease-out",
-                    "text-navy hover:bg-light-blue hover:text-brand focus-visible:bg-light-blue focus-visible:text-brand focus-visible:outline-none",
-                    item.primary && "font-semibold",
-                  )}
-                >
-                  {item.label}
-                </Link>
+                />
               </li>
             ))}
           </ul>
@@ -203,9 +242,10 @@ function HoverNavItem({
 
 type HeaderCtaPillsProps = {
   className?: string;
+  pills?: HeaderCtaPill[];
 };
 
-export function HeaderCtaPills({ className }: HeaderCtaPillsProps) {
+export function HeaderCtaPills({ className, pills = HEADER_CTA_PILLS }: HeaderCtaPillsProps) {
   const [openLabel, setOpenLabel] = useState<string | null>(null);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const fineHover = useFineHover();
@@ -256,57 +296,91 @@ export function HeaderCtaPills({ className }: HeaderCtaPillsProps) {
   }, [closeMenu, clearCloseTimer]);
 
   return (
-    <nav
+    <div
       data-nav-pills
-      aria-label="Primary actions"
-      className={cn("flex shrink-0 items-center gap-6 xl:gap-7", className)}
+      className={cn("flex shrink-0 flex-nowrap items-center gap-2 2xl:gap-2.5", className)}
     >
-      {HEADER_CTA_PILLS.map((pill) => (
+      {pills.map((pill, index) => (
         <HoverNavItem
           key={pill.label}
           pill={pill}
           fineHover={fineHover}
+          alignEnd={index >= pills.length - 2}
           open={openLabel === pill.label}
           onOpen={() => openMenu(pill.label)}
           onClose={closeMenu}
           onScheduleClose={scheduleClose}
+          onCancelClose={clearCloseTimer}
         />
       ))}
-    </nav>
+    </div>
   );
 }
 
-/** Mobile menu grouped CTA links */
-export function HeaderCtaMobileGroups({ onNavigate }: { onNavigate?: () => void }) {
+/** Mobile menu grouped CTA links with expandable sections */
+export function HeaderCtaMobileGroups({
+  onNavigate,
+  pills = HEADER_CTA_PILLS,
+}: {
+  onNavigate?: () => void;
+  pills?: HeaderCtaPill[];
+}) {
+  const [expanded, setExpanded] = useState<string | null>(null);
+
   return (
-    <div className="space-y-4 border-t border-border px-3 py-4">
-      {HEADER_CTA_PILLS.map((pill) => (
-        <div key={pill.label}>
-          <Link
-            to={pill.to}
-            onClick={onNavigate}
-            className="block px-3 pb-1 text-xs font-semibold text-brand"
-          >
-            {pill.label}
-          </Link>
-          <ul className="space-y-0.5">
-            {pill.items.map((item) => (
-              <li key={item.label}>
-                <Link
-                  to={item.to}
-                  onClick={onNavigate}
-                  className={cn(
-                    "block cursor-pointer rounded-xl px-3 py-2.5 text-sm transition-[background-color,color] duration-150 ease-out hover:bg-light-blue hover:text-brand",
-                    item.primary ? "font-semibold text-brand" : "font-medium text-navy",
-                  )}
-                >
-                  {item.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-      ))}
+    <div className="space-y-2 border-t border-border px-3 py-4">
+      {pills.map((pill) => {
+        const isOpen = expanded === pill.label;
+        return (
+          <div key={pill.label} className="rounded-xl border border-border/80 bg-surface-white">
+            <button
+              type="button"
+              className="flex min-h-11 w-full items-center justify-between px-3 py-2.5 text-left text-sm font-semibold text-navy"
+              aria-expanded={isOpen}
+              onClick={() => setExpanded(isOpen ? null : pill.label)}
+            >
+              {pill.label}
+              <ChevronDown
+                className={cn("size-4 shrink-0 text-brand transition-transform duration-200", isOpen && "rotate-180")}
+                aria-hidden="true"
+              />
+            </button>
+            {isOpen && (
+              <ul className="space-y-0.5 border-t border-border px-1 pb-2 pt-1">
+                <li>
+                  <Link
+                    to={pill.to}
+                    onClick={onNavigate}
+                    className="block min-h-11 rounded-lg px-3 py-2.5 text-sm font-semibold text-brand hover:bg-light-blue"
+                  >
+                    View {pill.label}
+                  </Link>
+                </li>
+                {pill.items.map((item) => (
+                  <li key={item.label}>
+                    {item.comingSoon || !item.to ? (
+                      <span className="block min-h-11 rounded-lg px-3 py-2.5 text-sm text-muted-foreground">
+                        {item.label}
+                      </span>
+                    ) : (
+                      <Link
+                        to={item.to}
+                        onClick={onNavigate}
+                        className={cn(
+                          "block min-h-11 cursor-pointer rounded-lg px-3 py-2.5 text-sm transition-[background-color,color] duration-150 ease-out hover:bg-light-blue hover:text-brand",
+                          item.primary ? "font-semibold text-brand" : "font-medium text-navy",
+                        )}
+                      >
+                        {item.label}
+                      </Link>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 }

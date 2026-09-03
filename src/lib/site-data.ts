@@ -1,61 +1,21 @@
 export const INSTITUTE = {
   name: "Government Polytechnic for Women, Srinagar",
   shortName: "GPW Srinagar",
+  brandMark: "GPWS",
   established: "1986",
   tagline:
     "Empowering women through quality technical education, practical learning and career-focused skills.",
-  address: "Government Polytechnic for Women, Srinagar, Jammu & Kashmir — [ADD OFFICIAL ADDRESS]",
-  phone: "[ADD OFFICIAL PHONE]",
-  email: "[ADD OFFICIAL EMAIL]",
+  address: "Government Polytechnic for Women, Bemina, Srinagar, Jammu & Kashmir",
+  phone: "0194-2491176",
+  email: "wpolysgr@yahoo.co.in",
+  /** Bemina campus — verified coordinates (34°4′43″N 74°45′47″E) */
+  mapEmbedUrl:
+    "https://www.google.com/maps?q=34.078611,74.763056&hl=en&z=16&output=embed",
+  mapLink:
+    "https://www.google.com/maps/search/?api=1&query=Government+Polytechnic+for+Women+Bemina+Srinagar",
 };
 
 export type NavItem = { label: string; to: string; children?: { label: string; to: string }[] };
-
-export const NAV: NavItem[] = [
-  { label: "Home", to: "/" },
-  {
-    label: "About",
-    to: "/about",
-    children: [
-      { label: "About the Institute", to: "/about" },
-      { label: "Vision & Mission", to: "/about" },
-      { label: "Principal's Message", to: "/about" },
-      { label: "Administration", to: "/about" },
-    ],
-  },
-  {
-    label: "Academics",
-    to: "/academics",
-    children: [
-      { label: "Programs / Courses", to: "/academics" },
-      { label: "Departments", to: "/academics" },
-      { label: "Laboratories", to: "/campus" },
-      { label: "Examination", to: "/notices" },
-    ],
-  },
-  {
-    label: "Admissions",
-    to: "/admissions",
-    children: [
-      { label: "Admission Overview", to: "/admissions" },
-      { label: "Eligibility", to: "/admissions" },
-      { label: "Fee Structure", to: "/admissions" },
-      { label: "Admission Notices", to: "/notices" },
-    ],
-  },
-  { label: "Placements", to: "/placements" },
-  { label: "Campus", to: "/campus" },
-  { label: "Notices", to: "/notices" },
-  { label: "Contact", to: "/contact" },
-];
-
-export const UTILITY_LINKS = [
-  { label: "Admissions", to: "/admissions" },
-  { label: "Notices", to: "/notices" },
-  { label: "Examination", to: "/notices" },
-  { label: "Results", to: "/notices" },
-  { label: "Contact", to: "/contact" },
-];
 
 /** Quick access links — homepage announcements & footer */
 export const UTILITY_STRIP = [
@@ -92,10 +52,10 @@ export const INSTITUTE_SPOTLIGHTS = [
 
 /** Academic unit tiles — IITD Academic Units pattern */
 export const ACADEMIC_UNITS = [
-  { title: "Departments", subtitle: "Specialized teaching units", to: "/academics" },
-  { title: "Programs", subtitle: "Three-year diploma courses", to: "/academics" },
-  { title: "Laboratories", subtitle: "Hands-on technical practice", to: "/campus" },
-  { title: "Facilities", subtitle: "Library, workshop & campus", to: "/campus" },
+  { title: "Departments", subtitle: "Specialized teaching units", to: "/academics#departments" },
+  { title: "Programs", subtitle: "Three-year diploma courses", to: "/academics#programs" },
+  { title: "Laboratories", subtitle: "Hands-on technical practice", to: "/academics#labs-workshops" },
+  { title: "Facilities", subtitle: "Library, workshop & campus", to: "/campus#facilities" },
 ] as const;
 
 export const CAMPUS_EVENTS = [
@@ -131,15 +91,23 @@ export const HOME_FAQS = [
   },
   {
     q: "How do I contact the institute for admissions queries?",
-    a: "Use the Contact page for official phone and email channels, or visit the Admissions page for process details.",
+    a: "Use the Contact page for the institute address, phone, email and enquiry form, or visit the Admissions page for process details.",
   },
 ] as const;
+
+export type HeaderCtaPillItem = {
+  label: string;
+  to?: string;
+  primary?: boolean;
+  /** Non-link placeholder (e.g. coming soon) */
+  comingSoon?: boolean;
+};
 
 export type HeaderCtaPill = {
   label: string;
   /** Parent landing page — click navigates here */
   to: string;
-  items: { label: string; to: string; primary?: boolean }[];
+  items: HeaderCtaPillItem[];
 };
 
 /** Pill CTA buttons in the header — each opens a dropdown of action links */
@@ -148,143 +116,88 @@ export const HEADER_CTA_PILLS: HeaderCtaPill[] = [
     label: "Admissions",
     to: "/admissions",
     items: [
-      { label: "Admission Information", to: "/admissions", primary: true },
-      { label: "Eligibility", to: "/admissions" },
-      { label: "Application Process", to: "/admissions" },
-      { label: "Important Dates", to: "/admissions" },
-      { label: "Documents", to: "/admissions" },
-      { label: "Fees", to: "/admissions" },
+      { label: "Apply Now", to: "/admissions#apply", primary: true },
+      { label: "Admission Information", to: "/admissions#admission-overview" },
+      { label: "Eligibility", to: "/admissions#eligibility" },
+      { label: "Application Process", to: "/admissions#application-process" },
+      { label: "Important Dates", to: "/admissions#important-dates" },
+      { label: "Required Documents", to: "/admissions#required-documents" },
+      { label: "Fee Information", to: "/admissions#fee-information" },
+      { label: "Admission Notices", to: "/notices#admissions" },
     ],
   },
   {
     label: "Academics",
     to: "/academics",
     items: [
-      { label: "Programs / Courses", to: "/academics", primary: true },
-      { label: "Departments", to: "/academics" },
-      { label: "Examination", to: "/notices" },
-      { label: "Results", to: "/notices" },
+      { label: "Programs / Courses", to: "/academics#programs", primary: true },
+      { label: "Departments", to: "/academics#departments" },
+      { label: "Academic Calendar", to: "/notices#academics" },
+      { label: "Curriculum & Syllabus", to: "/notices" },
+      { label: "Examination", to: "/notices#examination" },
+      { label: "Results", to: "/notices#examination" },
     ],
   },
   {
     label: "Campus",
     to: "/campus",
     items: [
-      { label: "360° Campus", to: "/campus", primary: true },
-      { label: "Facilities", to: "/campus" },
-      { label: "Laboratories", to: "/campus" },
-      { label: "Workshops", to: "/campus" },
-      { label: "Library", to: "/campus" },
-      { label: "Student Life", to: "/campus" },
+      { label: "Campus Overview", to: "/campus#campus-overview", primary: true },
+      { label: "Laboratories & Facilities", to: "/campus#facilities" },
+      { label: "Library", to: "/campus#facilities" },
+      { label: "Hostel", to: "/campus#facilities" },
+      { label: "Student Facilities", to: "/campus#facilities" },
+      { label: "Campus Gallery", to: "/campus#gallery" },
+      { label: "Contact / Location", to: "/contact" },
+      { label: "360° Virtual Tour — Coming Soon", to: "/campus#virtual-tour", comingSoon: true },
     ],
   },
   {
     label: "Updates",
     to: "/notices",
     items: [
-      { label: "Notices", to: "/notices", primary: true },
-      { label: "Announcements", to: "/notices" },
-      { label: "Events", to: "/notices" },
-      { label: "Examination Updates", to: "/notices" },
+      { label: "Latest News", to: "/notices", primary: true },
+      { label: "Notices", to: "/notices#notices-list" },
+      { label: "Events", to: "/notices#events" },
+      { label: "Tenders / Important Circulars", to: "/notices#tenders" },
     ],
   },
 ];
 
-export const ANNOUNCEMENTS = [
-  { tag: "Admission", date: "12 Aug 2026", title: "Diploma admissions 2026 — counselling schedule published" },
-  { tag: "Examination", date: "05 Aug 2026", title: "Odd semester practical examination date sheet" },
-  { tag: "Tender", date: "29 Jul 2026", title: "Tender notice for laboratory equipment procurement" },
-  { tag: "Circular", date: "21 Jul 2026", title: "Anti-ragging committee constitution and helpline" },
-];
+export { ANNOUNCEMENTS } from "@/lib/notices-data";
 
 export const STATS = [
   { value: 1986, label: "Established", prefix: "", suffix: "" },
-  { value: 6, label: "Diploma Programs", suffix: "+" },
-  { value: 6, label: "Departments", suffix: "" },
-  { value: 20, label: "Laboratories", suffix: "+" },
+  { value: 8, label: "Diploma Programmes", prefix: "", suffix: "" },
+  { value: 240, label: "Sanctioned Seats", prefix: "", suffix: "" },
+  { value: 3, label: "Diploma Duration", prefix: "", suffix: " Years" },
 ];
 
-export const PROGRAMS = [
-  {
-    name: "Computer Engineering",
-    dept: "Computer Engineering",
-    duration: "3 Years",
-    eligibility: "10th pass with Science & Mathematics",
-    seats: "[ADD INTAKE]",
-    stream: "Technology",
-    overview:
-      "Programming, data structures, web technologies, networking and modern software practice with strong laboratory work.",
-  },
-  {
-    name: "Electronics & Communication",
-    dept: "Electronics Engineering",
-    duration: "3 Years",
-    eligibility: "10th pass with Science & Mathematics",
-    seats: "[ADD INTAKE]",
-    stream: "Engineering",
-    overview:
-      "Analog and digital electronics, embedded systems, communication systems and instrumentation practice.",
-  },
-  {
-    name: "Electrical Engineering",
-    dept: "Electrical Engineering",
-    duration: "3 Years",
-    eligibility: "10th pass with Science & Mathematics",
-    seats: "[ADD INTAKE]",
-    stream: "Engineering",
-    overview:
-      "Machines, power systems, control, electrical workshop practice and industrial safety fundamentals.",
-  },
-  {
-    name: "Civil Engineering",
-    dept: "Civil Engineering",
-    duration: "3 Years",
-    eligibility: "10th pass with Science & Mathematics",
-    seats: "[ADD INTAKE]",
-    stream: "Engineering",
-    overview:
-      "Surveying, structures, construction materials, estimation and computer-aided civil drafting.",
-  },
-  {
-    name: "Architecture Assistantship",
-    dept: "Architecture",
-    duration: "3 Years",
-    eligibility: "10th pass",
-    seats: "[ADD INTAKE]",
-    stream: "Technology",
-    overview:
-      "Architectural drawing, design studio, building services and digital documentation workflows.",
-  },
-  {
-    name: "Applied Sciences & Humanities",
-    dept: "Applied Sciences",
-    duration: "Supporting Department",
-    eligibility: "—",
-    seats: "—",
-    stream: "Applied Sciences",
-    overview:
-      "Foundation courses in physics, chemistry, mathematics and communication skills across all programs.",
-  },
-];
+const UNVERIFIED_GLANCE_LABELS = new Set(["Laboratories", "Departments", "Diploma Programs"]);
 
-export const WHY_US = [
-  { title: "Women-Centered Technical Education", body: "A campus designed entirely around the learning, safety and ambition of women in engineering." },
-  { title: "Practical Laboratory Learning", body: "Hands-on workshop and laboratory hours built into every semester of every diploma program." },
-  { title: "Experienced Faculty", body: "Departmental faculty and instructors supporting students through structured academic mentoring." },
-  { title: "Career & Placement Support", body: "Training & Placement Cell coordinating skill sessions, internships and recruitment drives." },
-  { title: "Innovation & Entrepreneurship", body: "Student projects, technical clubs and idea-to-prototype support through the innovation cell." },
-  { title: "Safe & Inclusive Campus", body: "Anti-ragging cell, internal complaints committee and grievance redressal with clear escalation." },
-];
+/** Use CMS stats only when they match verified GPW Srinagar figures. */
+export function resolveGlanceStats<T extends { label: string }>(rows: T[]): T[] | typeof STATS {
+  if (rows.length === 0 || rows.some((row) => UNVERIFIED_GLANCE_LABELS.has(row.label))) {
+    return STATS;
+  }
+  return rows;
+}
 
-export const QUICK_LINKS = [
-  "Admissions", "Notices", "Examination", "Results", "Academic Calendar",
-  "Downloads", "Student Portal", "Faculty Portal", "Grievance",
-  "Anti-Ragging", "Scholarship", "Contact",
-];
+import { GPW_DEPARTMENTS, type ProgramCategory, type ProgramIcon } from "@/lib/departments-data";
 
-export const AUDIENCES = [
-  { who: "Prospective Student", items: ["Courses", "Eligibility", "Admission", "Fee", "Hostel", "Placement"] },
-  { who: "Current Student", items: ["Notices", "Examination", "Results", "Timetable", "Downloads", "Grievance"] },
-  { who: "Parent", items: ["About", "Safety & Support", "Fee Structure", "Placement", "Contact", "Campus"] },
-  { who: "Faculty / Alumni", items: ["Staff Login", "Circulars", "Departments", "Events", "Alumni Network", "Contact"] },
-];
+export type { ProgramCategory, ProgramIcon };
+
+/** Diploma programmes — derived from official department records. */
+export const PROGRAMS = GPW_DEPARTMENTS.map(
+  ({ name, categoryLabel, duration, eligibility, programType, stream, summary, icon, slug }) => ({
+    name,
+    categoryLabel,
+    duration,
+    eligibility,
+    programType,
+    stream,
+    overview: summary,
+    icon,
+    slug,
+  }),
+);

@@ -1,17 +1,16 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { KeepTogether } from "@/components/site/AmpersandText";
 import { EXPLORE_CARDS, type ExploreCard } from "@/lib/explore-data";
 import { cn } from "@/lib/utils";
 
 function FeatureCard({
   card,
-  index,
-  visible,
+  ariaHidden,
 }: {
   card: ExploreCard;
-  index: number;
-  visible: boolean;
+  ariaHidden?: boolean;
 }) {
   const content = (
     <>
@@ -29,7 +28,7 @@ function FeatureCard({
           loading={card.priority ? "eager" : "lazy"}
           fetchPriority={card.priority ? "high" : "auto"}
           decoding="async"
-          className="size-full max-w-none object-cover transition-transform duration-300 ease-out group-hover:scale-[1.03]"
+          className="size-full max-w-none object-cover transition-transform duration-500 ease-out group-hover:scale-[1.02]"
         />
       </div>
       <div
@@ -43,7 +42,7 @@ function FeatureCard({
         </p>
         <h3 className="mt-3 font-display text-xl font-extrabold text-navy sm:text-2xl">{card.title}</h3>
         <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-muted-foreground">{card.description}</p>
-        <span className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-brand transition-transform duration-300 group-hover:translate-x-1">
+        <span className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-brand transition-transform duration-200 group-hover:translate-x-1">
           {card.cta}
           <ArrowRight className="size-4" aria-hidden="true" />
         </span>
@@ -53,21 +52,18 @@ function FeatureCard({
 
   return (
     <article
-      className={cn(
-        "group w-[min(100%,420px)] shrink-0 snap-start sm:w-[min(72%,560px)] lg:w-[min(46%,580px)]",
-        "transition-all duration-700 ease-out motion-reduce:translate-y-0 motion-reduce:opacity-100 motion-reduce:transition-none",
-        visible ? "translate-y-0 opacity-100" : "translate-y-5 opacity-0",
-      )}
-      style={{ transitionDelay: visible ? `${120 + index * 70}ms` : "0ms" }}
+      className="group w-[min(100%,420px)] shrink-0 sm:w-[min(72%,560px)] lg:w-[min(46%,580px)]"
+      aria-hidden={ariaHidden}
     >
       <Link
         to={card.href}
         draggable={false}
+        tabIndex={ariaHidden ? -1 : undefined}
         className={cn(
           "grid h-full min-h-[320px] overflow-hidden rounded-[20px] border border-border bg-surface-white shadow-soft sm:min-h-[360px]",
-          "transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-brand/30 hover:shadow-raised",
+          "transition-[transform,box-shadow,border-color] duration-200 ease-out hover:-translate-y-0.5 hover:border-brand/30 hover:shadow-raised",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2",
-          card.imagePosition === "left" ? "sm:grid-cols-[42%_1fr]" : "sm:grid-cols-[1fr_42%]",
+          card.imagePosition === "left" ? "md:grid-cols-[42%_1fr]" : "md:grid-cols-[1fr_42%]",
         )}
       >
         {content}
@@ -76,64 +72,56 @@ function FeatureCard({
   );
 }
 
-export function ExploreGPWSrinagar() {
-  const scrollerRef = useRef<HTMLDivElement>(null);
-  const dragState = useRef({ active: false, startX: 0, scrollLeft: 0, moved: false });
-  const [visible, setVisible] = useState(false);
-  const [dragging, setDragging] = useState(false);
+/** Steady institutional carousel speed — px per second (target band: 35–50) */
+const EXPLORE_MARQUEE_PX_PER_SEC = 42;
+
+export function ExploreGPWSrinagar({ cards = EXPLORE_CARDS }: { cards?: ExploreCard[] }) {
+  const [headerVisible, setHeaderVisible] = useState(false);
+  const [reducedMotion, setReducedMotion] = useState(false);
+  const trackRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const el = scrollerRef.current;
-    if (!el) return;
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    setReducedMotion(reduced);
+
+    const header = document.getElementById("explore-gpw-heading");
+    if (!header) return;
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry?.isIntersecting) setVisible(true);
+        if (entry?.isIntersecting) setHeaderVisible(true);
       },
-      { threshold: 0.15 },
+      { threshold: 0.2 },
     );
-    observer.observe(el);
-
+    observer.observe(header);
     return () => observer.disconnect();
   }, []);
 
-  const onPointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
-    const el = scrollerRef.current;
-    if (!el || event.pointerType === "touch") return;
-    dragState.current = {
-      active: true,
-      startX: event.pageX,
-      scrollLeft: el.scrollLeft,
-      moved: false,
+  useEffect(() => {
+    if (reducedMotion) return;
+
+    const track = trackRef.current;
+    if (!track) return;
+
+    const syncMarqueeSpeed = () => {
+      const loopDistance = track.scrollWidth / 2;
+      if (loopDistance <= 0) return;
+      const seconds = loopDistance / EXPLORE_MARQUEE_PX_PER_SEC;
+      track.style.setProperty("--explore-marquee-duration", `${seconds.toFixed(2)}s`);
     };
-    setDragging(true);
-    el.setPointerCapture(event.pointerId);
-  };
 
-  const onPointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
-    const el = scrollerRef.current;
-    const drag = dragState.current;
-    if (!el || !drag.active) return;
-    const delta = event.pageX - drag.startX;
-    if (Math.abs(delta) > 4) drag.moved = true;
-    el.scrollLeft = drag.scrollLeft - delta;
-  };
+    syncMarqueeSpeed();
+    const ro = new ResizeObserver(syncMarqueeSpeed);
+    ro.observe(track);
+    window.addEventListener("load", syncMarqueeSpeed);
 
-  const endDrag = (event: React.PointerEvent<HTMLDivElement>) => {
-    const el = scrollerRef.current;
-    if (!el || !dragState.current.active) return;
-    dragState.current.active = false;
-    setDragging(false);
-    el.releasePointerCapture(event.pointerId);
-  };
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("load", syncMarqueeSpeed);
+    };
+  }, [reducedMotion]);
 
-  const onClickCapture = (event: React.MouseEvent) => {
-    if (dragState.current.moved) {
-      event.preventDefault();
-      event.stopPropagation();
-      dragState.current.moved = false;
-    }
-  };
+  const loopCards = [...cards, ...cards];
 
   return (
     <section
@@ -143,43 +131,51 @@ export function ExploreGPWSrinagar() {
       <div className="container-page min-w-0">
         <div
           className={cn(
-            "max-w-3xl transition-all duration-700 ease-out motion-reduce:transition-none",
-            visible ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0",
+            "w-full min-w-0 transition-[opacity,transform] duration-[620ms] ease-[cubic-bezier(0.22,0.61,0.36,1)] motion-reduce:transition-none",
+            headerVisible ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0",
           )}
+          data-motion="off"
         >
           <div className="h-0.5 w-16 rounded-full bg-brand" />
           <h2
             id="explore-gpw-heading"
-            className="mt-5 font-display text-3xl font-extrabold text-navy lg:text-4xl"
+            className="heading-section mt-5 font-display font-extrabold text-navy"
           >
             Explore GPW Srinagar
           </h2>
-          <p className="mt-4 max-w-2xl text-base leading-relaxed text-muted-foreground">
-            A focused path through academics, campus life, admissions and careers at GPW Srinagar.
+          <p className="mt-4 w-full min-w-0 hyphens-none text-base leading-relaxed text-muted-foreground lg:whitespace-nowrap">
+            A focused path through academics, campus life, admissions and careers at{" "}
+            <KeepTogether>GPW Srinagar.</KeepTogether>
           </p>
         </div>
 
-        <div className="relative mt-10 w-full max-w-full min-w-0 overflow-hidden">
+        {reducedMotion ? (
           <div
-            ref={scrollerRef}
             role="region"
             aria-label="Explore GPW Srinagar — horizontally scrollable cards"
-            tabIndex={0}
-            onPointerDown={onPointerDown}
-            onPointerMove={onPointerMove}
-            onPointerUp={endDrag}
-            onPointerLeave={endDrag}
-            onClickCapture={onClickCapture}
-            className={cn(
-              "explore-scroll gap-6 pb-2",
-              dragging ? "cursor-grabbing select-none" : "cursor-grab sm:cursor-grab",
-            )}
+            className="explore-scroll relative mt-10 gap-6 pb-2"
           >
-            {EXPLORE_CARDS.map((card, index) => (
-              <FeatureCard key={card.id} card={card} index={index} visible={visible} />
+            {cards.map((card) => (
+              <FeatureCard key={card.id} card={card} />
             ))}
           </div>
-        </div>
+        ) : (
+          <div
+            role="region"
+            aria-label="Explore GPW Srinagar — continuously scrolling cards"
+            className="explore-marquee-viewport relative mt-10 w-full max-w-full min-w-0"
+          >
+            <div ref={trackRef} className="explore-marquee-track">
+              {loopCards.map((card, index) => (
+                <FeatureCard
+                  key={`${card.id}-${index}`}
+                  card={card}
+                  ariaHidden={index >= cards.length}
+                />
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </section>
   );

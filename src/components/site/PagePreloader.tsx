@@ -1,74 +1,158 @@
-import { useEffect, useState } from "react";
-import { CollegeLogo } from "@/components/site/CollegeLogo";
+import { useEffect, useRef, useState } from "react";
+import {
+  BOOKS_AT_MS,
+  BOOKS_PHASE,
+  EXIT_MS,
+  GRAD_AT_MS,
+  GRAD_PHASE,
+  HOLD_AT_MS,
+  HOLD_PHASE,
+  LOGO_PHASE,
+  REDUCED_FADE_MS,
+} from "@/components/site/loader-phases";
+import { StoryLoaderScene } from "@/components/site/StoryLoaderScene";
+import { INSTITUTE } from "@/lib/site-data";
 import { cn } from "@/lib/utils";
 
+const EXIT_HOLD_MS = 240;
+const SAFETY_MS = 9000;
+
 /**
- * Initial application preloader only.
- * Dismisses on window load — no artificial multi-second delay.
+ * Compact GPWS identity lockup: logo + wordmark from the first frame,
+ * then a continuous emblem handoff through books and the graduation cap.
  */
 export function PagePreloader() {
   const [visible, setVisible] = useState(true);
   const [leaving, setLeaving] = useState(false);
+  const [phase, setPhase] = useState(LOGO_PHASE);
+  const [reducedMotion, setReducedMotion] = useState(false);
+  const pageReadyRef = useRef(false);
+  const animationDoneRef = useRef(false);
+  const leavingRef = useRef(false);
+  const timersRef = useRef<number[]>([]);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setReducedMotion(mq.matches);
+    const onChange = () => setReducedMotion(mq.matches);
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, []);
+
+  useEffect(() => {
+    if (!visible) return;
+    const html = document.documentElement;
+    const body = document.body;
+    const prevHtml = html.style.overflow;
+    const prevBody = body.style.overflow;
+    html.classList.add("story-loader-lock");
+    html.style.overflow = "hidden";
+    body.style.overflow = "hidden";
+    return () => {
+      html.classList.remove("story-loader-lock");
+      html.style.overflow = prevHtml;
+      body.style.overflow = prevBody;
+    };
+  }, [visible]);
 
   useEffect(() => {
     let cancelled = false;
-    let leaveTimer: ReturnType<typeof setTimeout> | undefined;
 
-    const dismiss = () => {
-      if (cancelled) return;
+    const clearTimers = () => {
+      timersRef.current.forEach((id) => window.clearTimeout(id));
+      timersRef.current = [];
+    };
+
+    const later = (fn: () => void, ms: number) => {
+      const id = window.setTimeout(() => {
+        if (!cancelled) fn();
+      }, ms);
+      timersRef.current.push(id);
+    };
+
+    const beginLeave = () => {
+      if (cancelled || leavingRef.current) return;
+      leavingRef.current = true;
       setLeaving(true);
-      leaveTimer = setTimeout(() => {
-        if (!cancelled) setVisible(false);
-      }, 320);
+      later(() => setVisible(false), EXIT_MS);
+    };
+
+    const tryFinish = () => {
+      if (cancelled || leavingRef.current) return;
+      if (pageReadyRef.current && animationDoneRef.current) {
+        later(beginLeave, EXIT_HOLD_MS);
+      }
+    };
+
+    const markReady = () => {
+      animationDoneRef.current = true;
+      setPhase(reducedMotion ? LOGO_PHASE : HOLD_PHASE);
+      tryFinish();
     };
 
     const onReady = () => {
-      // Double rAF so first paint completes before fade-out
-      requestAnimationFrame(() => {
-        requestAnimationFrame(dismiss);
-      });
+      pageReadyRef.current = true;
+      tryFinish();
     };
 
+    const startTimeline = () => {
+      if (cancelled) return;
+
+      if (reducedMotion) {
+        setPhase(LOGO_PHASE);
+        later(markReady, REDUCED_FADE_MS);
+        return;
+      }
+
+      setPhase(LOGO_PHASE);
+      later(() => setPhase(BOOKS_PHASE), BOOKS_AT_MS);
+      later(() => setPhase(GRAD_PHASE), GRAD_AT_MS);
+      later(markReady, HOLD_AT_MS);
+    };
+
+    startTimeline();
+
     if (document.readyState === "complete") {
-      onReady();
+      requestAnimationFrame(onReady);
     } else {
       window.addEventListener("load", onReady, { once: true });
     }
 
-    // Safety: never trap the user
-    const safety = setTimeout(dismiss, 4500);
+    later(beginLeave, SAFETY_MS);
 
     return () => {
       cancelled = true;
-      clearTimeout(safety);
-      if (leaveTimer) clearTimeout(leaveTimer);
+      clearTimers();
       window.removeEventListener("load", onReady);
     };
-  }, []);
+  }, [reducedMotion]);
 
   if (!visible) return null;
 
   return (
     <div
       className={cn(
-        "fixed inset-0 z-[200] flex flex-col items-center justify-center bg-surface-white transition-opacity duration-300 ease-out",
-        leaving && "pointer-events-none opacity-0",
+        "story-loader fixed inset-0 z-[200] flex items-center justify-center overflow-hidden px-5",
+        leaving && "story-loader--leaving",
+        reducedMotion && "story-loader--reduced",
       )}
+      data-phase={phase}
       role="status"
       aria-live="polite"
       aria-busy={!leaving}
-      aria-label="Loading Government Polytechnic for Women, Srinagar"
+      aria-label={INSTITUTE.name}
     >
-      <div className="relative flex size-[7.25rem] items-center justify-center sm:size-32">
-        <span
-          className="preloader-ring absolute inset-0 rounded-full border-2 border-border border-t-brand"
-          aria-hidden="true"
-        />
-        <CollegeLogo variant="footer" className="!h-[4.75rem] !w-[4.75rem] sm:!h-24 sm:!w-24" />
+      <div className="story-loader-backdrop" aria-hidden="true" />
+
+      <div className="story-loader-lockup">
+        <StoryLoaderScene phase={reducedMotion ? LOGO_PHASE : phase} />
+
+        <div className="story-identity is-in">
+          <p className="story-identity-mark">{INSTITUTE.brandMark}</p>
+          <p className="story-identity-name">{INSTITUTE.name}</p>
+          <p className="story-identity-since">SINCE {INSTITUTE.established}</p>
+        </div>
       </div>
-      <p className="mt-6 max-w-sm px-6 text-center font-display text-sm font-semibold text-navy sm:text-base">
-        Government Polytechnic for Women, Srinagar
-      </p>
     </div>
   );
 }
