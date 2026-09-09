@@ -139,7 +139,7 @@ export type DbNotice = {
   category: string;
   tag: string;
   published_at: string;
-  priority: "Urgent" | "Important" | "General";
+  priority: "Urgent" | "Important" | "General" | "New";
   file_label: string | null;
   file_url: string | null;
   is_pinned: boolean;

@@ -15,7 +15,7 @@ const sizeClasses: Record<NonNullable<CollegeLogoProps["variant"]>, string> = {
     "h-[3.75rem] w-[3.75rem] sm:h-16 sm:w-16 md:h-[4.5rem] md:w-[4.5rem] xl:h-[5.25rem] xl:w-[5.25rem] 2xl:h-[5.5rem] 2xl:w-[5.5rem]",
   "header-compact":
     "h-14 w-14 sm:h-[3.75rem] sm:w-[3.75rem] md:h-16 md:w-16 xl:h-20 xl:w-20 2xl:h-[5.25rem] 2xl:w-[5.25rem]",
-  footer: "h-20 w-20 sm:h-24 sm:w-24",
+  footer: "h-16 w-16 sm:h-[4.5rem] sm:w-[4.5rem]",
   loader: "h-[clamp(4.5rem,16vw,6rem)] w-[clamp(4.5rem,16vw,6rem)]",
 };
 

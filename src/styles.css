@@ -18,6 +18,7 @@
   --radius-3xl: calc(var(--radius) + 12px);
   --radius-4xl: calc(var(--radius) + 16px);
   --font-display: "Manrope", ui-sans-serif, system-ui, sans-serif;
+  --font-brand: "Source Serif 4", "Times New Roman", Times, serif;
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   /* Typography — global 1.5x body rhythm, tighter headings */
   --leading-none: 1;
@@ -270,6 +271,11 @@
     color: var(--deep-blue);
   }
 
+  .font-brand {
+    font-family: var(--font-brand);
+    letter-spacing: -0.015em;
+  }
+
   :focus-visible {
     outline: 2px solid var(--primary-blue);
     outline-offset: 2px;
@@ -510,39 +516,19 @@
   }
 }
 
-@utility contextual-return {
+@utility trail-previous {
   display: inline-flex;
   max-width: 100%;
   align-items: center;
-  gap: 0.35rem;
-  border-radius: 9999px;
-  border: 1px solid var(--border);
-  background: rgb(255 255 255 / 0.88);
-  padding: 0.32rem 0.78rem;
+  gap: 0.2rem;
   font-size: 0.8125rem;
   font-weight: 600;
   line-height: 1.2;
-  color: rgb(23 54 93 / 0.82);
-  box-shadow: 0 1px 2px rgb(23 54 93 / 0.04);
-  backdrop-filter: blur(8px);
-  transition:
-    padding var(--transition-fast),
-    gap var(--transition-fast),
-    color var(--transition-fast),
-    box-shadow var(--transition-fast),
-    background-color var(--transition-fast);
-  &:hover {
-    gap: 0.5rem;
-    padding-inline: 0.95rem;
-    color: var(--deep-blue);
-    box-shadow: var(--shadow-soft);
-  }
+  color: rgb(23 54 93 / 0.72);
+  transition: color var(--transition-fast);
+  &:hover,
   &:focus-visible {
-    outline: none;
     color: var(--deep-blue);
-    box-shadow:
-      0 0 0 2px var(--background),
-      0 0 0 4px var(--primary-blue);
   }
   & svg {
     transition: transform var(--transition-fast);
@@ -551,8 +537,14 @@
   &:focus-visible svg {
     transform: translateX(-3px);
   }
-  @media (max-width: 767px) {
-    padding: 0.28rem 0.68rem;
+  &:focus-visible {
+    outline: none;
+    border-radius: 0.25rem;
+    box-shadow:
+      0 0 0 2px var(--background),
+      0 0 0 4px var(--primary-blue);
+  }
+  @media (max-width: 639px) {
     font-size: 0.75rem;
   }
   @media (prefers-reduced-motion: reduce) {
@@ -839,6 +831,134 @@ html.js-motion footer nav a:hover {
 }
 
 @keyframes announcement-vertical {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(0, -50%, 0);
+  }
+}
+
+.notices-vertical-viewport {
+  position: relative;
+  max-height: min(28rem, 68vh);
+  overflow: hidden;
+}
+
+@media (min-width: 640px) {
+  .notices-vertical-viewport {
+    max-height: min(32rem, 70vh);
+  }
+}
+
+.notices-vertical-viewport::before,
+.notices-vertical-viewport::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 1;
+  height: 1.75rem;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 200ms ease;
+}
+
+.notices-vertical-viewport.is-animating::before,
+.notices-vertical-viewport.is-animating::after {
+  opacity: 1;
+}
+
+.notices-vertical-viewport::before {
+  top: 0;
+  background: linear-gradient(to bottom, var(--background) 12%, transparent);
+}
+
+.notices-vertical-viewport::after {
+  bottom: 0;
+  background: linear-gradient(to top, var(--background) 12%, transparent);
+}
+
+.notices-vertical-track {
+  animation: notices-vertical var(--notices-vertical-duration, 56s) linear infinite;
+  will-change: transform;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .notices-vertical-viewport:hover .notices-vertical-track {
+    animation-play-state: paused;
+  }
+}
+
+.notices-vertical-viewport:focus-within .notices-vertical-track {
+  animation-play-state: paused;
+}
+
+@keyframes notices-vertical {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(0, -50%, 0);
+  }
+}
+
+.live-updates-viewport {
+  position: relative;
+  max-height: 13.5rem;
+  overflow: hidden;
+}
+
+@media (min-width: 640px) {
+  .live-updates-viewport {
+    max-height: 15rem;
+  }
+}
+
+.live-updates-viewport::before,
+.live-updates-viewport::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 1;
+  height: 1.25rem;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 200ms ease;
+}
+
+.live-updates-viewport.is-animating::before,
+.live-updates-viewport.is-animating::after {
+  opacity: 1;
+}
+
+.live-updates-viewport::before {
+  top: 0;
+  background: linear-gradient(to bottom, var(--color-surface-white, #fff) 10%, transparent);
+}
+
+.live-updates-viewport::after {
+  bottom: 0;
+  background: linear-gradient(to top, var(--color-surface-white, #fff) 10%, transparent);
+}
+
+.live-updates-track {
+  animation: live-updates-vertical var(--live-updates-duration, 52s) linear infinite;
+  will-change: transform;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .live-updates-viewport:hover .live-updates-track {
+    animation-play-state: paused;
+  }
+}
+
+.live-updates-viewport:focus-within .live-updates-track {
+  animation-play-state: paused;
+}
+
+@keyframes live-updates-vertical {
   from {
     transform: translate3d(0, 0, 0);
   }
@@ -1671,6 +1791,16 @@ html:has(.story-loader)::-webkit-scrollbar {
   }
 
   .announcement-vertical-track {
+    animation: none;
+    transform: none;
+  }
+
+  .notices-vertical-track {
+    animation: none;
+    transform: none;
+  }
+
+  .live-updates-track {
     animation: none;
     transform: none;
   }

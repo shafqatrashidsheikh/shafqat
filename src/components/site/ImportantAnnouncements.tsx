@@ -20,7 +20,7 @@ function AnnouncementRow({
 }) {
   return (
     <Link
-      to="/notices"
+      to="/updates/notices"
       tabIndex={ariaHidden ? -1 : undefined}
       aria-hidden={ariaHidden}
       className="group flex flex-col gap-2 px-5 py-4 transition-[background-color,color] duration-200 ease-out hover:bg-light-blue/50 sm:flex-row sm:items-center sm:justify-between sm:gap-6 sm:px-6"
@@ -171,7 +171,7 @@ export function ImportantAnnouncements({
                 </nav>
               </div>
             </div>
-            <Link to="/notices" className="link-cta shrink-0 text-sm">
+            <Link to="/updates/news" className="link-cta shrink-0 text-sm">
               View all
               <ArrowRight className="size-4" />
             </Link>

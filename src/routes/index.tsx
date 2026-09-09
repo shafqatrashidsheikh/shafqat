@@ -105,8 +105,7 @@ function Home() {
   const stats = resolveGlanceStats(homepage.stats);
   const campusPhotos =
     campus.gallery.length > 0 ? campus.gallery.slice(0, 2) : CAMPUS_GALLERY.slice(0, 2);
-  const campusFacilities =
-    campus.facilities.length > 0 ? campus.facilities : CAMPUS_FACILITIES;
+  const campusFacilities = CAMPUS_FACILITIES;
 
   return (
     <>
@@ -121,7 +120,7 @@ function Home() {
               {hero?.eyebrow ?? `Established ${INSTITUTE.established}`}
             </span>
             <h1
-              className="reveal mt-5 max-w-xl text-balance font-display text-[clamp(1.875rem,5vw+0.5rem,3rem)] font-extrabold text-navy"
+              className="reveal mt-5 max-w-xl text-balance font-brand text-[clamp(1.875rem,5vw+0.5rem,3rem)] font-extrabold text-navy"
               style={{ "--reveal-delay": "90ms" } as CSSProperties}
               aria-label="Government Polytechnic for Women, Srinagar"
             >
@@ -148,16 +147,16 @@ function Home() {
           </div>
           <div
             ref={heroImageRef}
-            className="reveal-hero-image order-2 min-w-0 overflow-hidden rounded-3xl border border-border bg-surface-white shadow-raised will-change-transform lg:order-2"
+            className="reveal-hero-image order-2 min-w-0 overflow-hidden rounded-3xl border border-border bg-light-blue/30 shadow-raised will-change-transform lg:order-2"
             style={{ "--reveal-delay": "360ms" } as CSSProperties}
           >
             <img
               src={collegeHeroImg}
               alt="Government Polytechnic for Women, Srinagar campus building"
-              width={1400}
-              height={1000}
+              width={1024}
+              height={768}
               fetchPriority="high"
-              className="aspect-[4/3] size-full object-cover lg:aspect-[5/4]"
+              className="aspect-[4/3] h-auto w-full object-cover object-center"
             />
           </div>
         </div>
@@ -334,7 +333,7 @@ function Home() {
         </div>
       </section>
 
-      <NewsAndEvents events={homepage.events} />
+      <NewsAndEvents />
 
       <HomeFaqs items={homepage.faqs} />
     </>

@@ -47,7 +47,7 @@ const ACADEMIC_RESOURCES: {
   description: string;
   detail: string;
   cta: string;
-  to: "/admissions" | "/notices" | "/campus" | "/placements";
+  to: "/admissions" | "/updates/notices" | "/campus" | "/placements";
   icon: LucideIcon;
 }[] = [
   {
@@ -66,7 +66,7 @@ const ACADEMIC_RESOURCES: {
       "Stay updated with official admission notices, examination schedules, results, selection lists, scholarship notifications, tenders, recruitment notices and other important institute announcements.",
     detail: "Only officially published information should be displayed here.",
     cta: "View Notices",
-    to: "/notices",
+    to: "/updates/notices",
     icon: Megaphone,
   },
   {

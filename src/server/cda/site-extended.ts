@@ -6,7 +6,7 @@ import { PRINCIPAL } from "@/lib/principal-data";
 import { CAMPUS_FACILITIES, CAMPUS_GALLERY } from "@/lib/campus-data";
 import { getSupabaseServer } from "@/lib/supabase/server";
 import { requireAdmin } from "@/server/cma/auth";
-import { buildMediaUrlMap } from "@/server/cda/content";
+import { loadMediaUrlMap } from "@/server/cda/content";
 import { mapDbDepartmentToGpw, resolveAssetImage } from "@/lib/departments-cms";
 import type {
   DbAboutBlock,
@@ -34,17 +34,17 @@ const FOOTER_QUICK_STATIC = [
   { label: "Admissions", to: "/admissions" },
   { label: "Academics", to: "/academics" },
   { label: "Campus", to: "/campus" },
-  { label: "Updates / Notices", to: "/notices" },
-  { label: "Results", to: "/notices#examination" },
+  { label: "Updates / Notices", to: "/updates/notices" },
+  { label: "Results", to: "/updates/notices#examination" },
   { label: "Contact", to: "/contact" },
 ];
 
 const FOOTER_ACADEMIC_STATIC = [
   { label: "Programs / Courses", to: "/academics#programs" },
   { label: "Departments", to: "/academics#departments" },
-  { label: "Examination", to: "/notices#examination" },
-  { label: "Academic Calendar", to: "/notices#academics" },
-  { label: "Results", to: "/notices#examination" },
+  { label: "Examination", to: "/updates/notices#examination" },
+  { label: "Academic Calendar", to: "/updates/notices#academics" },
+  { label: "Results", to: "/updates/notices#examination" },
 ];
 
 /** CDA — department detail by slug */
@@ -59,7 +59,7 @@ export const fetchDepartmentBySlug = createServerFn({ method: "GET" })
       if (!data.accessToken) query = query.eq("is_active", true);
       const { data: row, error } = await query.maybeSingle();
       if (error || !row) return null;
-      const mediaMap = await buildMediaUrlMap();
+      const mediaMap = await loadMediaUrlMap();
       return mapDbDepartmentToGpw(row, mediaMap);
     } catch {
       return null;
@@ -110,7 +110,7 @@ export const fetchPrincipalProfile = createServerFn({ method: "GET" })
       const { data: row, error } = await query.maybeSingle();
       if (error || !row) throw error;
 
-      const mediaMap = await buildMediaUrlMap();
+      const mediaMap = await loadMediaUrlMap();
       const portraitUrl =
         resolveAssetImage(row.portrait_asset_key, mediaMap) ?? PRINCIPAL.portrait;
 
@@ -233,7 +233,7 @@ export const fetchCampusContent = createServerFn({ method: "GET" })
 
     try {
       const supabase = await adminOrPublicClient(data?.accessToken);
-      const mediaMap = await buildMediaUrlMap();
+      const mediaMap = await loadMediaUrlMap();
 
       let galleryQuery = supabase.from("campus_gallery_items").select("*").order("sort_order");
       let facilityQuery = supabase.from("campus_facility_items").select("*").order("sort_order");
@@ -261,10 +261,7 @@ export const fetchCampusContent = createServerFn({ method: "GET" })
           width: row.width ?? undefined,
           height: row.height ?? undefined,
         })),
-        facilities: facilityRows.map((row) => ({
-          name: row.name,
-          description: row.description,
-        })),
+        facilities: CAMPUS_FACILITIES,
         source: "supabase" as const,
       };
     } catch {

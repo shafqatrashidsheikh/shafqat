@@ -9,7 +9,7 @@ import { AdminMediaPanel } from "@/components/admin/AdminMediaPanel";
 import { AdminPrincipalPanel } from "@/components/admin/AdminPrincipalPanel";
 import { AdminResourcePanel, AdminTabsShell, TabsContent } from "@/components/admin/AdminResourcePanel";
 import { AdminUsersPanel } from "@/components/admin/AdminUsersPanel";
-import { ContextualBack } from "@/components/site/ContextualBack";
+import { PageNavigation } from "@/components/site/PageNavigation";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent as SubTabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { fetchAdmissionsAdmin, fetchDepartments, fetchEvents, fetchExploreCards, fetchHomepageBlocks, fetchMediaAssets, fetchNotices, fetchPageSections, fetchPrograms } from "@/server/cda/content";
@@ -210,7 +210,7 @@ export function AdminDashboard({ accessToken, onSignOut }: AdminDashboardProps) 
     <div className="min-h-screen bg-background pb-16">
       <header className="border-b border-border bg-surface-white">
         <div className="container-page py-4">
-          <ContextualBack className="mb-3" />
+          <PageNavigation pageLabel="Content Management" className="mb-3" />
           <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
             <p className="text-xs font-semibold tracking-[0.16em] text-brand uppercase">CMA Admin</p>
@@ -415,7 +415,7 @@ export function AdminDashboard({ accessToken, onSignOut }: AdminDashboardProps) 
                 { key: "category", label: "Category", defaultValue: "Notices" },
                 { key: "tag", label: "Tag", defaultValue: "Notice" },
                 { key: "published_at", label: "Published date", type: "date" },
-                { key: "priority", label: "Priority (Urgent/Important/General)", defaultValue: "General" },
+                { key: "priority", label: "Priority (New/Important/General/Urgent)", defaultValue: "General" },
                 { key: "file_label", label: "File label (e.g. PDF · 240 KB)" },
                 { key: "file_url", label: "Download file", type: "media_url", mediaKinds: ["pdf", "other"] },
                 { key: "is_pinned", label: "Pinned", type: "boolean", defaultValue: false },

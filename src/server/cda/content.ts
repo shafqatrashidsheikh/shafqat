@@ -105,6 +105,13 @@ async function adminOrPublicClient(accessToken?: string) {
 }
 
 /** CDA — read admissions content */
+let admissionsMissingTablesLogged = false;
+
+function isMissingRelationError(error: { code?: string; message?: string } | null | undefined): boolean {
+  if (!error) return false;
+  return error.code === "PGRST205" || /Could not find the table/i.test(error.message ?? "");
+}
+
 export const fetchAdmissionsData = createServerFn({ method: "GET" }).handler(
   async (): Promise<AdmissionsData> => {
     if (!isSupabaseConfigured()) return getStaticAdmissionsData();
@@ -129,6 +136,7 @@ export const fetchAdmissionsData = createServerFn({ method: "GET" }).handler(
         return getStaticAdmissionsData();
       }
 
+      const staticFallback = getStaticAdmissionsData();
       const [steps, documents, dates, faqs, programmes, eligibility] = await Promise.all([
         supabase.from("admission_steps").select("*").eq("cycle_id", cycle.id).order("sort_order"),
         supabase.from("admission_documents").select("*").eq("cycle_id", cycle.id).order("sort_order"),
@@ -143,16 +151,19 @@ export const fetchAdmissionsData = createServerFn({ method: "GET" }).handler(
         supabase.from("admission_eligibility_groups").select("*").eq("cycle_id", cycle.id).order("sort_order"),
       ]);
 
-      const queryErrors = [
-        steps.error,
-        documents.error,
-        dates.error,
-        faqs.error,
-        programmes.error,
-        eligibility.error,
-      ].filter(Boolean);
-      if (queryErrors.length > 0) {
-        console.error("[CDA] fetchAdmissionsData partial query failures:", queryErrors);
+      const missingExtendedTables =
+        isMissingRelationError(programmes.error) || isMissingRelationError(eligibility.error);
+
+      if (missingExtendedTables && !admissionsMissingTablesLogged) {
+        admissionsMissingTablesLogged = true;
+        console.warn(
+          "[CDA] admission_programmes / admission_eligibility_groups missing in Supabase — using static programme & eligibility copy. Apply migrations 20260902120000_admissions_cms.sql and 20260902220000_admissions_eligibility.sql (supabase db push).",
+        );
+      }
+
+      const otherErrors = [steps.error, documents.error, dates.error, faqs.error].filter(Boolean);
+      if (otherErrors.length > 0) {
+        console.error("[CDA] fetchAdmissionsData partial query failures:", otherErrors);
       }
 
       const result = {
@@ -161,10 +172,14 @@ export const fetchAdmissionsData = createServerFn({ method: "GET" }).handler(
         documents: documents.error ? [] : asDocuments(documents.data as Record<string, unknown>[] | null),
         dates: dates.error ? [] : (dates.data ?? []),
         faqs: faqs.error ? [] : (faqs.data ?? []),
-        programmes: programmes.error ? [] : asProgrammes(programmes.data as Record<string, unknown>[] | null),
-        eligibilityGroups: eligibility.error
-          ? []
-          : asEligibility(eligibility.data as Record<string, unknown>[] | null),
+        programmes:
+          programmes.error || !programmes.data?.length
+            ? staticFallback.programmes
+            : asProgrammes(programmes.data as Record<string, unknown>[]),
+        eligibilityGroups:
+          eligibility.error || !eligibility.data?.length
+            ? staticFallback.eligibilityGroups
+            : asEligibility(eligibility.data as Record<string, unknown>[]),
       };
 
       const hasContent =
@@ -279,17 +294,20 @@ export function mapNoticeRow(row: {
   title: string;
   category: string;
   published_at: string;
-  priority: "Urgent" | "Important" | "General";
+  priority: "Urgent" | "Important" | "General" | "New";
   file_label: string | null;
   file_url: string | null;
 }): NoticeItem {
+  const publishedAt = row.published_at.slice(0, 10);
   return {
     title: row.title,
     cat: row.category,
     date: formatDate(row.published_at),
+    publishedAt,
     priority: row.priority,
-    file: row.file_label ?? "Document",
-    fileUrl: row.file_url,
+    file: row.file_label ?? "Official notice · JKBOTE",
+    fileUrl: row.file_url?.trim() || "https://jkbote.ac.in/notice.php",
+    source: "JKBOTE",
   };
 }
 
@@ -353,13 +371,30 @@ export const fetchMediaAssets = createServerFn({ method: "GET" })
 
 /** Build asset_key → public_url map for image resolution */
 export function buildMediaUrlMap(
-  assets: { asset_key: string | null; public_url: string; is_active: boolean }[],
+  assets: { asset_key: string | null; public_url: string; is_active: boolean }[] = [],
 ): Record<string, string> {
   return Object.fromEntries(
-    assets
+    (assets ?? [])
       .filter((a) => a.is_active && a.asset_key && a.public_url)
       .map((a) => [a.asset_key as string, a.public_url]),
   );
+}
+
+/** Fetch active media assets and return asset_key → public_url map */
+export async function loadMediaUrlMap(): Promise<Record<string, string>> {
+  if (!isSupabaseConfigured()) return {};
+
+  try {
+    const supabase = getSupabaseServer();
+    const { data, error } = await supabase
+      .from("media_assets")
+      .select("asset_key, public_url, is_active")
+      .eq("is_active", true);
+    if (error) return {};
+    return buildMediaUrlMap(data ?? []);
+  } catch {
+    return {};
+  }
 }
 
 /** CDA — read admissions admin data */

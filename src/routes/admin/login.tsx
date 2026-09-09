@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ContextualBack } from "@/components/site/ContextualBack";
+import { PageNavigation } from "@/components/site/PageNavigation";
 import { isCmsRole } from "@/lib/auth/roles";
 import { getPostAuthPath } from "@/lib/auth/redirects";
 import { useAuth } from "@/hooks/useAuth";
@@ -53,7 +53,7 @@ function AdminLoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4 py-10">
       <div className="flex w-full max-w-md flex-col items-start gap-4">
-        <ContextualBack />
+        <PageNavigation />
         <div className="card-premium w-full p-8">
         <p className="text-xs font-semibold tracking-[0.16em] text-brand uppercase">CMA</p>
         <h1 className="mt-2 font-display text-2xl font-extrabold text-navy">Admin sign in</h1>

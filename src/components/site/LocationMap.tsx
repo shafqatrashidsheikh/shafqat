@@ -9,7 +9,7 @@ type LocationMapProps = {
 };
 
 export function LocationMap({ className, size = "footer", linkClassName }: LocationMapProps) {
-  const heightClass = size === "contact" ? "h-56 sm:h-64 md:h-72" : "h-40 sm:h-44 md:h-48";
+  const heightClass = size === "contact" ? "h-56 sm:h-64 md:h-72" : "h-28 sm:h-32 md:h-36";
 
   return (
     <div className={cn("min-w-0", className)}>

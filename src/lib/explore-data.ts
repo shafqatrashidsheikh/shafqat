@@ -21,9 +21,10 @@ export const EXPLORE_CARDS: ExploreCard[] = [
     description: "History, vision and the institutional profile of GPW Srinagar.",
     cta: "Discover Our Story",
     href: "/about",
-    image: CAMPUS_IMAGES.entrance,
-    imageAlt: "Entrance of Government Polytechnic for Women, Srinagar, Bemina",
-    imagePosition: "left",
+    image: CAMPUS_IMAGES.winterGate,
+    imageAlt:
+      "Snow-covered entrance gate of Government Polytechnic for Women, Srinagar, Bemina",
+    imagePosition: "right",
     priority: true,
   },
   {
@@ -45,9 +46,10 @@ export const EXPLORE_CARDS: ExploreCard[] = [
     description: "Workshops, laboratories, library and campus facilities for practical learning.",
     cta: "Explore Facilities",
     href: "/campus",
-    image: CAMPUS_IMAGES.main,
-    imageAlt: "Laboratory and workshop facilities at GPW Srinagar",
-    imagePosition: "left",
+    image: CAMPUS_IMAGES.microscopeLab,
+    imageAlt:
+      "Students using a microscope during a laboratory practical at Government Polytechnic for Women, Srinagar",
+    imagePosition: "right",
   },
   {
     id: "admissions",
@@ -56,8 +58,8 @@ export const EXPLORE_CARDS: ExploreCard[] = [
     description: "Eligibility, process, important dates and how to apply.",
     cta: "Admission Information",
     href: "/admissions",
-    image: CAMPUS_IMAGES.collegeHero,
-    imageAlt: "GPW Srinagar campus — start your journey here",
+    image: CAMPUS_IMAGES.smartClassroomStudents,
+    imageAlt: "Students in a smart classroom session at Government Polytechnic for Women, Srinagar",
     imagePosition: "right",
   },
   {

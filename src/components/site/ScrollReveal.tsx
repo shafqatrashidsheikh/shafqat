@@ -35,6 +35,8 @@ function shouldSkip(el: HTMLElement) {
   if (el.dataset["motion"] === "off") return true;
   if (el.tagName === "IMG") return true;
   if (el.closest(".announcement-vertical-viewport")) return true;
+  if (el.closest(".notices-vertical-viewport")) return true;
+  if (el.closest(".live-updates-viewport")) return true;
   if (
     el.closest(".card-premium") &&
     !el.classList.contains("card-premium") &&

@@ -27,6 +27,7 @@ supabase/.temp
 
 .wrangler/
 .dev.vars
+.cache/
 
 # Editor directories and files
 .vscode/*

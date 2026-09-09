@@ -1,74 +1,48 @@
-import { Link, useRouter, useRouterState } from "@tanstack/react-router";
+import { Link, useRouterState } from "@tanstack/react-router";
 import { ChevronLeft } from "lucide-react";
-import { useEffect, type MouseEvent } from "react";
-import {
-  getPreviousInternalPath,
-  pathsEqual,
-  rememberInternalPath,
-  resolveContextualReturn,
-  splitHref,
-} from "@/lib/contextual-return";
+import { useEffect, useState } from "react";
+import { getMeaningfulPrevious, locationKey, rememberInternalPath, splitHref } from "@/lib/contextual-return";
+import { labelForLocation } from "@/lib/site-trail";
 import { cn } from "@/lib/utils";
-
-type ContextualBackProps = {
-  label?: string;
-  fallback?: string;
-  shortLabel?: string;
-  className?: string;
-};
 
 export function InternalRouteMemory() {
   const pathname = useRouterState({ select: (state) => state.location.pathname });
+  const hash = useRouterState({ select: (state) => state.location.hash });
 
   useEffect(() => {
-    rememberInternalPath(pathname);
-  }, [pathname]);
+    rememberInternalPath(pathname, hash);
+  }, [pathname, hash]);
 
   return null;
 }
 
-export function ContextualBack({
-  label,
-  fallback,
-  shortLabel,
-  className,
-}: ContextualBackProps) {
-  const router = useRouter();
+export function ContextualBack({ className }: { className?: string }) {
   const pathname = useRouterState({ select: (state) => state.location.pathname });
-  const resolved = resolveContextualReturn(pathname);
+  const hash = useRouterState({ select: (state) => state.location.hash });
+  const currentKey = locationKey(pathname, hash);
+  const [previous, setPrevious] = useState<string | null>(null);
 
-  if (!resolved && !label && !fallback) return null;
+  useEffect(() => {
+    setPrevious(getMeaningfulPrevious(currentKey));
+  }, [currentKey]);
 
-  const href = fallback ?? resolved?.to ?? "/";
-  const fullLabel = label ?? resolved?.label ?? "Home";
-  const compactLabel = shortLabel ?? resolved?.shortLabel ?? fullLabel;
-  const { to, hash } = splitHref(href);
-  const ariaLabel = `Return to ${fullLabel}`;
+  if (!previous) return null;
 
-  const onClick = (event: MouseEvent<HTMLAnchorElement>) => {
-    if (event.defaultPrevented) return;
-    if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-
-    const previous = getPreviousInternalPath();
-    if (previous && pathsEqual(previous, to)) {
-      event.preventDefault();
-      router.history.back();
-    }
-  };
+  const { to, hash: prevHash } = splitHref(previous);
+  const previousLabel = labelForLocation(to, prevHash);
+  const ariaLabel = `Previous section: ${previousLabel}`;
 
   return (
     <Link
       to={to as "/"}
-      {...(hash ? { hash } : {})}
-      onClick={onClick}
+      {...(prevHash ? { hash: prevHash } : {})}
       aria-label={ariaLabel}
       title={ariaLabel}
-      activeOptions={{ exact: true }}
-      className={cn("contextual-return group min-w-0", className)}
+      className={cn("trail-previous group", className)}
     >
       <ChevronLeft className="size-3.5 shrink-0 text-brand" aria-hidden="true" strokeWidth={2.25} />
-      <span className="min-w-0 truncate sm:hidden">{compactLabel}</span>
-      <span className="min-w-0 truncate max-sm:hidden">{fullLabel}</span>
+      <span className="sm:hidden">Previous</span>
+      <span className="max-sm:hidden">Previous section</span>
     </Link>
   );
 }

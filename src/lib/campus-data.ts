@@ -10,59 +10,71 @@ export type CampusPhoto = {
 /** Campus gallery — institute photographs available in the project */
 export const CAMPUS_GALLERY: CampusPhoto[] = [
   {
-    src: CAMPUS_IMAGES.collegeHero,
-    alt: "Government Polytechnic for Women, Srinagar — main institute building",
-    width: 1400,
-    height: 1000,
-  },
-  {
-    src: CAMPUS_IMAGES.entrance,
-    alt: "Entrance of Government Polytechnic for Women, Srinagar, Bemina",
+    src: CAMPUS_IMAGES.electronicsLabStudents,
+    alt: "Students working on electronics practicals in the laboratory at Government Polytechnic for Women, Srinagar",
     width: 1600,
     height: 1200,
   },
   {
-    src: CAMPUS_IMAGES.main,
-    alt: "Front view of Government Polytechnic for Women, Srinagar",
+    src: CAMPUS_IMAGES.computerLabStudents,
+    alt: "Students working in the computer laboratory at Government Polytechnic for Women, Srinagar",
     width: 1600,
     height: 1200,
   },
   {
-    src: CAMPUS_IMAGES.summer,
-    alt: "Government Polytechnic for Women, Srinagar campus building",
+    src: CAMPUS_IMAGES.buildingLawn,
+    alt: "Campus lawn and academic building at Government Polytechnic for Women, Srinagar",
+    width: 819,
+    height: 717,
+  },
+  {
+    src: CAMPUS_IMAGES.buildingWalkway,
+    alt: "Walkway toward the main building at Government Polytechnic for Women, Srinagar",
     width: 1600,
     height: 1200,
   },
 ];
 
-/** Facilities with verified descriptions */
+/** Laboratories and technical facilities aligned with GPW Srinagar diploma programmes. */
 export const CAMPUS_FACILITIES: { name: string; description: string }[] = [
   {
-    name: "Computer Centre",
-    description: "Computing facilities supporting programming, digital learning and practical coursework.",
+    name: "Computer & IT Laboratories",
+    description: "Practical computing, programming, software and digital learning facilities.",
   },
   {
-    name: "Electronics Laboratory",
-    description: "Practical training in electronic circuits, measurement and communication systems.",
+    name: "Electronics & Communication Laboratory",
+    description: "Hands-on training in electronics, circuits, communication and measurement.",
+  },
+  {
+    name: "Food Technology Laboratory",
+    description: "Practical training related to food processing, testing and quality control.",
+  },
+  {
+    name: "Medical Laboratory Technology Lab",
+    description: "Practical learning in clinical laboratory techniques and diagnostics.",
+  },
+  {
+    name: "Garment Technology Laboratory",
+    description: "Practical training in garment construction, production and related techniques.",
+  },
+  {
+    name: "Textile Technology Laboratory",
+    description: "Practical textile processing, materials and production training.",
   },
   {
     name: "Engineering Workshop",
-    description: "Workshop-based practical training supporting diploma programmes.",
+    description: "Hands-on technical and workshop-based practical training.",
   },
   {
-    name: "Library & Reading Room",
-    description: "A dedicated academic space for study, reference and learning resources.",
+    name: "Library & Learning Resources",
+    description: "Academic reference, study and learning resources.",
+  },
+  {
+    name: "Smart Classrooms & IT Infrastructure",
+    description: "Technology-supported teaching and digital learning.",
+  },
+  {
+    name: "Auditorium & Seminar Facilities",
+    description: "Academic events, seminars and institutional programmes.",
   },
 ];
-
-/** Additional campus facilities — names only until official descriptions are published */
-export const CAMPUS_FACILITY_NAMES = [
-  "Electrical Machines Lab",
-  "Civil Survey Lab",
-  "Smart Classrooms",
-  "Hostel",
-  "Sports Facilities",
-  "Cafeteria",
-  "Transportation",
-  "Seminar Hall",
-] as const;

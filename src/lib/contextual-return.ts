@@ -25,6 +25,10 @@ const EXACT_RETURNS: Record<string, ContextualReturnTarget> = {
   "/admissions": HOME,
   "/campus": HOME,
   "/notices": HOME,
+  "/updates/news": HOME,
+  "/updates/notices": HOME,
+  "/updates/events": HOME,
+  "/updates/circulars": HOME,
   "/contact": HOME,
   "/placements": HOME,
   "/principal-message": {
@@ -50,6 +54,16 @@ const EXACT_RETURNS: Record<string, ContextualReturnTarget> = {
     to: "/login",
   },
 };
+
+export function normalizeHash(hash: string | undefined): string {
+  return (hash ?? "").replace(/^#/, "");
+}
+
+export function locationKey(pathname: string, hash = ""): string {
+  const path = normalizePath(pathname);
+  const section = normalizeHash(hash);
+  return section ? `${path}#${section}` : path;
+}
 
 export function normalizePath(pathname: string): string {
   const noQuery = pathname.split("?")[0] ?? pathname;
@@ -103,8 +117,8 @@ export function resolveContextualReturn(pathname: string): ContextualReturnTarge
     return { label: "Campus", shortLabel: "Campus", to: "/campus" };
   }
 
-  if (path.startsWith("/notices/")) {
-    return { label: "Updates", shortLabel: "Updates", to: "/notices" };
+  if (path.startsWith("/updates/") || path.startsWith("/notices/")) {
+    return { label: "Updates", shortLabel: "Updates", to: "/updates/news" };
   }
 
   if (path.startsWith("/admin") && path !== "/admin/login") {
@@ -122,9 +136,9 @@ export function resolveContextualReturn(pathname: string): ContextualReturnTarge
   return EXACT_RETURNS[path] ?? HOME;
 }
 
-export function rememberInternalPath(pathname: string): void {
+export function rememberInternalPath(pathname: string, hash = ""): void {
   if (typeof window === "undefined") return;
-  const current = normalizePath(pathname);
+  const current = locationKey(pathname, hash);
   const last = sessionStorage.getItem(LAST_KEY);
   if (last && last !== current) {
     sessionStorage.setItem(PREV_KEY, last);
@@ -135,4 +149,15 @@ export function rememberInternalPath(pathname: string): void {
 export function getPreviousInternalPath(): string | null {
   if (typeof window === "undefined") return null;
   return sessionStorage.getItem(PREV_KEY);
+}
+
+/** Previous in-site location, excluding Home and the current page. */
+export function getMeaningfulPrevious(currentKey: string): string | null {
+  if (typeof window === "undefined") return null;
+  const last = sessionStorage.getItem(LAST_KEY);
+  const stored = sessionStorage.getItem(PREV_KEY);
+  const candidate = last && last !== currentKey ? last : stored;
+  if (!candidate || candidate === "/" || candidate === currentKey) return null;
+  if (!candidate.startsWith("/")) return null;
+  return candidate;
 }

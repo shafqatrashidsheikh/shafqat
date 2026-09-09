@@ -28,19 +28,26 @@ from (values
 join public.departments d on d.slug = p.slug;
 
 -- Notices / announcements
-insert into public.notices (title, category, tag, published_at, priority, file_label, is_pinned, sort_order) values
-  ('Diploma admissions 2026 — counselling schedule published', 'Admissions', 'Admission', '2026-08-12', 'Urgent', 'PDF · 240 KB', true, 1),
-  ('Odd semester practical examination date sheet', 'Examination', 'Examination', '2026-08-05', 'Important', 'PDF · 180 KB', false, 2),
-  ('Tender notice for laboratory equipment procurement', 'Tenders', 'Tender', '2026-07-29', 'General', 'PDF · 320 KB', false, 3),
-  ('Anti-ragging committee constitution and helpline', 'Circulars', 'Circular', '2026-07-21', 'Important', 'PDF · 96 KB', false, 4),
-  ('Scholarship application window for eligible students', 'Notices', 'Notice', '2026-07-10', 'General', 'PDF · 150 KB', false, 5),
-  ('Academic calendar for the session 2026–27', 'Academics', 'Academics', '2026-07-01', 'General', 'PDF · 210 KB', false, 6);
+insert into public.notices (title, category, tag, published_at, priority, file_label, file_url, is_pinned, sort_order) values
+  ('Notice for Backlog 2026 Practical Examination SCVT (Draughtsman Civil)', 'Examination', 'Examination', '2026-09-08', 'New', 'Official notice · JKBOTE', 'https://drive.google.com/file/d/1VbfduIj88HAj3QyBsgaMqXwJyX3TtbaQ/view?usp=sharing', true, 1),
+  ('Notice for Upload of Recent Passport-Size Photograph for Diploma Certificate (NEP 2020 Pass-Outs Only)', 'Academics', 'Academic', '2026-09-02', 'New', 'Official notice · JKBOTE', 'https://drive.google.com/file/d/1r9sZy0_2Ot7LZQu2AwGvRZWPGaegX0F3/view?usp=sharing', true, 2),
+  ('Online Registration Forms for Newly Admitted Students Session 2026–2027 — First Semester and Lateral Entry (3rd Semester)', 'Admissions', 'Admission', '2026-09-01', 'New', 'Official notice · JKBOTE', 'https://drive.google.com/file/d/1EZPv1y0D0uF4pi9J0iJL_ax0zF73xx60/view?usp=sharing', true, 3),
+  ('Re-Evaluation Result of 2nd and 4th Semester — Session MJ26', 'Examination', 'Examination', '2026-08-28', 'Important', 'Official notice · JKBOTE', 'https://drive.google.com/file/d/1mm5dRPPxwjyUtikgVk5ngz-pdv70u-7v/view?usp=sharing', false, 4),
+  ('Notice for Declaration of Result — SCVT Annual Examination Session 2026', 'Examination', 'Examination', '2026-08-27', 'Important', 'Official notice · JKBOTE', 'https://drive.google.com/file/d/1_6QfSP2cmJisKzHbeyQMpnKbZcIqDL7H/view?usp=sharing', false, 5),
+  ('Selection List of Lateral Entry Admissions 2026', 'Admissions', 'Admission', '2026-08-12', 'Important', 'Official notice · JKBOTE', 'https://drive.google.com/file/d/1n6p9_HJFk6H2i_rjpx_asPKWxU5jI2Rs/view?usp=sharing', false, 6),
+  ('Extension of Online Applications under Lateral Entry System in 3rd Semester — Diploma Courses 2026', 'Admissions', 'Admission', '2026-07-31', 'General', 'Official notice · JKBOTE', 'https://drive.google.com/file/d/1ZMbg5fYr4ajab7q99633rc6L1aDGCLD0/view?usp=sharing', false, 7),
+  ('Date Sheet for SCVT Annual Examination Session 2026', 'Examination', 'Examination', '2026-07-28', 'General', 'Official notice · JKBOTE', 'https://drive.google.com/file/d/1qMsyzFUN-uJZl8SE-27vCmlUoR0ErWSt/view?usp=sharing', false, 8),
+  ('Declaration of 2nd and 4th Semester Diploma Examination Results — Session May–June 2026', 'Examination', 'Examination', '2026-07-25', 'Important', 'Official notice · JKBOTE', 'https://drive.google.com/file/d/15BxTnjahI4TuXgwtgqRndFOOzmBdT96V/view?usp=sharing', false, 9),
+  ('Admission Notice under Lateral Entry System in 3rd Semester — Diploma Courses 2026', 'Admissions', 'Admission', '2026-07-06', 'General', 'Official notice · JKBOTE', 'https://drive.google.com/file/d/1WdYUwnE4mse8GwJOAljVjEYxb7vXBkgV/view?usp=sharing', false, 10),
+  ('Provisional Selection List of Admission in Polytechnic Colleges in J&K and Ladakh 2026', 'Admissions', 'Admission', '2026-06-18', 'Important', 'Official notice · JKBOTE', 'https://drive.google.com/file/d/1u4x8sUyOCZxzTjZ_FMZPtv4IakP3CQTg/view?usp=sharing', false, 11),
+  ('Provisional Merit List for Admission in Polytechnic Colleges 2026', 'Admissions', 'Admission', '2026-06-15', 'Important', 'Official notice · JKBOTE', 'https://drive.google.com/file/d/14x9GSll_VxGL2X2zr19M1Uh-9A56Ihou/view?usp=sharing', false, 12),
+  ('Extension of Last Date for Admission to Three-Year Diploma Polytechnic Courses 2026, including Medical Lab Technology', 'Admissions', 'Admission', '2026-06-13', 'General', 'Official notice · JKBOTE', 'https://drive.google.com/file/d/1EoD7egpGCQRKSBz3hZQA5tQVNDsI6OSZ/view?usp=sharing', false, 13),
+  ('Admission Notification for Three-Year Diploma Polytechnic Courses 2026, including Diploma in Medical Lab Technology', 'Admissions', 'Admission', '2026-03-31', 'Important', 'Official notice · JKBOTE', 'https://drive.google.com/file/d/1zU2aiwvudAtLT8IdU-GfQ8ThxYNp7qpX/view?usp=sharing', false, 14),
+  ('Notice for Online Examination Forms — Semester Examinations Session MJ26', 'Examination', 'Examination', '2026-03-25', 'General', 'Official notice · JKBOTE', 'https://drive.google.com/file/d/1b-lIOjGNHSxDL1uEgaqVulVmamtk3fql/view?usp=sharing', false, 15);
 
 -- Events
 insert into public.events (title, event_date, venue, description, sort_order) values
-  ('Orientation for new diploma entrants', 'August 2026', 'Main Auditorium', 'Welcome session for newly admitted diploma students.', 1),
-  ('Technical workshop series — Electronics & Computing', 'September 2026', 'Department Labs', 'Hands-on workshops across electronics and computing departments.', 2),
-  ('Industry interaction & career guidance session', 'October 2026', 'Seminar Hall', 'Guest sessions with industry professionals and placement guidance.', 3);
+  ('Industry MoUs for Travel, Tourism and Hospitality Training', '16 Jun 2026', 'Government Polytechnic for Women, Srinagar', 'Government Polytechnic for Women, Srinagar signed Memorandums of Understanding to strengthen industry–academia collaboration in travel, tourism and hospitality training with Travel Agents Association of India (J&K Chapter), Radisson Hotels, and Ecotourism Association of Kashmir.', 1);
 
 -- Homepage stats
 insert into public.institute_stats (value, label, prefix, suffix, sort_order) values

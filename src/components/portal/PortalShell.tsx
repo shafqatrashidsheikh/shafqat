@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import type { ReactNode } from "react";
-import { ContextualBack } from "@/components/site/ContextualBack";
+import { PageNavigation } from "@/components/site/PageNavigation";
 import { Button } from "@/components/ui/button";
 import type { UserProfile } from "@/lib/auth/roles";
 import { cn } from "@/lib/utils";
@@ -26,7 +26,7 @@ export function PortalShell({
     <div className="min-h-screen bg-background">
       <header className="border-b border-border bg-surface-white">
         <div className="container-page py-4">
-          <ContextualBack className="mb-3" />
+          <PageNavigation pageLabel="Portal" className="mb-3" />
           <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
             <p className="text-xs font-semibold tracking-[0.16em] text-brand uppercase">GPW Portal</p>

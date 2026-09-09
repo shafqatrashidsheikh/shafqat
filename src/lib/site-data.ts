@@ -19,10 +19,10 @@ export type NavItem = { label: string; to: string; children?: { label: string; t
 
 /** Quick access links — homepage announcements & footer */
 export const UTILITY_STRIP = [
-  { label: "Notices", to: "/notices" },
-  { label: "Examination", to: "/notices" },
-  { label: "Results", to: "/notices" },
-  { label: "Tenders", to: "/notices" },
+  { label: "Notices", to: "/updates/notices" },
+  { label: "Examination", to: "/updates/notices#examination" },
+  { label: "Results", to: "/updates/notices#examination" },
+  { label: "Tenders", to: "/updates/circulars#tenders" },
   { label: "Contact", to: "/contact" },
 ];
 
@@ -46,7 +46,7 @@ export const INSTITUTE_SPOTLIGHTS = [
   {
     title: "Updates",
     subtitle: "Notices, exams & announcements",
-    to: "/notices",
+    to: "/updates/news",
   },
 ] as const;
 
@@ -56,24 +56,6 @@ export const ACADEMIC_UNITS = [
   { title: "Programs", subtitle: "Three-year diploma courses", to: "/academics#programs" },
   { title: "Laboratories", subtitle: "Hands-on technical practice", to: "/academics#labs-workshops" },
   { title: "Facilities", subtitle: "Library, workshop & campus", to: "/campus#facilities" },
-] as const;
-
-export const CAMPUS_EVENTS = [
-  {
-    title: "Orientation for new diploma entrants",
-    date: "August 2026",
-    place: "Main Auditorium",
-  },
-  {
-    title: "Technical workshop series — Electronics & Computing",
-    date: "September 2026",
-    place: "Department Labs",
-  },
-  {
-    title: "Industry interaction & career guidance session",
-    date: "October 2026",
-    place: "Seminar Hall",
-  },
 ] as const;
 
 export const HOME_FAQS = [
@@ -123,7 +105,7 @@ export const HEADER_CTA_PILLS: HeaderCtaPill[] = [
       { label: "Important Dates", to: "/admissions#important-dates" },
       { label: "Required Documents", to: "/admissions#required-documents" },
       { label: "Fee Information", to: "/admissions#fee-information" },
-      { label: "Admission Notices", to: "/notices#admissions" },
+      { label: "Admission Notices", to: "/updates/notices#admissions" },
     ],
   },
   {
@@ -132,10 +114,10 @@ export const HEADER_CTA_PILLS: HeaderCtaPill[] = [
     items: [
       { label: "Programs / Courses", to: "/academics#programs", primary: true },
       { label: "Departments", to: "/academics#departments" },
-      { label: "Academic Calendar", to: "/notices#academics" },
-      { label: "Curriculum & Syllabus", to: "/notices" },
-      { label: "Examination", to: "/notices#examination" },
-      { label: "Results", to: "/notices#examination" },
+      { label: "Academic Calendar", to: "/updates/notices#academics" },
+      { label: "Curriculum & Syllabus", to: "/updates/notices" },
+      { label: "Examination", to: "/updates/notices#examination" },
+      { label: "Results", to: "/updates/notices#examination" },
     ],
   },
   {
@@ -154,17 +136,17 @@ export const HEADER_CTA_PILLS: HeaderCtaPill[] = [
   },
   {
     label: "Updates",
-    to: "/notices",
+    to: "/updates/news",
     items: [
-      { label: "Latest News", to: "/notices", primary: true },
-      { label: "Notices", to: "/notices#notices-list" },
-      { label: "Events", to: "/notices#events" },
-      { label: "Tenders / Important Circulars", to: "/notices#tenders" },
+      { label: "Latest News", to: "/updates/news", primary: true },
+      { label: "Notices", to: "/updates/notices" },
+      { label: "Events", to: "/updates/events" },
+      { label: "Tenders / Important Circulars", to: "/updates/circulars" },
     ],
   },
 ];
 
-export { ANNOUNCEMENTS } from "@/lib/notices-data";
+export { ANNOUNCEMENTS, CAMPUS_EVENTS } from "@/lib/updates-data";
 
 export const STATS = [
   { value: 1986, label: "Established", prefix: "", suffix: "" },

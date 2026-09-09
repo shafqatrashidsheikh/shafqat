@@ -24,7 +24,7 @@ export function PrincipalMessageContent({ principal = {
   message: [...PRINCIPAL.message],
 } }: PrincipalMessageContentProps) {
   return (
-    <section className="section-misty section-y !pt-0">
+    <section className="section-misty pb-6 pt-0 sm:pb-7 md:pb-8">
       <div className="container-page min-w-0">
         <div
           className="card-premium overflow-hidden p-6 sm:p-8 lg:p-10 xl:p-12"

@@ -100,9 +100,24 @@ export function useAuth() {
     const client = getSupabaseBrowserClient();
     const { error } = await client.auth.signInWithOtp({
       email,
-      options: { shouldCreateUser: true },
+      options: {
+        shouldCreateUser: true,
+        emailRedirectTo: `${window.location.origin}/auth/callback`,
+      },
     });
-    if (error) throw error;
+    if (error) {
+      const message = error.message.toLowerCase();
+      if (
+        message.includes("error sending") ||
+        message.includes("magic link") ||
+        (message.includes("email") && message.includes("send"))
+      ) {
+        throw new Error(
+          "Could not send the login email. In Supabase Dashboard → Authentication → SMTP Settings, enable custom SMTP (or confirm the built-in email provider is enabled). Also add http://localhost:3000/auth/callback under Redirect URLs.",
+        );
+      }
+      throw error;
+    }
   }, []);
 
   const verifyOtp = useCallback(

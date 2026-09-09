@@ -1,5 +1,4 @@
 import { Link } from "@tanstack/react-router";
-import { ContextualBack } from "@/components/site/ContextualBack";
 import {
   ArrowRight,
   BriefcaseBusiness,
@@ -39,31 +38,10 @@ export function DepartmentDetailContent({ department }: { department: GpwDepartm
   return (
     <>
       <section className="bg-background">
-        <div className="container-page py-8 sm:py-10 md:py-12">
-          <ContextualBack className="mb-4 sm:mb-5" />
-          <nav
-            aria-label="Breadcrumb"
-            className="flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-1 text-xs text-muted-foreground"
-          >
-            <Link to="/" className="link-underline text-brand hover:text-navy">
-              Home
-            </Link>
-            <span aria-hidden="true">/</span>
-            <Link to="/academics" className="link-underline text-brand hover:text-navy">
-              Academics
-            </Link>
-            <span aria-hidden="true">/</span>
-            <Link to="/academics#departments" className="link-underline text-brand hover:text-navy">
-              Departments
-            </Link>
-            <span aria-hidden="true">/</span>
-            <span className="font-medium text-navy">{department.name}</span>
-          </nav>
-
-          <div className="mt-6 flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+        <div className="container-page pt-3 pb-6 sm:pt-4 sm:pb-8 md:pt-5 md:pb-10">
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
             <div className="min-w-0 max-w-3xl">
-              <div className="accent-line" />
-              <div className="mt-4 flex items-start gap-4">
+              <div className="flex items-start gap-4">
                 <span className="inline-flex size-14 shrink-0 items-center justify-center rounded-2xl border border-border/80 bg-light-blue text-brand">
                   <Icon className="size-7" aria-hidden="true" />
                 </span>
@@ -190,7 +168,7 @@ export function DepartmentDetailContent({ department }: { department: GpwDepartm
                   </Link>
                 </li>
                 <li>
-                  <Link to="/notices" className="link-underline text-brand hover:text-navy">
+                  <Link to="/updates/notices" className="link-underline text-brand hover:text-navy">
                     Notices &amp; examination updates
                   </Link>
                 </li>

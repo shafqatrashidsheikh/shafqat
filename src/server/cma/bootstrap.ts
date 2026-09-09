@@ -48,14 +48,6 @@ import { isSupabaseConfigured } from "@/lib/env";
 import { getSupabaseAdmin } from "@/lib/supabase/server";
 import { requireAdmin } from "@/server/cma/auth";
 
-const NOTICE_ISO_DATES: Record<string, string> = {
-  "12 Aug 2026": "2026-08-12",
-  "05 Aug 2026": "2026-08-05",
-  "29 Jul 2026": "2026-07-29",
-  "21 Jul 2026": "2026-07-21",
-  "10 Jul 2026": "2026-07-10",
-  "01 Jul 2026": "2026-07-01",
-};
 
 const ANNOUNCEMENT_TAGS: Record<string, string> = {
   Admissions: "Admission",
@@ -67,14 +59,21 @@ const ANNOUNCEMENT_TAGS: Record<string, string> = {
 };
 
 const EXPLORE_IMAGE_KEYS: Record<string, string> = {
-  about: "campus-entrance",
+  about: "campus-winter-gate",
   academics: "computer-lab",
-  facilities: "campus-main",
-  admissions: "college-hero",
+  facilities: "microscope-lab",
+  admissions: "smart-classroom-students",
   placement: "campus-summer",
 };
 
-const GALLERY_ASSET_KEYS = ["college-hero", "campus-entrance", "campus-main", "campus-summer"] as const;
+const GALLERY_ASSET_KEYS = [
+  "electronics-lab-students",
+  "computer-lab-students",
+  "campus-building-lawn",
+  "campus-building-walkway",
+] as const;
+
+
 
 async function countRows(supabase: ReturnType<typeof getSupabaseAdmin>, table: string) {
   const { count, error } = await supabase.from(table).select("*", { count: "exact", head: true });
@@ -221,10 +220,11 @@ export const cmaBootstrapCms = createServerFn({ method: "POST" })
           title: notice.title,
           category: notice.cat,
           tag: ANNOUNCEMENT_TAGS[notice.cat] ?? notice.cat,
-          published_at: NOTICE_ISO_DATES[notice.date] ?? "2026-07-01",
+          published_at: notice.publishedAt,
           priority: notice.priority,
           file_label: notice.file,
-          is_pinned: order === 1,
+          file_url: notice.fileUrl,
+          is_pinned: order <= 3,
           is_published: true,
           sort_order: order++,
         });
@@ -240,7 +240,7 @@ export const cmaBootstrapCms = createServerFn({ method: "POST" })
           title: event.title,
           event_date: event.date,
           venue: event.place,
-          description: event.title,
+          description: event.summary,
           is_published: true,
           sort_order: order++,
         });
@@ -433,7 +433,7 @@ export const cmaBootstrapCms = createServerFn({ method: "POST" })
             block_key: "about_intro",
             title: "About intro",
             body: `Established in ${INSTITUTE.established}, the institute delivers three-year diploma education in engineering and technology exclusively for women in the Kashmir valley.`,
-            image_asset_key: "campus-summer",
+            image_asset_key: "campus-skill-signage",
             sort_order: 0,
           },
           {
@@ -470,16 +470,16 @@ export const cmaBootstrapCms = createServerFn({ method: "POST" })
           { label: "Admissions", to: "/admissions" },
           { label: "Academics", to: "/academics" },
           { label: "Campus", to: "/campus" },
-          { label: "Updates / Notices", to: "/notices" },
-          { label: "Results", to: "/notices#examination" },
+          { label: "Updates / Notices", to: "/updates/notices" },
+          { label: "Results", to: "/updates/notices#examination" },
           { label: "Contact", to: "/contact" },
         ];
         const footerAcademic = [
           { label: "Programs / Courses", to: "/academics#programs" },
           { label: "Departments", to: "/academics#departments" },
-          { label: "Examination", to: "/notices#examination" },
-          { label: "Academic Calendar", to: "/notices#academics" },
-          { label: "Results", to: "/notices#examination" },
+          { label: "Examination", to: "/updates/notices#examination" },
+          { label: "Academic Calendar", to: "/updates/notices#academics" },
+          { label: "Results", to: "/updates/notices#examination" },
         ];
         const mandatory = ["RTI", "Mandatory Disclosures", "Privacy Policy", "Website Policy"];
 

@@ -68,7 +68,7 @@ function StudentPortalPage() {
       <h2 className="mb-4 font-display text-lg font-bold text-navy">Institute resources</h2>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {[
-          { label: "Notices & Updates", to: "/notices", desc: "Exam schedules, circulars and announcements" },
+          { label: "Notices & Updates", to: "/updates/notices", desc: "Exam schedules, circulars and announcements" },
           { label: "Academics", to: "/academics", desc: "Diploma programmes and departments" },
           { label: "Admissions", to: "/admissions", desc: "Admission process and documents" },
           { label: "Campus", to: "/campus", desc: "Labs, workshops and facilities" },

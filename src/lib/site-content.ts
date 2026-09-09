@@ -8,9 +8,47 @@ export const EXPLORE_IMAGE_BY_KEY: Record<string, string> = {
   "campus-entrance": CAMPUS_IMAGES.entrance,
   "computer-lab": CAMPUS_IMAGES.computerLab,
   "electrical-lab": CAMPUS_IMAGES.electricalLab,
+  "electronics-lab-students": CAMPUS_IMAGES.electronicsLabStudents,
+  "computer-lab-students": CAMPUS_IMAGES.computerLabStudents,
+  "smart-classroom-students": CAMPUS_IMAGES.smartClassroomStudents,
+  "library-students": CAMPUS_IMAGES.computerLabStudents,
+  "microscope-lab": CAMPUS_IMAGES.microscopeLab,
   "campus-main": CAMPUS_IMAGES.main,
   "college-hero": CAMPUS_IMAGES.collegeHero,
   "campus-summer": CAMPUS_IMAGES.summer,
+  "campus-skill-signage": CAMPUS_IMAGES.skillSignage,
+  "campus-winter-gate": CAMPUS_IMAGES.winterGate,
+  "campus-building-lawn": CAMPUS_IMAGES.buildingLawn,
+  "campus-building-walkway": CAMPUS_IMAGES.buildingWalkway,
+};
+
+const EXPLORE_CARD_OVERRIDES: Record<
+  string,
+  { imageKey: string; imageAlt: string; imagePosition: "left" | "right" }
+> = {
+  about: {
+    imageKey: "campus-winter-gate",
+    imageAlt:
+      "Snow-covered entrance gate of Government Polytechnic for Women, Srinagar, Bemina",
+    imagePosition: "right",
+  },
+  academics: {
+    imageKey: "computer-lab",
+    imageAlt: "Students working in the computer laboratory at Government Polytechnic for Women, Srinagar",
+    imagePosition: "right",
+  },
+  facilities: {
+    imageKey: "microscope-lab",
+    imageAlt:
+      "Students using a microscope during a laboratory practical at Government Polytechnic for Women, Srinagar",
+    imagePosition: "right",
+  },
+  admissions: {
+    imageKey: "smart-classroom-students",
+    imageAlt:
+      "Students in a smart classroom session at Government Polytechnic for Women, Srinagar",
+    imagePosition: "right",
+  },
 };
 
 export function resolveExploreImage(imageKey: string, mediaUrlByKey?: Record<string, string>): string {
@@ -19,7 +57,10 @@ export function resolveExploreImage(imageKey: string, mediaUrlByKey?: Record<str
 }
 
 export function mapExploreCard(row: DbExploreCard, mediaUrlByKey?: Record<string, string>): ExploreCard {
-  const imageKey = row.slug === "academics" ? "computer-lab" : row.image_key;
+  const override = EXPLORE_CARD_OVERRIDES[row.slug];
+  const imageKey = override?.imageKey ?? row.image_key;
+  // Prefer bundled assets for curated cards so CMS media rows cannot override layout photos.
+  const bundled = override?.imageKey ? EXPLORE_IMAGE_BY_KEY[override.imageKey] : undefined;
   return {
     id: row.slug,
     category: row.category,
@@ -27,12 +68,9 @@ export function mapExploreCard(row: DbExploreCard, mediaUrlByKey?: Record<string
     description: row.description,
     cta: row.cta,
     href: row.href,
-    image: resolveExploreImage(imageKey, mediaUrlByKey),
-    imageAlt:
-      row.slug === "academics"
-        ? "Students working in the computer laboratory at Government Polytechnic for Women, Srinagar"
-        : row.image_alt,
-    imagePosition: row.image_position,
+    image: bundled ?? resolveExploreImage(imageKey, mediaUrlByKey),
+    imageAlt: override?.imageAlt ?? row.image_alt,
+    imagePosition: override?.imagePosition ?? row.image_position,
     priority: row.is_priority,
   };
 }

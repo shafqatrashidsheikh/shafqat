@@ -16,7 +16,9 @@ import { Footer } from "@/components/site/Footer";
 import { GPWAssistant } from "@/components/gpw-assistant/GPWAssistant";
 import { PagePreloader } from "@/components/site/PagePreloader";
 import { BOOKS_ART_SRC, GRADUATION_ART_SRC, LOADER_LOGO_SRC } from "@/lib/loader-assets";
-import { ContextualBack, InternalRouteMemory } from "@/components/site/ContextualBack";
+import { PageNavigation } from "@/components/site/PageNavigation";
+import { InternalRouteMemory } from "@/components/site/ContextualBack";
+import { LiveUpdatesTicker } from "@/components/site/LiveUpdatesTicker";
 import { RouteTransition } from "@/components/site/RouteTransition";
 import { ScrollReveal } from "@/components/site/ScrollReveal";
 
@@ -24,7 +26,7 @@ function NotFoundComponent() {
   return (
     <div className="bg-background">
       <div className="container-page pt-8 sm:pt-10">
-        <ContextualBack />
+        <PageNavigation currentLabel="Page not found" />
       </div>
       <div className="flex min-h-[70vh] items-center justify-center px-4 py-24">
         <div className="max-w-xl text-center">
@@ -67,7 +69,7 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   return (
     <div className="bg-background">
       <div className="container-page pt-8 sm:pt-10">
-        <ContextualBack />
+        <PageNavigation currentLabel="Page not found" />
       </div>
       <div className="flex min-h-[60vh] items-center justify-center px-4 py-16">
         <div className="max-w-md text-center">
@@ -127,7 +129,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
         rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap",
+        href: "https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,600;8..60,700;8..60,800&family=Manrope:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap",
       },
       { rel: "preload", href: "/gpw-srinagar-logo.jpg", as: "image" },
       { rel: "preload", href: LOADER_LOGO_SRC, as: "image" },
@@ -216,6 +218,7 @@ function RootComponent() {
         Skip to content
       </a>
       <Header institute={siteChrome.institute} headerNav={siteChrome.headerNav} />
+      <LiveUpdatesTicker initial={siteChrome.liveNotices} />
       <main id="main" className="relative z-0 min-w-0 overflow-x-clip bg-background">
         <RouteTransition>
           {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}

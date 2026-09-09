@@ -1,17 +1,12 @@
 import { NOTICES } from "@/lib/notices-data";
 import type { NoticeItem } from "@/lib/notices-data";
-import { fetchPublicNotices } from "@/server/cda/content";
 
 export async function loadNoticesData(): Promise<NoticeItem[]> {
-  try {
-    const rows = await fetchPublicNotices();
-    return rows.length > 0 ? rows : NOTICES;
-  } catch {
-    return NOTICES;
-  }
+  // Verified JKBOTE notices are the public source of truth.
+  return NOTICES;
 }
 
-import { buildMediaUrlMap, fetchDepartments, fetchHomepageBlocks, fetchPrograms } from "@/server/cda/content";
+import { loadMediaUrlMap, fetchDepartments, fetchHomepageBlocks, fetchPrograms } from "@/server/cda/content";
 import { GPW_DEPARTMENTS, resolveEligibility } from "@/lib/departments-data";
 import { mapDbDepartmentToGpw } from "@/lib/departments-cms";
 import { PROGRAMS, ACADEMIC_UNITS } from "@/lib/site-data";
@@ -22,7 +17,7 @@ export async function loadAcademicsData() {
       fetchPrograms({ data: {} }),
       fetchDepartments({ data: {} }),
       fetchHomepageBlocks({ data: {} }),
-      buildMediaUrlMap(),
+      loadMediaUrlMap(),
     ]);
 
     return {

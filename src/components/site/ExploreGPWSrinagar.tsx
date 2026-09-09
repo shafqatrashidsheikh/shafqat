@@ -136,10 +136,9 @@ export function ExploreGPWSrinagar({ cards = EXPLORE_CARDS }: { cards?: ExploreC
           )}
           data-motion="off"
         >
-          <div className="h-0.5 w-16 rounded-full bg-brand" />
           <h2
             id="explore-gpw-heading"
-            className="heading-section mt-5 font-display font-extrabold text-navy"
+            className="heading-section font-display font-extrabold text-navy"
           >
             Explore GPW Srinagar
           </h2>

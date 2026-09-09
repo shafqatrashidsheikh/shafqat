@@ -1,5 +1,5 @@
 import { createFileRoute, Navigate, useNavigate } from "@tanstack/react-router";
-import { ContextualBack } from "@/components/site/ContextualBack";
+import { PageNavigation } from "@/components/site/PageNavigation";
 import { StudentOnboardingForm } from "@/components/portal/StudentOnboardingForm";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -39,7 +39,7 @@ function StudentOnboardingPage() {
   return (
     <div className="min-h-screen bg-background py-10">
       <div className="container-page mb-6 flex items-center justify-between gap-3">
-        <ContextualBack />
+        <PageNavigation />
         <button type="button" onClick={signOut} className="text-sm font-medium text-brand hover:text-navy">
           Sign out
         </button>

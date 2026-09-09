@@ -23,11 +23,17 @@ import { Route as SignupRouteImport } from './routes/signup'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as AdminLoginRouteImport } from './routes/admin/login'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
+import { Route as ApiJkboteNoticesRouteImport } from './routes/api/jkbote-notices'
 import { Route as AuthCallbackRouteImport } from './routes/auth/callback'
 import { Route as PortalIndexRouteImport } from './routes/portal/index'
 import { Route as StudentIndexRouteImport } from './routes/student/index'
 import { Route as StudentOnboardingRouteImport } from './routes/student/onboarding'
 import { Route as StudentPendingRouteImport } from './routes/student/pending'
+import { Route as UpdatesIndexRouteImport } from './routes/updates/index'
+import { Route as UpdatesCircularsRouteImport } from './routes/updates/circulars'
+import { Route as UpdatesEventsRouteImport } from './routes/updates/events'
+import { Route as UpdatesNewsRouteImport } from './routes/updates/news'
+import { Route as UpdatesNoticesRouteImport } from './routes/updates/notices'
 import { Route as AcademicsDepartmentsSlugRouteImport } from './routes/academics_.departments.$slug'
 
 const IndexRoute = IndexRouteImport.update({
@@ -100,6 +106,11 @@ const ApiChatRoute = ApiChatRouteImport.update({
   path: '/api/chat',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiJkboteNoticesRoute = ApiJkboteNoticesRouteImport.update({
+  id: '/api/jkbote-notices',
+  path: '/api/jkbote-notices',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthCallbackRoute = AuthCallbackRouteImport.update({
   id: '/auth/callback',
   path: '/auth/callback',
@@ -125,6 +136,31 @@ const StudentPendingRoute = StudentPendingRouteImport.update({
   path: '/student/pending',
   getParentRoute: () => rootRouteImport,
 } as any)
+const UpdatesIndexRoute = UpdatesIndexRouteImport.update({
+  id: '/updates/',
+  path: '/updates/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UpdatesCircularsRoute = UpdatesCircularsRouteImport.update({
+  id: '/updates/circulars',
+  path: '/updates/circulars',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UpdatesEventsRoute = UpdatesEventsRouteImport.update({
+  id: '/updates/events',
+  path: '/updates/events',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UpdatesNewsRoute = UpdatesNewsRouteImport.update({
+  id: '/updates/news',
+  path: '/updates/news',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UpdatesNoticesRoute = UpdatesNoticesRouteImport.update({
+  id: '/updates/notices',
+  path: '/updates/notices',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AcademicsDepartmentsSlugRoute =
   AcademicsDepartmentsSlugRouteImport.update({
     id: '/academics_/departments/$slug',
@@ -146,12 +182,18 @@ export interface FileRoutesByFullPath {
   '/signup': typeof SignupRoute
   '/admin/login': typeof AdminLoginRoute
   '/api/chat': typeof ApiChatRoute
+  '/api/jkbote-notices': typeof ApiJkboteNoticesRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/student/onboarding': typeof StudentOnboardingRoute
   '/student/pending': typeof StudentPendingRoute
+  '/updates/circulars': typeof UpdatesCircularsRoute
+  '/updates/events': typeof UpdatesEventsRoute
+  '/updates/news': typeof UpdatesNewsRoute
+  '/updates/notices': typeof UpdatesNoticesRoute
   '/admin/': typeof AdminIndexRoute
   '/portal/': typeof PortalIndexRoute
   '/student/': typeof StudentIndexRoute
+  '/updates/': typeof UpdatesIndexRoute
   '/academics/departments/$slug': typeof AcademicsDepartmentsSlugRoute
 }
 export interface FileRoutesByTo {
@@ -168,12 +210,18 @@ export interface FileRoutesByTo {
   '/signup': typeof SignupRoute
   '/admin/login': typeof AdminLoginRoute
   '/api/chat': typeof ApiChatRoute
+  '/api/jkbote-notices': typeof ApiJkboteNoticesRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/student/onboarding': typeof StudentOnboardingRoute
   '/student/pending': typeof StudentPendingRoute
+  '/updates/circulars': typeof UpdatesCircularsRoute
+  '/updates/events': typeof UpdatesEventsRoute
+  '/updates/news': typeof UpdatesNewsRoute
+  '/updates/notices': typeof UpdatesNoticesRoute
   '/admin': typeof AdminIndexRoute
   '/portal': typeof PortalIndexRoute
   '/student': typeof StudentIndexRoute
+  '/updates': typeof UpdatesIndexRoute
   '/academics/departments/$slug': typeof AcademicsDepartmentsSlugRoute
 }
 export interface FileRoutesById {
@@ -191,12 +239,18 @@ export interface FileRoutesById {
   '/signup': typeof SignupRoute
   '/admin/login': typeof AdminLoginRoute
   '/api/chat': typeof ApiChatRoute
+  '/api/jkbote-notices': typeof ApiJkboteNoticesRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/student/onboarding': typeof StudentOnboardingRoute
   '/student/pending': typeof StudentPendingRoute
+  '/updates/circulars': typeof UpdatesCircularsRoute
+  '/updates/events': typeof UpdatesEventsRoute
+  '/updates/news': typeof UpdatesNewsRoute
+  '/updates/notices': typeof UpdatesNoticesRoute
   '/admin/': typeof AdminIndexRoute
   '/portal/': typeof PortalIndexRoute
   '/student/': typeof StudentIndexRoute
+  '/updates/': typeof UpdatesIndexRoute
   '/academics_/departments/$slug': typeof AcademicsDepartmentsSlugRoute
 }
 export interface FileRouteTypes {
@@ -215,12 +269,18 @@ export interface FileRouteTypes {
     | '/signup'
     | '/admin/login'
     | '/api/chat'
+    | '/api/jkbote-notices'
     | '/auth/callback'
     | '/student/onboarding'
     | '/student/pending'
+    | '/updates/circulars'
+    | '/updates/events'
+    | '/updates/news'
+    | '/updates/notices'
     | '/admin/'
     | '/portal/'
     | '/student/'
+    | '/updates/'
     | '/academics/departments/$slug'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -237,12 +297,18 @@ export interface FileRouteTypes {
     | '/signup'
     | '/admin/login'
     | '/api/chat'
+    | '/api/jkbote-notices'
     | '/auth/callback'
     | '/student/onboarding'
     | '/student/pending'
+    | '/updates/circulars'
+    | '/updates/events'
+    | '/updates/news'
+    | '/updates/notices'
     | '/admin'
     | '/portal'
     | '/student'
+    | '/updates'
     | '/academics/departments/$slug'
   id:
     | '__root__'
@@ -259,12 +325,18 @@ export interface FileRouteTypes {
     | '/signup'
     | '/admin/login'
     | '/api/chat'
+    | '/api/jkbote-notices'
     | '/auth/callback'
     | '/student/onboarding'
     | '/student/pending'
+    | '/updates/circulars'
+    | '/updates/events'
+    | '/updates/news'
+    | '/updates/notices'
     | '/admin/'
     | '/portal/'
     | '/student/'
+    | '/updates/'
     | '/academics_/departments/$slug'
   fileRoutesById: FileRoutesById
 }
@@ -282,12 +354,18 @@ export interface RootRouteChildren {
   SignupRoute: typeof SignupRoute
   AdminLoginRoute: typeof AdminLoginRoute
   ApiChatRoute: typeof ApiChatRoute
+  ApiJkboteNoticesRoute: typeof ApiJkboteNoticesRoute
   AuthCallbackRoute: typeof AuthCallbackRoute
   StudentOnboardingRoute: typeof StudentOnboardingRoute
   StudentPendingRoute: typeof StudentPendingRoute
+  UpdatesCircularsRoute: typeof UpdatesCircularsRoute
+  UpdatesEventsRoute: typeof UpdatesEventsRoute
+  UpdatesNewsRoute: typeof UpdatesNewsRoute
+  UpdatesNoticesRoute: typeof UpdatesNoticesRoute
   AdminIndexRoute: typeof AdminIndexRoute
   PortalIndexRoute: typeof PortalIndexRoute
   StudentIndexRoute: typeof StudentIndexRoute
+  UpdatesIndexRoute: typeof UpdatesIndexRoute
   AcademicsDepartmentsSlugRoute: typeof AcademicsDepartmentsSlugRoute
 }
 
@@ -391,6 +469,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiChatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/jkbote-notices': {
+      id: '/api/jkbote-notices'
+      path: '/api/jkbote-notices'
+      fullPath: '/api/jkbote-notices'
+      preLoaderRoute: typeof ApiJkboteNoticesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth/callback': {
       id: '/auth/callback'
       path: '/auth/callback'
@@ -426,6 +511,41 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StudentPendingRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/updates/': {
+      id: '/updates/'
+      path: '/updates'
+      fullPath: '/updates/'
+      preLoaderRoute: typeof UpdatesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/updates/circulars': {
+      id: '/updates/circulars'
+      path: '/updates/circulars'
+      fullPath: '/updates/circulars'
+      preLoaderRoute: typeof UpdatesCircularsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/updates/events': {
+      id: '/updates/events'
+      path: '/updates/events'
+      fullPath: '/updates/events'
+      preLoaderRoute: typeof UpdatesEventsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/updates/news': {
+      id: '/updates/news'
+      path: '/updates/news'
+      fullPath: '/updates/news'
+      preLoaderRoute: typeof UpdatesNewsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/updates/notices': {
+      id: '/updates/notices'
+      path: '/updates/notices'
+      fullPath: '/updates/notices'
+      preLoaderRoute: typeof UpdatesNoticesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/academics_/departments/$slug': {
       id: '/academics_/departments/$slug'
       path: '/academics/departments/$slug'
@@ -450,12 +570,18 @@ const rootRouteChildren: RootRouteChildren = {
   SignupRoute: SignupRoute,
   AdminLoginRoute: AdminLoginRoute,
   ApiChatRoute: ApiChatRoute,
+  ApiJkboteNoticesRoute: ApiJkboteNoticesRoute,
   AuthCallbackRoute: AuthCallbackRoute,
   StudentOnboardingRoute: StudentOnboardingRoute,
   StudentPendingRoute: StudentPendingRoute,
+  UpdatesCircularsRoute: UpdatesCircularsRoute,
+  UpdatesEventsRoute: UpdatesEventsRoute,
+  UpdatesNewsRoute: UpdatesNewsRoute,
+  UpdatesNoticesRoute: UpdatesNoticesRoute,
   AdminIndexRoute: AdminIndexRoute,
   PortalIndexRoute: PortalIndexRoute,
   StudentIndexRoute: StudentIndexRoute,
+  UpdatesIndexRoute: UpdatesIndexRoute,
   AcademicsDepartmentsSlugRoute: AcademicsDepartmentsSlugRoute,
 }
 export const routeTree = rootRouteImport

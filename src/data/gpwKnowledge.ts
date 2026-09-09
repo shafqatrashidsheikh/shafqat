@@ -13,7 +13,7 @@ import {
   ADMISSIONS_STEPS,
   JKBOTE_APPLY_URL,
 } from "@/lib/admissions-data";
-import { CAMPUS_FACILITIES, CAMPUS_FACILITY_NAMES } from "@/lib/campus-data";
+import { CAMPUS_FACILITIES } from "@/lib/campus-data";
 import { GPW_PORTAL_DEPARTMENTS } from "@/lib/portal-departments";
 import { departmentDetailPath } from "@/lib/departments-data";
 import {
@@ -38,7 +38,10 @@ export const GPW_WEBSITE_ROUTES: KnowledgeRoute[] = [
   { label: "Admissions", path: "/admissions", description: "Diploma programmes, eligibility, application steps, documents and dates" },
   { label: "Academics", path: "/academics", description: "Programs and academic units" },
   { label: "Campus", path: "/campus", description: "Campus overview, facilities and gallery" },
-  { label: "Notices", path: "/notices", description: "Notices, examinations, results and updates" },
+  { label: "Notices", path: "/updates/notices", description: "Notices, examinations, results and updates" },
+  { label: "Latest News", path: "/updates/news", description: "Most recent JKBOTE and college updates" },
+  { label: "Events", path: "/updates/events", description: "Verified institutional events and collaborations" },
+  { label: "Circulars", path: "/updates/circulars", description: "Tenders and important circulars" },
   { label: "Placements", path: "/placements", description: "Training & placement cell information" },
   { label: "Contact", path: "/contact", description: "Contact details, location map and enquiry form" },
 ];
@@ -126,41 +129,43 @@ export const GPW_KNOWLEDGE = {
   },
   facilities: {
     verified: CAMPUS_FACILITIES.map((f) => ({ name: f.name, description: f.description })),
-    listedOnWebsite: [...CAMPUS_FACILITY_NAMES],
-    note: "Detailed descriptions for some facilities are not yet published on the website. Refer to the Campus page or official notices for confirmation.",
+    note: "The Campus page lists laboratories and technical facilities aligned with the institute diploma programmes. Confirm current availability with the institute office if needed.",
     page: "/campus#facilities",
   },
   laboratories: {
     summary:
-      "Laboratories and workshops support hands-on diploma training including electronics, computer, engineering workshop and related practical areas.",
+      "Laboratories and technical facilities support practical diploma training in computing, electronics, food technology, medical laboratory technology, garment and textile technology, workshop practice, library resources, smart classrooms and seminar spaces.",
     page: "/campus#facilities",
   },
   library: {
-    summary: "Library & Reading Room — a dedicated academic space for study, reference and learning resources.",
+    summary: "Library & Learning Resources — academic reference, study and learning resources.",
     page: "/campus#facilities",
   },
   hostel: {
-    summary: "Hostel is listed among campus facilities on the website. Specific allotment rules and availability are not detailed in the current website knowledge.",
+    summary:
+      "Hostel is not listed among the current campus laboratory and technical facility cards. Allotment rules and availability are not published in the current website knowledge.",
     page: "/campus#facilities",
   },
   sports: {
-    summary: "Sports facilities are listed among campus facilities. Details are on the Campus page.",
+    summary:
+      "Sports facilities are not listed among the current campus laboratory and technical facility cards. Details are not published in the current website knowledge.",
     page: "/campus#facilities",
   },
   examinations: {
     summary: "Examination schedules, date sheets and related circulars are published on the Notices page.",
-    page: "/notices#examination",
+    page: "/updates/notices#examination",
   },
   results: {
     summary: "Result notices are published on the Notices page when released by the institute.",
-    page: "/notices#examination",
+    page: "/updates/notices#examination",
     disclaimer: "Always verify the latest official result notice.",
   },
   notices: {
-    summary: "Official notices, tenders, circulars and announcements are published on the Notices page.",
+    summary:
+      "Official JKBOTE notices relevant to Government Polytechnic for Women, Srinagar — including admissions, examinations and results — are listed on the Notices page with links to official sources.",
     utilityLinks: UTILITY_STRIP.map((l) => ({ label: l.label, path: l.to })),
-    page: "/notices",
-    disclaimer: "Notice content changes frequently. Check the Notices page for the latest official version.",
+    page: "/updates/notices",
+    disclaimer: "Always verify the latest official JKBOTE notice. College-specific circulars appear when published by the institute.",
   },
   placements: {
     summary:

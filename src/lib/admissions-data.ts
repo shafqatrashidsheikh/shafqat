@@ -1,7 +1,7 @@
 /** Shared admissions content — static fallback, bootstrap seed, and public-page defaults. */
 
 export const JKBOTE_APPLY_URL = "https://admission.jkbote.ac.in/";
-export const ADMISSIONS_NOTICE_HREF = "/notices#admissions";
+export const ADMISSIONS_NOTICE_HREF = "/updates/notices#admissions";
 
 export const ADMISSIONS_YEAR = 2026;
 export const ADMISSIONS_TITLE = "Admissions 2026";

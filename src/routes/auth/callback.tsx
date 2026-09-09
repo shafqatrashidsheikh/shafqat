@@ -1,7 +1,7 @@
 import { createFileRoute, Link, Navigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { z } from "zod";
-import { ContextualBack } from "@/components/site/ContextualBack";
+import { PageNavigation } from "@/components/site/PageNavigation";
 import { getPostAuthPath } from "@/lib/auth/redirects";
 import { useAuth } from "@/hooks/useAuth";
 import { completeOAuthCallback } from "@/server/portal/auth-callback";
@@ -66,7 +66,7 @@ function AuthCallbackPage() {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background px-4">
         <div className="flex w-full max-w-md flex-col items-start gap-4">
-          <ContextualBack />
+          <PageNavigation />
           <div className="card-premium w-full p-8 text-center">
           <p className="text-sm text-red">{loaderData.error ?? "Authentication failed"}</p>
           <Link to="/login" className="mt-4 inline-block text-sm font-semibold text-brand">
