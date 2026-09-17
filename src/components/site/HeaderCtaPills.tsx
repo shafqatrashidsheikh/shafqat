@@ -8,6 +8,7 @@ import {
   useState,
   type KeyboardEvent as ReactKeyboardEvent,
 } from "react";
+import { ApplyOnlineButton } from "@/components/site/ApplyOnlineButton";
 import { HEADER_CTA_PILLS, type HeaderCtaPill, type HeaderCtaPillItem } from "@/lib/site-data";
 import { cn } from "@/lib/utils";
 
@@ -62,10 +63,16 @@ function DropdownItem({
 }: {
   item: HeaderCtaPillItem;
   open: boolean;
-  itemRef: (el: HTMLAnchorElement | null) => void;
+  itemRef: (el: HTMLAnchorElement | HTMLButtonElement | null) => void;
   onClose: () => void;
 }) {
-  if (item.comingSoon || !item.to) {
+  const menuClass = cn(
+    "block w-full cursor-pointer rounded-xl px-3.5 py-2.5 text-left text-sm transition-[background-color,color] duration-150 ease-out",
+    "text-navy hover:bg-light-blue hover:text-brand focus-visible:bg-light-blue focus-visible:text-brand focus-visible:outline-none",
+    item.primary && "font-semibold text-brand",
+  );
+
+  if (item.comingSoon || (!item.to && item.action !== "apply-online")) {
     return (
       <span
         className="block cursor-default rounded-xl px-3.5 py-2.5 text-sm text-muted-foreground"
@@ -76,18 +83,28 @@ function DropdownItem({
     );
   }
 
+  if (item.action === "apply-online") {
+    return (
+      <ApplyOnlineButton
+        label={item.label}
+        className={menuClass}
+        prefetch={false}
+        role="menuitem"
+        tabIndex={open ? 0 : -1}
+        buttonRef={itemRef}
+        onBeforeApply={onClose}
+      />
+    );
+  }
+
   return (
     <Link
-      ref={itemRef}
+      ref={itemRef as (el: HTMLAnchorElement | null) => void}
       role="menuitem"
-      to={item.to}
+      to={item.to!}
       tabIndex={open ? 0 : -1}
       onClick={onClose}
-      className={cn(
-        "block cursor-pointer rounded-xl px-3.5 py-2.5 text-sm transition-[background-color,color] duration-150 ease-out",
-        "text-navy hover:bg-light-blue hover:text-brand focus-visible:bg-light-blue focus-visible:text-brand focus-visible:outline-none",
-        item.primary && "font-semibold text-brand",
-      )}
+      className={menuClass}
     >
       {item.label}
     </Link>
@@ -107,7 +124,7 @@ function HoverNavItem({
   const menuId = useId();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const active = isRouteActive(pathname, pill.to);
-  const itemRefs = useRef<(HTMLAnchorElement | null)[]>([]);
+  const itemRefs = useRef<(HTMLAnchorElement | HTMLButtonElement | null)[]>([]);
 
   const onTriggerKeyDown = (e: ReactKeyboardEvent) => {
     if (e.key === "Escape") {
@@ -358,13 +375,23 @@ export function HeaderCtaMobileGroups({
                 </li>
                 {pill.items.map((item) => (
                   <li key={item.label}>
-                    {item.comingSoon || !item.to ? (
+                    {item.comingSoon || (!item.to && item.action !== "apply-online") ? (
                       <span className="block min-h-11 rounded-lg px-3 py-2.5 text-sm text-muted-foreground">
                         {item.label}
                       </span>
+                    ) : item.action === "apply-online" ? (
+                      <ApplyOnlineButton
+                        label={item.label}
+                        prefetch={false}
+                        {...(onNavigate ? { onBeforeApply: onNavigate } : {})}
+                        className={cn(
+                          "block min-h-11 w-full cursor-pointer rounded-lg px-3 py-2.5 text-left text-sm transition-[background-color,color] duration-150 ease-out hover:bg-light-blue hover:text-brand",
+                          item.primary ? "font-semibold text-brand" : "font-medium text-navy",
+                        )}
+                      />
                     ) : (
                       <Link
-                        to={item.to}
+                        to={item.to!}
                         onClick={onNavigate}
                         className={cn(
                           "block min-h-11 cursor-pointer rounded-lg px-3 py-2.5 text-sm transition-[background-color,color] duration-150 ease-out hover:bg-light-blue hover:text-brand",

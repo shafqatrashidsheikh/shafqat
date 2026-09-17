@@ -1,4 +1,6 @@
 import { ExternalLink } from "lucide-react";
+import { AmpersandText } from "@/components/site/AmpersandText";
+import { safeHrefOr } from "@/lib/security/safe-url";
 import { JKBOTE_NOTICES_URL, type NoticePriority, type UpdateItem } from "@/lib/updates-data";
 
 const PRIORITY_STYLES: Record<NoticePriority, string> = {
@@ -17,7 +19,7 @@ export function UpdateNoticeCard({
   ariaHidden?: boolean;
   actionLabel?: string;
 }) {
-  const href = item.fileUrl?.trim() || JKBOTE_NOTICES_URL;
+  const href = safeHrefOr(item.fileUrl, JKBOTE_NOTICES_URL);
 
   return (
     <a
@@ -36,7 +38,9 @@ export function UpdateNoticeCard({
           <span className="text-brand">{item.category}</span>
           <span className="text-muted-foreground">{item.date}</span>
         </div>
-        <h2 className="mt-1.5 font-display text-base font-bold leading-snug text-navy">{item.title}</h2>
+        <h2 className="mt-1.5 min-w-0 hyphens-none font-display text-base font-bold leading-snug text-navy">
+          <AmpersandText>{item.title}</AmpersandText>
+        </h2>
         <p className="mt-1 text-xs text-muted-foreground">Official Source: {item.source}</p>
       </div>
       <span className="inline-flex min-h-10 shrink-0 items-center gap-2 rounded-lg border border-border px-4 text-sm font-semibold text-brand transition-colors group-hover:bg-light-blue">

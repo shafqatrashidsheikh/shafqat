@@ -1,13 +1,13 @@
-import { useRouterState } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 
-/** Subtle fade/slide when the pathname changes — no artificial delay */
+/**
+ * Stable outlet wrapper — do NOT remount on pathname change.
+ * Remounting via key={pathname} unmounts the current page before the
+ * destination is ready and causes a Home/previous-page flash.
+ *
+ * No opacity animation here: fill-mode animations can leave the page
+ * invisible after refresh if hydration is interrupted.
+ */
 export function RouteTransition({ children }: { children: ReactNode }) {
-  const pathname = useRouterState({ select: (s) => s.location.pathname });
-
-  return (
-    <div key={pathname} className="route-enter">
-      {children}
-    </div>
-  );
+  return <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-x-clip">{children}</div>;
 }

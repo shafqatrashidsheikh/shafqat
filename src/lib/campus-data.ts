@@ -7,6 +7,21 @@ export type CampusPhoto = {
   height?: number;
 };
 
+export type CampusFacilityCategory =
+  | "Laboratory"
+  | "Workshop"
+  | "Learning resources"
+  | "Teaching"
+  | "Events";
+
+export type CampusFacility = {
+  name: string;
+  description: string;
+  category: CampusFacilityCategory;
+  /** Deep link — department page or related campus service */
+  href?: "/library" | "/hostel" | `/academics/departments/${string}`;
+};
+
 /** Campus gallery — institute photographs available in the project */
 export const CAMPUS_GALLERY: CampusPhoto[] = [
   {
@@ -35,46 +50,86 @@ export const CAMPUS_GALLERY: CampusPhoto[] = [
   },
 ];
 
-/** Laboratories and technical facilities aligned with GPW Srinagar diploma programmes. */
-export const CAMPUS_FACILITIES: { name: string; description: string }[] = [
+/**
+ * Laboratories & technical facilities on the Bemina campus.
+ * Aligned with official GPW Srinagar diploma departments and published campus amenities
+ * (departmental labs, Tech Edu-III Food Technology & Textile academic blocks, library,
+ * workshops, IT classrooms, auditorium). Exact equipment inventories are not published —
+ * wording stays factual and practical.
+ */
+export const CAMPUS_FACILITIES: CampusFacility[] = [
   {
-    name: "Computer & IT Laboratories",
-    description: "Practical computing, programming, software and digital learning facilities.",
+    name: "Computer Engineering Laboratory",
+    category: "Laboratory",
+    href: "/academics/departments/computer-engineering",
+    description:
+      "Programming, software development, databases and networking practicals for the Computer Engineering diploma.",
   },
   {
     name: "Electronics & Communication Laboratory",
-    description: "Hands-on training in electronics, circuits, communication and measurement.",
+    category: "Laboratory",
+    href: "/academics/departments/electronics-communication-engineering",
+    description:
+      "Circuit work, digital electronics, measurements and communication-system exercises for the ECE diploma.",
   },
   {
     name: "Food Technology Laboratory",
-    description: "Practical training related to food processing, testing and quality control.",
+    category: "Laboratory",
+    href: "/academics/departments/food-technology",
+    description:
+      "Hands-on food processing, testing and quality-control practicals in the Food Technology academic facilities.",
   },
   {
-    name: "Medical Laboratory Technology Lab",
-    description: "Practical learning in clinical laboratory techniques and diagnostics.",
+    name: "Medical Lab Technology Laboratory",
+    category: "Laboratory",
+    href: "/academics/departments/medical-lab-technology",
+    description:
+      "Clinical laboratory techniques, specimen handling and diagnostic-support practicals for the MLT diploma.",
   },
   {
     name: "Garment Technology Laboratory",
-    description: "Practical training in garment construction, production and related techniques.",
+    category: "Laboratory",
+    href: "/academics/departments/garment-technology",
+    description:
+      "Garment construction, pattern work and production techniques for the Garment Technology diploma.",
   },
   {
     name: "Textile Technology Laboratory",
-    description: "Practical textile processing, materials and production training.",
+    category: "Laboratory",
+    href: "/academics/departments/textile-technology",
+    description:
+      "Textile materials, processing and production practicals linked to the Textile Technology programme.",
+  },
+  {
+    name: "OMCA Computer Applications Lab",
+    category: "Laboratory",
+    href: "/academics/departments/office-management-computer-applications",
+    description:
+      "Office software, computer applications and workplace digital skills for the OMCA diploma.",
   },
   {
     name: "Engineering Workshop",
-    description: "Hands-on technical and workshop-based practical training.",
+    category: "Workshop",
+    description:
+      "Shared workshop space for hands-on technical training, fabrication practice and skill-based exercises.",
   },
   {
     name: "Library & Learning Resources",
-    description: "Academic reference, study and learning resources.",
+    category: "Learning resources",
+    href: "/library",
+    description:
+      "Programme-linked books, journals, career guides and quiet study seating supporting diploma teaching.",
   },
   {
     name: "Smart Classrooms & IT Infrastructure",
-    description: "Technology-supported teaching and digital learning.",
+    category: "Teaching",
+    description:
+      "Technology-supported classrooms and campus IT setup used for digital teaching and presentations.",
   },
   {
     name: "Auditorium & Seminar Facilities",
-    description: "Academic events, seminars and institutional programmes.",
+    category: "Events",
+    description:
+      "Venue for academic events, seminars, guest lectures and institutional programmes on campus.",
   },
 ];

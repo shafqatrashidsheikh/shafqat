@@ -15,7 +15,8 @@
     "supabase:reset": "supabase db reset",
     "supabase:push": "supabase db push",
     "supabase:status": "supabase status",
-    "favicons:generate": "node scripts/generate-favicons.mjs"
+    "favicons:generate": "node scripts/generate-favicons.mjs",
+    "logo:generate": "node scripts/generate-logo-assets.mjs"
   },
   "overrides": {
     "rolldown": "1.2.1"

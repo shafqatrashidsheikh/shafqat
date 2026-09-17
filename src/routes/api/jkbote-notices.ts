@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { guardPublicApiRequest } from "@/lib/security/request-guards";
 import { getLiveJkboteNotices } from "@/server/jkbote/sync";
 
 export const Route = createFileRoute("/api/jkbote-notices")({
@@ -9,6 +10,9 @@ export const Route = createFileRoute("/api/jkbote-notices")({
         const force = url.searchParams.get("refresh") === "1";
         const limitRaw = Number(url.searchParams.get("limit") ?? "20");
         const limit = Number.isFinite(limitRaw) ? Math.min(40, Math.max(1, limitRaw)) : 20;
+
+        const blocked = guardPublicApiRequest(request, { upstreamRefresh: force });
+        if (blocked) return blocked;
 
         try {
           const payload = await getLiveJkboteNotices({ force, limit });

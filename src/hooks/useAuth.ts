@@ -98,25 +98,31 @@ export function useAuth() {
 
   const signInWithOtp = useCallback(async (email: string) => {
     const client = getSupabaseBrowserClient();
+    // OTP code flow (verifyOtp) — do not pass emailRedirectTo.
+    // A production/preview origin that is not in Supabase Redirect URLs
+    // causes "Error sending magic link email" even when SMTP is configured.
     const { error } = await client.auth.signInWithOtp({
-      email,
+      email: email.trim().toLowerCase(),
       options: {
         shouldCreateUser: true,
-        emailRedirectTo: `${window.location.origin}/auth/callback`,
       },
     });
     if (error) {
-      const message = error.message.toLowerCase();
+      const detail = error.message?.trim() || "Unknown auth error";
+      const lower = detail.toLowerCase();
       if (
-        message.includes("error sending") ||
-        message.includes("magic link") ||
-        (message.includes("email") && message.includes("send"))
+        lower.includes("error sending") ||
+        lower.includes("magic link") ||
+        (lower.includes("email") && lower.includes("send"))
       ) {
         throw new Error(
-          "Could not send the login email. In Supabase Dashboard → Authentication → SMTP Settings, enable custom SMTP (or confirm the built-in email provider is enabled). Also add http://localhost:3000/auth/callback under Redirect URLs.",
+          `${detail} — Check Supabase → Authentication → Logs for the mailer failure. Confirm SMTP credentials work, and that Authentication → Email Templates → Magic Link / Confirm signup includes {{ .Token }} for the 6-digit code. Redirect URLs are not required for OTP codes.`,
         );
       }
-      throw error;
+      if (lower.includes("rate") || lower.includes("security")) {
+        throw new Error(`${detail} — Wait a minute and try again, or use Google sign-in.`);
+      }
+      throw new Error(detail);
     }
   }, []);
 
@@ -124,13 +130,21 @@ export function useAuth() {
     async (email: string, token: string) => {
       const client = getSupabaseBrowserClient();
       const { data, error } = await client.auth.verifyOtp({
-        email,
-        token,
+        email: email.trim().toLowerCase(),
+        token: token.trim(),
         type: "email",
       });
       if (error) throw error;
       setSession(data.session);
-      if (data.session?.access_token) await fetchProfile(data.session.access_token);
+      if (!data.session?.access_token) {
+        throw new Error("Verification succeeded but no session was returned. Try signing in again.");
+      }
+      const row = await fetchProfile(data.session.access_token);
+      if (!row) {
+        throw new Error(
+          "Signed in, but your student profile could not be created. Contact the institute administrator.",
+        );
+      }
       return data.session;
     },
     [fetchProfile],

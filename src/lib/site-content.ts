@@ -20,21 +20,28 @@ export const EXPLORE_IMAGE_BY_KEY: Record<string, string> = {
   "campus-winter-gate": CAMPUS_IMAGES.winterGate,
   "campus-building-lawn": CAMPUS_IMAGES.buildingLawn,
   "campus-building-walkway": CAMPUS_IMAGES.buildingWalkway,
+  "placement-career-guidance": CAMPUS_IMAGES.placementCareerGuidance,
+  "admissions-desk": CAMPUS_IMAGES.admissionsDesk,
 };
 
 const EXPLORE_CARD_OVERRIDES: Record<
   string,
-  { imageKey: string; imageAlt: string; imagePosition: "left" | "right" }
+  {
+    imageKey: string;
+    imageAlt: string;
+    imagePosition: "left" | "right";
+    imageObjectClass?: string;
+  }
 > = {
   about: {
     imageKey: "campus-winter-gate",
-    imageAlt:
-      "Snow-covered entrance gate of Government Polytechnic for Women, Srinagar, Bemina",
+    imageAlt: "Snow-covered entrance gate of Government Polytechnic for Women, Srinagar, Bemina",
     imagePosition: "right",
   },
   academics: {
     imageKey: "computer-lab",
-    imageAlt: "Students working in the computer laboratory at Government Polytechnic for Women, Srinagar",
+    imageAlt:
+      "Students working in the computer laboratory at Government Polytechnic for Women, Srinagar",
     imagePosition: "right",
   },
   facilities: {
@@ -44,19 +51,33 @@ const EXPLORE_CARD_OVERRIDES: Record<
     imagePosition: "right",
   },
   admissions: {
-    imageKey: "smart-classroom-students",
+    imageKey: "admissions-desk",
     imageAlt:
-      "Students in a smart classroom session at Government Polytechnic for Women, Srinagar",
+      "Admission desk at Government Polytechnic for Women, Srinagar — a counsellor helping an applicant complete her admission form",
     imagePosition: "right",
+    imageObjectClass: "object-[50%_80%] md:object-[8%_50%]",
+  },
+  placement: {
+    imageKey: "placement-career-guidance",
+    imageAlt:
+      "Placement and career guidance at Government Polytechnic for Women, Srinagar — student interview and career counselling session",
+    imagePosition: "right",
+    imageObjectClass: "object-[38%_45%]",
   },
 };
 
-export function resolveExploreImage(imageKey: string, mediaUrlByKey?: Record<string, string>): string {
+export function resolveExploreImage(
+  imageKey: string,
+  mediaUrlByKey?: Record<string, string>,
+): string {
   if (mediaUrlByKey?.[imageKey]) return mediaUrlByKey[imageKey];
   return EXPLORE_IMAGE_BY_KEY[imageKey] ?? CAMPUS_IMAGES.main;
 }
 
-export function mapExploreCard(row: DbExploreCard, mediaUrlByKey?: Record<string, string>): ExploreCard {
+export function mapExploreCard(
+  row: DbExploreCard,
+  mediaUrlByKey?: Record<string, string>,
+): ExploreCard {
   const override = EXPLORE_CARD_OVERRIDES[row.slug];
   const imageKey = override?.imageKey ?? row.image_key;
   // Prefer bundled assets for curated cards so CMS media rows cannot override layout photos.
@@ -71,6 +92,7 @@ export function mapExploreCard(row: DbExploreCard, mediaUrlByKey?: Record<string
     image: bundled ?? resolveExploreImage(imageKey, mediaUrlByKey),
     imageAlt: override?.imageAlt ?? row.image_alt,
     imagePosition: override?.imagePosition ?? row.image_position,
+    imageObjectClass: override?.imageObjectClass,
     priority: row.is_priority,
   };
 }
@@ -91,8 +113,7 @@ export function getStaticPageSections(): PageSectionsMap {
       section_key: "home_about",
       eyebrow: "About GPW Srinagar",
       title: "Empowering Women Through Technical Education",
-      body:
-        "Established in 1986, Government Polytechnic for Women, Srinagar is a government technical institution dedicated to providing women with accessible, practical and career-oriented technical education.",
+      body: "Established in 1986, Government Polytechnic for Women, Srinagar is a government technical institution dedicated to providing women with accessible, practical and career-oriented technical education.",
       cta_label: "Learn More",
       cta_href: "/about",
       sort_order: 2,
@@ -121,8 +142,8 @@ export function getStaticPageSections(): PageSectionsMap {
     placement_blurb: {
       section_key: "placement_blurb",
       eyebrow: "Placement & Careers",
-      title: "From classroom to career",
-      body: "The Training & Placement Cell supports students with skill training, internships, career counselling and recruitment opportunities.",
+      title: "Training & Placement Cell",
+      body: "The Training & Placement Cell supports diploma students with industrial training, internships, career counselling and placement-related guidance.",
       cta_label: "View placement details",
       cta_href: "/placements",
       sort_order: 5,

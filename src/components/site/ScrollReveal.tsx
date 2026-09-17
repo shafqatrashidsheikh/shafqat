@@ -37,6 +37,7 @@ function shouldSkip(el: HTMLElement) {
   if (el.closest(".announcement-vertical-viewport")) return true;
   if (el.closest(".notices-vertical-viewport")) return true;
   if (el.closest(".live-updates-viewport")) return true;
+  if (el.closest(".gpw-assistant-root")) return true;
   if (
     el.closest(".card-premium") &&
     !el.classList.contains("card-premium") &&
@@ -68,12 +69,13 @@ function gridColumnCount(grid: Element): number {
   return 1;
 }
 
-function inferDirection(el: HTMLElement): "up" | "left" | "right" {
+function inferDirection(el: HTMLElement): "up" | "left" | "right" | "scale" {
   const preset = el.dataset["motionFrom"];
-  if (preset === "left" || preset === "right") return preset;
-  if (preset === "up") return "up";
+  if (preset === "left" || preset === "right" || preset === "up") return preset;
+  if (preset === "scale") return "scale";
 
   if (el.closest(".announcement-scroll")) return "up";
+  if (el.classList.contains("card-premium")) return "scale";
 
   const isVisual =
     classNameString(el).includes("aspect-") ||
@@ -86,21 +88,6 @@ function inferDirection(el: HTMLElement): "up" | "left" | "right" {
     const siblings = [...grid.children].filter((c): c is HTMLElement => c instanceof HTMLElement);
     const idx = siblings.indexOf(el);
     if (cols === 2) return idx % 2 === 0 ? "left" : "right";
-  }
-
-  const section = el.closest("section");
-  if (section) {
-    const sectionGrid = section.querySelector(".grid");
-    if (sectionGrid && sectionGrid.contains(el)) {
-      const cols = gridColumnCount(sectionGrid);
-      if (cols === 2 && el.classList.contains("card-premium")) {
-        const siblings = [...sectionGrid.children].filter(
-          (c): c is HTMLElement => c instanceof HTMLElement,
-        );
-        const idx = siblings.indexOf(el);
-        if (idx >= 0) return idx % 2 === 0 ? "left" : "right";
-      }
-    }
   }
 
   return "up";
@@ -140,12 +127,29 @@ function prepareMotionTargets(root: ParentNode) {
 
     const group = staggerGroup(el);
     const idx = groupStagger.get(group) ?? 0;
-    el.style.setProperty("--motion-delay", `${Math.min(idx, 7) * 62}ms`);
+    el.style.setProperty("--motion-delay", `${Math.min(idx, 7) * 55}ms`);
     groupStagger.set(group, idx + 1);
   });
 }
 
-/** Intelligent scroll-triggered motion — direction matches component orientation */
+function revealInViewport() {
+  document.querySelectorAll<HTMLElement>("[data-motion='in']:not(.motion-visible)").forEach((el) => {
+    const rect = el.getBoundingClientRect();
+    const vh = window.innerHeight || document.documentElement.clientHeight;
+    // Already on screen (or just above/below fold) — show immediately
+    if (rect.top < vh * 0.95 && rect.bottom > 0) {
+      el.classList.add("motion-visible");
+    }
+  });
+}
+
+function forceRevealAll() {
+  document.querySelectorAll<HTMLElement>("[data-motion='in']:not(.motion-visible)").forEach((el) => {
+    el.classList.add("motion-visible");
+  });
+}
+
+/** Intelligent scroll-triggered motion — never leaves the page stuck invisible */
 export function ScrollReveal() {
   const pathname = useRouterState({ select: (state) => state.location.pathname });
 
@@ -153,7 +157,10 @@ export function ScrollReveal() {
     document.documentElement.classList.add("js-motion");
 
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduced) return;
+    if (reduced) {
+      forceRevealAll();
+      return;
+    }
 
     const roots = [document.getElementById("main"), document.querySelector("footer")].filter(
       Boolean,
@@ -169,6 +176,9 @@ export function ScrollReveal() {
 
     roots.forEach((root) => prepareMotionTargets(root));
 
+    // Reveal above-the-fold immediately so refresh never shows a blank page
+    revealInViewport();
+
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -177,14 +187,22 @@ export function ScrollReveal() {
           observer.unobserve(entry.target);
         });
       },
-      { threshold: 0.1, rootMargin: "0px 0px -3% 0px" },
+      { threshold: 0.01, rootMargin: "0px 0px -2% 0px" },
     );
 
     document
       .querySelectorAll("[data-motion='in']:not(.motion-visible)")
       .forEach((el) => observer.observe(el));
 
-    return () => observer.disconnect();
+    requestAnimationFrame(revealInViewport);
+
+    // Hard safety — never leave content invisible
+    const safety = window.setTimeout(forceRevealAll, 900);
+
+    return () => {
+      observer.disconnect();
+      window.clearTimeout(safety);
+    };
   }, [pathname]);
 
   return null;

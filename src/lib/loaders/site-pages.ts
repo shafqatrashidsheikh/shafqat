@@ -1,71 +1,52 @@
 import { NOTICES } from "@/lib/notices-data";
 import type { NoticeItem } from "@/lib/notices-data";
+import { loadMediaUrlMap, fetchDepartments } from "@/server/cda/content";
+import { GPW_DEPARTMENTS } from "@/lib/departments-data";
+import { mapDbDepartmentToGpw } from "@/lib/departments-cms";
+import { PROGRAMS, ACADEMIC_UNITS } from "@/lib/site-data";
 
 export async function loadNoticesData(): Promise<NoticeItem[]> {
   // Verified JKBOTE notices are the public source of truth.
   return NOTICES;
 }
 
-import { loadMediaUrlMap, fetchDepartments, fetchHomepageBlocks, fetchPrograms } from "@/server/cda/content";
-import { GPW_DEPARTMENTS, resolveEligibility } from "@/lib/departments-data";
-import { mapDbDepartmentToGpw } from "@/lib/departments-cms";
-import { PROGRAMS, ACADEMIC_UNITS } from "@/lib/site-data";
-
+/**
+ * Academics page data — official GPW Srinagar programmes only.
+ * Static GPW_DEPARTMENTS / PROGRAMS are the public source of truth.
+ * CMS may supply media overlays for known official slugs; it must not
+ * introduce programmes the institute does not offer (e.g. Civil / Electrical).
+ */
 export async function loadAcademicsData() {
   try {
-    const [programs, departments, blocks, mediaMap] = await Promise.all([
-      fetchPrograms({ data: {} }),
+    const [departments, mediaMap] = await Promise.all([
       fetchDepartments({ data: {} }),
-      fetchHomepageBlocks({ data: {} }),
       loadMediaUrlMap(),
     ]);
 
+    const cmsBySlug = new Map(
+      departments
+        .map((d) => mapDbDepartmentToGpw(d, mediaMap))
+        .filter((d) => GPW_DEPARTMENTS.some((s) => s.slug === d.slug))
+        .map((d) => [d.slug, d] as const),
+    );
+
     return {
-      programs:
-        programs.length > 0
-          ? programs.map((p) => {
-              const dept = departments.find((d) => d.id === p.department_id);
-              const staticMatch = PROGRAMS.find((s) => s.slug === dept?.slug);
-              const slug = dept?.slug ?? staticMatch?.slug ?? p.name.toLowerCase().replace(/\s+/g, "-");
-              return {
-                name: p.name,
-                categoryLabel: p.dept_label,
-                duration: p.duration,
-                eligibility: resolveEligibility(slug, p.eligibility),
-                programType: staticMatch?.programType ?? "Full-time Diploma",
-                stream: p.stream as "Engineering & Technology" | "Applied / Health Sciences" | "Management & Services",
-                overview: p.overview,
-                slug,
-              };
-            })
-          : PROGRAMS,
-      academicUnits:
-        blocks?.academicUnits?.length
-          ? blocks.academicUnits.map((u) => ({
-              title: u.title,
-              subtitle: u.subtitle,
-              to: u.link_path,
-            }))
-          : ACADEMIC_UNITS.map((u) => ({ title: u.title, subtitle: u.subtitle, to: u.to })),
-      departments:
-        departments.length > 0
-          ? departments.map((d) => {
-              const mapped = mapDbDepartmentToGpw(d, mediaMap);
-              return {
-                slug: mapped.slug,
-                name: mapped.name,
-                summary: mapped.summary,
-                categoryLabel: mapped.categoryLabel,
-                duration: mapped.duration,
-              };
-            })
-          : GPW_DEPARTMENTS,
+      programs: PROGRAMS,
+      academicUnits: ACADEMIC_UNITS.map((u) => ({
+        title: u.title,
+        subtitle: u.subtitle,
+        to: u.to,
+      })),
+      departments: GPW_DEPARTMENTS.map((dept) => {
+        const fromCms = cmsBySlug.get(dept.slug);
+        return fromCms?.image ? { ...dept, image: fromCms.image } : dept;
+      }),
     };
   } catch {
     return {
       programs: PROGRAMS,
       academicUnits: ACADEMIC_UNITS.map((u) => ({ title: u.title, subtitle: u.subtitle, to: u.to })),
-      departments: GPW_DEPARTMENTS,
+      departments: [...GPW_DEPARTMENTS],
     };
   }
 }

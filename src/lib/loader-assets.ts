@@ -1,9 +1,8 @@
-import loaderLogoSrc from "@/assets/loader/gpw-srinagar-logo.jpg";
 import booksArtSrc from "@/assets/loader/stack-of-books.png";
 import graduationArtSrc from "@/assets/loader/graduation-cap-certificate.png";
 
-/** Exact circular GPW Srinagar logo used only by the page loader. */
-export const LOADER_LOGO_SRC = loaderLogoSrc;
+/** Same full-resolution official crest as header/footer (cache-busted). */
+export const LOADER_LOGO_SRC = "/gpw-srinagar-logo.png?v=9";
 export const LOADER_LOGO_ALT = "Government Polytechnic for Women, Srinagar";
 
 /** Exact uploaded stack of books used only by the page loader. */

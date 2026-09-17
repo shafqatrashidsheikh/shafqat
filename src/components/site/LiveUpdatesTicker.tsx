@@ -2,6 +2,8 @@ import { Link, useRouterState } from "@tanstack/react-router";
 import { ExternalLink, Megaphone } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
+import { safeHrefOr } from "@/lib/security/safe-url";
+import { JKBOTE_NOTICES_URL } from "@/lib/updates-data";
 import {
   JKBOTE_CLIENT_POLL_MS,
   type JkboteCachePayload,
@@ -18,7 +20,7 @@ function isUpdatesPath(pathname: string) {
 function TickerRow({ notice, ariaHidden }: { notice: LiveNotice; ariaHidden?: boolean }) {
   return (
     <a
-      href={notice.url}
+      href={safeHrefOr(notice.url, JKBOTE_NOTICES_URL)}
       target="_blank"
       rel="noopener noreferrer"
       tabIndex={ariaHidden ? -1 : undefined}

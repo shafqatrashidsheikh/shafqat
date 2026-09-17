@@ -5,7 +5,7 @@ export function PageHeader({
   title,
   intro,
   crumb: _crumb,
-  compact,
+  compact = true,
   titleClassName,
   introClassName,
   className,
@@ -14,6 +14,7 @@ export function PageHeader({
   intro: ReactNode;
   /** Kept for call-site compatibility; breadcrumbs removed site-wide */
   crumb?: string;
+  /** Default true — keeps title→content spacing tight on every page */
   compact?: boolean;
   titleClassName?: string;
   introClassName?: string;
@@ -23,9 +24,10 @@ export function PageHeader({
     <section className="bg-background">
       <div
         className={cn(
+          /* Keep header→content gap tight on every page (compact is the site default). */
           compact
-            ? "container-page pt-2 pb-2.5 sm:pt-3 sm:pb-3 md:pt-3.5 md:pb-3.5"
-            : "container-page pt-3 pb-5 sm:pt-4 sm:pb-7 md:pt-5 md:pb-9 lg:pt-6 lg:pb-10",
+            ? "container-page pt-2 pb-2 sm:pt-2.5 sm:pb-2.5 md:pt-3 md:pb-3"
+            : "container-page pt-2.5 pb-2.5 sm:pt-3 sm:pb-3 md:pt-3.5 md:pb-3",
           className,
         )}
       >
@@ -44,9 +46,9 @@ export function PageHeader({
           </h1>
           <p
             className={cn(
-              "hyphens-none text-base leading-relaxed text-muted-foreground",
+              "hyphens-none text-pretty text-base leading-relaxed text-muted-foreground",
               compact ? "mt-2.5 w-full min-w-0 sm:mt-3" : "mt-3",
-              !compact && !introClassName && "max-w-2xl text-pretty",
+              !compact && !introClassName && "max-w-2xl",
               introClassName,
             )}
           >

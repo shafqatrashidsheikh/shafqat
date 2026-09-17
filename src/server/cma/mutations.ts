@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { requireAdmin } from "@/server/cma/auth";
+import { requireAdminWrite } from "@/server/cma/auth";
 
 const tokenSchema = z.object({ accessToken: z.string().min(1) });
 
@@ -33,7 +33,7 @@ const noticePayload = z.object({
 export const cmaCreateNotice = createServerFn({ method: "POST" })
   .validator(withAdmin(noticePayload))
   .handler(async ({ data }) => {
-    const { supabase } = await requireAdmin(data.accessToken);
+    const { supabase } = await requireAdminWrite(data.accessToken);
     const { data: row, error } = await supabase.from("notices").insert(data.payload).select().single();
     if (error) throw error;
     return row;
@@ -42,7 +42,7 @@ export const cmaCreateNotice = createServerFn({ method: "POST" })
 export const cmaUpdateNotice = createServerFn({ method: "POST" })
   .validator(withAdminId(noticePayload.partial()))
   .handler(async ({ data }) => {
-    const { supabase } = await requireAdmin(data.accessToken);
+    const { supabase } = await requireAdminWrite(data.accessToken);
     const { data: row, error } = await supabase
       .from("notices")
       .update(data.payload)
@@ -56,7 +56,7 @@ export const cmaUpdateNotice = createServerFn({ method: "POST" })
 export const cmaDeleteNotice = createServerFn({ method: "POST" })
   .validator(idOnlySchema)
   .handler(async ({ data }) => {
-    const { supabase } = await requireAdmin(data.accessToken);
+    const { supabase } = await requireAdminWrite(data.accessToken);
     const { error } = await supabase.from("notices").delete().eq("id", data.id);
     if (error) throw error;
     return { ok: true };
@@ -77,7 +77,7 @@ const eventPayload = z.object({
 export const cmaCreateEvent = createServerFn({ method: "POST" })
   .validator(withAdmin(eventPayload))
   .handler(async ({ data }) => {
-    const { supabase } = await requireAdmin(data.accessToken);
+    const { supabase } = await requireAdminWrite(data.accessToken);
     const { data: row, error } = await supabase.from("events").insert(data.payload).select().single();
     if (error) throw error;
     return row;
@@ -86,7 +86,7 @@ export const cmaCreateEvent = createServerFn({ method: "POST" })
 export const cmaUpdateEvent = createServerFn({ method: "POST" })
   .validator(withAdminId(eventPayload.partial()))
   .handler(async ({ data }) => {
-    const { supabase } = await requireAdmin(data.accessToken);
+    const { supabase } = await requireAdminWrite(data.accessToken);
     const { data: row, error } = await supabase
       .from("events")
       .update(data.payload)
@@ -100,7 +100,7 @@ export const cmaUpdateEvent = createServerFn({ method: "POST" })
 export const cmaDeleteEvent = createServerFn({ method: "POST" })
   .validator(idOnlySchema)
   .handler(async ({ data }) => {
-    const { supabase } = await requireAdmin(data.accessToken);
+    const { supabase } = await requireAdminWrite(data.accessToken);
     const { error } = await supabase.from("events").delete().eq("id", data.id);
     if (error) throw error;
     return { ok: true };
@@ -144,7 +144,7 @@ const departmentPayload = z.object({
 export const cmaCreateDepartment = createServerFn({ method: "POST" })
   .validator(withAdmin(departmentPayload))
   .handler(async ({ data }) => {
-    const { supabase } = await requireAdmin(data.accessToken);
+    const { supabase } = await requireAdminWrite(data.accessToken);
     const { data: row, error } = await supabase.from("departments").insert(data.payload).select().single();
     if (error) throw error;
     return row;
@@ -153,7 +153,7 @@ export const cmaCreateDepartment = createServerFn({ method: "POST" })
 export const cmaUpdateDepartment = createServerFn({ method: "POST" })
   .validator(withAdminId(departmentPayload.partial()))
   .handler(async ({ data }) => {
-    const { supabase } = await requireAdmin(data.accessToken);
+    const { supabase } = await requireAdminWrite(data.accessToken);
     const { data: row, error } = await supabase
       .from("departments")
       .update(data.payload)
@@ -167,7 +167,7 @@ export const cmaUpdateDepartment = createServerFn({ method: "POST" })
 export const cmaDeleteDepartment = createServerFn({ method: "POST" })
   .validator(idOnlySchema)
   .handler(async ({ data }) => {
-    const { supabase } = await requireAdmin(data.accessToken);
+    const { supabase } = await requireAdminWrite(data.accessToken);
     const { error } = await supabase.from("departments").delete().eq("id", data.id);
     if (error) throw error;
     return { ok: true };
@@ -192,7 +192,7 @@ const programPayload = z.object({
 export const cmaCreateProgram = createServerFn({ method: "POST" })
   .validator(withAdmin(programPayload))
   .handler(async ({ data }) => {
-    const { supabase } = await requireAdmin(data.accessToken);
+    const { supabase } = await requireAdminWrite(data.accessToken);
     const { data: row, error } = await supabase.from("programs").insert(data.payload).select().single();
     if (error) throw error;
     return row;
@@ -201,7 +201,7 @@ export const cmaCreateProgram = createServerFn({ method: "POST" })
 export const cmaUpdateProgram = createServerFn({ method: "POST" })
   .validator(withAdminId(programPayload.partial()))
   .handler(async ({ data }) => {
-    const { supabase } = await requireAdmin(data.accessToken);
+    const { supabase } = await requireAdminWrite(data.accessToken);
     const { data: row, error } = await supabase
       .from("programs")
       .update(data.payload)
@@ -215,7 +215,7 @@ export const cmaUpdateProgram = createServerFn({ method: "POST" })
 export const cmaDeleteProgram = createServerFn({ method: "POST" })
   .validator(idOnlySchema)
   .handler(async ({ data }) => {
-    const { supabase } = await requireAdmin(data.accessToken);
+    const { supabase } = await requireAdminWrite(data.accessToken);
     const { error } = await supabase.from("programs").delete().eq("id", data.id);
     if (error) throw error;
     return { ok: true };
@@ -236,7 +236,7 @@ const statPayload = z.object({
 export const cmaCreateStat = createServerFn({ method: "POST" })
   .validator(withAdmin(statPayload))
   .handler(async ({ data }) => {
-    const { supabase } = await requireAdmin(data.accessToken);
+    const { supabase } = await requireAdminWrite(data.accessToken);
     const { data: row, error } = await supabase.from("institute_stats").insert(data.payload).select().single();
     if (error) throw error;
     return row;
@@ -245,7 +245,7 @@ export const cmaCreateStat = createServerFn({ method: "POST" })
 export const cmaUpdateStat = createServerFn({ method: "POST" })
   .validator(withAdminId(statPayload.partial()))
   .handler(async ({ data }) => {
-    const { supabase } = await requireAdmin(data.accessToken);
+    const { supabase } = await requireAdminWrite(data.accessToken);
     const { data: row, error } = await supabase
       .from("institute_stats")
       .update(data.payload)
@@ -259,7 +259,7 @@ export const cmaUpdateStat = createServerFn({ method: "POST" })
 export const cmaDeleteStat = createServerFn({ method: "POST" })
   .validator(idOnlySchema)
   .handler(async ({ data }) => {
-    const { supabase } = await requireAdmin(data.accessToken);
+    const { supabase } = await requireAdminWrite(data.accessToken);
     const { error } = await supabase.from("institute_stats").delete().eq("id", data.id);
     if (error) throw error;
     return { ok: true };
@@ -276,7 +276,7 @@ const spotlightPayload = z.object({
 export const cmaCreateSpotlight = createServerFn({ method: "POST" })
   .validator(withAdmin(spotlightPayload))
   .handler(async ({ data }) => {
-    const { supabase } = await requireAdmin(data.accessToken);
+    const { supabase } = await requireAdminWrite(data.accessToken);
     const { data: row, error } = await supabase.from("institute_spotlights").insert(data.payload).select().single();
     if (error) throw error;
     return row;
@@ -285,7 +285,7 @@ export const cmaCreateSpotlight = createServerFn({ method: "POST" })
 export const cmaUpdateSpotlight = createServerFn({ method: "POST" })
   .validator(withAdminId(spotlightPayload.partial()))
   .handler(async ({ data }) => {
-    const { supabase } = await requireAdmin(data.accessToken);
+    const { supabase } = await requireAdminWrite(data.accessToken);
     const { data: row, error } = await supabase
       .from("institute_spotlights")
       .update(data.payload)
@@ -299,7 +299,7 @@ export const cmaUpdateSpotlight = createServerFn({ method: "POST" })
 export const cmaDeleteSpotlight = createServerFn({ method: "POST" })
   .validator(idOnlySchema)
   .handler(async ({ data }) => {
-    const { supabase } = await requireAdmin(data.accessToken);
+    const { supabase } = await requireAdminWrite(data.accessToken);
     const { error } = await supabase.from("institute_spotlights").delete().eq("id", data.id);
     if (error) throw error;
     return { ok: true };
@@ -316,7 +316,7 @@ const unitPayload = z.object({
 export const cmaCreateAcademicUnit = createServerFn({ method: "POST" })
   .validator(withAdmin(unitPayload))
   .handler(async ({ data }) => {
-    const { supabase } = await requireAdmin(data.accessToken);
+    const { supabase } = await requireAdminWrite(data.accessToken);
     const { data: row, error } = await supabase.from("academic_units").insert(data.payload).select().single();
     if (error) throw error;
     return row;
@@ -325,7 +325,7 @@ export const cmaCreateAcademicUnit = createServerFn({ method: "POST" })
 export const cmaUpdateAcademicUnit = createServerFn({ method: "POST" })
   .validator(withAdminId(unitPayload.partial()))
   .handler(async ({ data }) => {
-    const { supabase } = await requireAdmin(data.accessToken);
+    const { supabase } = await requireAdminWrite(data.accessToken);
     const { data: row, error } = await supabase
       .from("academic_units")
       .update(data.payload)
@@ -339,7 +339,7 @@ export const cmaUpdateAcademicUnit = createServerFn({ method: "POST" })
 export const cmaDeleteAcademicUnit = createServerFn({ method: "POST" })
   .validator(idOnlySchema)
   .handler(async ({ data }) => {
-    const { supabase } = await requireAdmin(data.accessToken);
+    const { supabase } = await requireAdminWrite(data.accessToken);
     const { error } = await supabase.from("academic_units").delete().eq("id", data.id);
     if (error) throw error;
     return { ok: true };
@@ -355,7 +355,7 @@ const faqPayload = z.object({
 export const cmaCreateHomeFaq = createServerFn({ method: "POST" })
   .validator(withAdmin(faqPayload))
   .handler(async ({ data }) => {
-    const { supabase } = await requireAdmin(data.accessToken);
+    const { supabase } = await requireAdminWrite(data.accessToken);
     const { data: row, error } = await supabase.from("home_faqs").insert(data.payload).select().single();
     if (error) throw error;
     return row;
@@ -364,7 +364,7 @@ export const cmaCreateHomeFaq = createServerFn({ method: "POST" })
 export const cmaUpdateHomeFaq = createServerFn({ method: "POST" })
   .validator(withAdminId(faqPayload.partial()))
   .handler(async ({ data }) => {
-    const { supabase } = await requireAdmin(data.accessToken);
+    const { supabase } = await requireAdminWrite(data.accessToken);
     const { data: row, error } = await supabase
       .from("home_faqs")
       .update(data.payload)
@@ -378,7 +378,7 @@ export const cmaUpdateHomeFaq = createServerFn({ method: "POST" })
 export const cmaDeleteHomeFaq = createServerFn({ method: "POST" })
   .validator(idOnlySchema)
   .handler(async ({ data }) => {
-    const { supabase } = await requireAdmin(data.accessToken);
+    const { supabase } = await requireAdminWrite(data.accessToken);
     const { error } = await supabase.from("home_faqs").delete().eq("id", data.id);
     if (error) throw error;
     return { ok: true };
@@ -411,7 +411,7 @@ const cyclePayload = z.object({
 export const cmaUpdateAdmissionCycle = createServerFn({ method: "POST" })
   .validator(withAdminId(cyclePayload.partial()))
   .handler(async ({ data }) => {
-    const { supabase } = await requireAdmin(data.accessToken);
+    const { supabase } = await requireAdminWrite(data.accessToken);
     const { data: row, error } = await supabase
       .from("admission_cycles")
       .update(data.payload)
@@ -433,7 +433,7 @@ const stepPayload = z.object({
 export const cmaCreateAdmissionStep = createServerFn({ method: "POST" })
   .validator(withAdmin(stepPayload))
   .handler(async ({ data }) => {
-    const { supabase } = await requireAdmin(data.accessToken);
+    const { supabase } = await requireAdminWrite(data.accessToken);
     const { data: row, error } = await supabase.from("admission_steps").insert(data.payload).select().single();
     if (error) throw error;
     return row;
@@ -442,7 +442,7 @@ export const cmaCreateAdmissionStep = createServerFn({ method: "POST" })
 export const cmaUpdateAdmissionStep = createServerFn({ method: "POST" })
   .validator(withAdminId(stepPayload.partial()))
   .handler(async ({ data }) => {
-    const { supabase } = await requireAdmin(data.accessToken);
+    const { supabase } = await requireAdminWrite(data.accessToken);
     const { data: row, error } = await supabase
       .from("admission_steps")
       .update(data.payload)
@@ -456,7 +456,7 @@ export const cmaUpdateAdmissionStep = createServerFn({ method: "POST" })
 export const cmaDeleteAdmissionStep = createServerFn({ method: "POST" })
   .validator(idOnlySchema)
   .handler(async ({ data }) => {
-    const { supabase } = await requireAdmin(data.accessToken);
+    const { supabase } = await requireAdminWrite(data.accessToken);
     const { error } = await supabase.from("admission_steps").delete().eq("id", data.id);
     if (error) throw error;
     return { ok: true };
@@ -472,7 +472,7 @@ const docPayload = z.object({
 export const cmaCreateAdmissionDocument = createServerFn({ method: "POST" })
   .validator(withAdmin(docPayload))
   .handler(async ({ data }) => {
-    const { supabase } = await requireAdmin(data.accessToken);
+    const { supabase } = await requireAdminWrite(data.accessToken);
     const { data: row, error } = await supabase.from("admission_documents").insert(data.payload).select().single();
     if (error) throw error;
     return row;
@@ -481,7 +481,7 @@ export const cmaCreateAdmissionDocument = createServerFn({ method: "POST" })
 export const cmaUpdateAdmissionDocument = createServerFn({ method: "POST" })
   .validator(withAdminId(docPayload.partial()))
   .handler(async ({ data }) => {
-    const { supabase } = await requireAdmin(data.accessToken);
+    const { supabase } = await requireAdminWrite(data.accessToken);
     const { data: row, error } = await supabase
       .from("admission_documents")
       .update(data.payload)
@@ -495,7 +495,7 @@ export const cmaUpdateAdmissionDocument = createServerFn({ method: "POST" })
 export const cmaDeleteAdmissionDocument = createServerFn({ method: "POST" })
   .validator(idOnlySchema)
   .handler(async ({ data }) => {
-    const { supabase } = await requireAdmin(data.accessToken);
+    const { supabase } = await requireAdminWrite(data.accessToken);
     const { error } = await supabase.from("admission_documents").delete().eq("id", data.id);
     if (error) throw error;
     return { ok: true };
@@ -511,7 +511,7 @@ const datePayload = z.object({
 export const cmaCreateAdmissionDate = createServerFn({ method: "POST" })
   .validator(withAdmin(datePayload))
   .handler(async ({ data }) => {
-    const { supabase } = await requireAdmin(data.accessToken);
+    const { supabase } = await requireAdminWrite(data.accessToken);
     const { data: row, error } = await supabase.from("admission_dates").insert(data.payload).select().single();
     if (error) throw error;
     return row;
@@ -520,7 +520,7 @@ export const cmaCreateAdmissionDate = createServerFn({ method: "POST" })
 export const cmaUpdateAdmissionDate = createServerFn({ method: "POST" })
   .validator(withAdminId(datePayload.partial()))
   .handler(async ({ data }) => {
-    const { supabase } = await requireAdmin(data.accessToken);
+    const { supabase } = await requireAdminWrite(data.accessToken);
     const { data: row, error } = await supabase
       .from("admission_dates")
       .update(data.payload)
@@ -534,7 +534,7 @@ export const cmaUpdateAdmissionDate = createServerFn({ method: "POST" })
 export const cmaDeleteAdmissionDate = createServerFn({ method: "POST" })
   .validator(idOnlySchema)
   .handler(async ({ data }) => {
-    const { supabase } = await requireAdmin(data.accessToken);
+    const { supabase } = await requireAdminWrite(data.accessToken);
     const { error } = await supabase.from("admission_dates").delete().eq("id", data.id);
     if (error) throw error;
     return { ok: true };
@@ -550,7 +550,7 @@ const admissionFaqPayload = z.object({
 export const cmaCreateAdmissionFaq = createServerFn({ method: "POST" })
   .validator(withAdmin(admissionFaqPayload))
   .handler(async ({ data }) => {
-    const { supabase } = await requireAdmin(data.accessToken);
+    const { supabase } = await requireAdminWrite(data.accessToken);
     const { data: row, error } = await supabase.from("admission_faqs").insert(data.payload).select().single();
     if (error) throw error;
     return row;
@@ -559,7 +559,7 @@ export const cmaCreateAdmissionFaq = createServerFn({ method: "POST" })
 export const cmaUpdateAdmissionFaq = createServerFn({ method: "POST" })
   .validator(withAdminId(admissionFaqPayload.partial()))
   .handler(async ({ data }) => {
-    const { supabase } = await requireAdmin(data.accessToken);
+    const { supabase } = await requireAdminWrite(data.accessToken);
     const { data: row, error } = await supabase
       .from("admission_faqs")
       .update(data.payload)
@@ -573,7 +573,7 @@ export const cmaUpdateAdmissionFaq = createServerFn({ method: "POST" })
 export const cmaDeleteAdmissionFaq = createServerFn({ method: "POST" })
   .validator(idOnlySchema)
   .handler(async ({ data }) => {
-    const { supabase } = await requireAdmin(data.accessToken);
+    const { supabase } = await requireAdminWrite(data.accessToken);
     const { error } = await supabase.from("admission_faqs").delete().eq("id", data.id);
     if (error) throw error;
     return { ok: true };
@@ -596,7 +596,7 @@ const programmePayload = z.object({
 export const cmaCreateAdmissionProgramme = createServerFn({ method: "POST" })
   .validator(withAdmin(programmePayload))
   .handler(async ({ data }) => {
-    const { supabase } = await requireAdmin(data.accessToken);
+    const { supabase } = await requireAdminWrite(data.accessToken);
     const { data: row, error } = await supabase.from("admission_programmes").insert(data.payload).select().single();
     if (error) throw error;
     return row;
@@ -605,7 +605,7 @@ export const cmaCreateAdmissionProgramme = createServerFn({ method: "POST" })
 export const cmaUpdateAdmissionProgramme = createServerFn({ method: "POST" })
   .validator(withAdminId(programmePayload.partial()))
   .handler(async ({ data }) => {
-    const { supabase } = await requireAdmin(data.accessToken);
+    const { supabase } = await requireAdminWrite(data.accessToken);
     const { data: row, error } = await supabase
       .from("admission_programmes")
       .update(data.payload)
@@ -619,7 +619,7 @@ export const cmaUpdateAdmissionProgramme = createServerFn({ method: "POST" })
 export const cmaDeleteAdmissionProgramme = createServerFn({ method: "POST" })
   .validator(idOnlySchema)
   .handler(async ({ data }) => {
-    const { supabase } = await requireAdmin(data.accessToken);
+    const { supabase } = await requireAdminWrite(data.accessToken);
     const { error } = await supabase.from("admission_programmes").delete().eq("id", data.id);
     if (error) throw error;
     return { ok: true };
@@ -635,7 +635,7 @@ const eligibilityGroupPayload = z.object({
 export const cmaCreateAdmissionEligibilityGroup = createServerFn({ method: "POST" })
   .validator(withAdmin(eligibilityGroupPayload))
   .handler(async ({ data }) => {
-    const { supabase } = await requireAdmin(data.accessToken);
+    const { supabase } = await requireAdminWrite(data.accessToken);
     const { data: row, error } = await supabase
       .from("admission_eligibility_groups")
       .insert(data.payload)
@@ -648,7 +648,7 @@ export const cmaCreateAdmissionEligibilityGroup = createServerFn({ method: "POST
 export const cmaUpdateAdmissionEligibilityGroup = createServerFn({ method: "POST" })
   .validator(withAdminId(eligibilityGroupPayload.partial()))
   .handler(async ({ data }) => {
-    const { supabase } = await requireAdmin(data.accessToken);
+    const { supabase } = await requireAdminWrite(data.accessToken);
     const { data: row, error } = await supabase
       .from("admission_eligibility_groups")
       .update(data.payload)
@@ -662,7 +662,7 @@ export const cmaUpdateAdmissionEligibilityGroup = createServerFn({ method: "POST
 export const cmaDeleteAdmissionEligibilityGroup = createServerFn({ method: "POST" })
   .validator(idOnlySchema)
   .handler(async ({ data }) => {
-    const { supabase } = await requireAdmin(data.accessToken);
+    const { supabase } = await requireAdminWrite(data.accessToken);
     const { error } = await supabase.from("admission_eligibility_groups").delete().eq("id", data.id);
     if (error) throw error;
     return { ok: true };
@@ -690,7 +690,7 @@ export const cmaUpdatePageSection = createServerFn({ method: "POST" })
     }),
   )
   .handler(async ({ data }) => {
-    const { supabase } = await requireAdmin(data.accessToken);
+    const { supabase } = await requireAdminWrite(data.accessToken);
     const { data: row, error } = await supabase
       .from("page_sections")
       .update(data.payload)
@@ -719,7 +719,7 @@ const exploreCardPayload = z.object({
 export const cmaCreateExploreCard = createServerFn({ method: "POST" })
   .validator(withAdmin(exploreCardPayload))
   .handler(async ({ data }) => {
-    const { supabase } = await requireAdmin(data.accessToken);
+    const { supabase } = await requireAdminWrite(data.accessToken);
     const { data: row, error } = await supabase.from("explore_cards").insert(data.payload).select().single();
     if (error) throw error;
     return row;
@@ -728,7 +728,7 @@ export const cmaCreateExploreCard = createServerFn({ method: "POST" })
 export const cmaUpdateExploreCard = createServerFn({ method: "POST" })
   .validator(withAdminId(exploreCardPayload.partial()))
   .handler(async ({ data }) => {
-    const { supabase } = await requireAdmin(data.accessToken);
+    const { supabase } = await requireAdminWrite(data.accessToken);
     const { data: row, error } = await supabase
       .from("explore_cards")
       .update(data.payload)
@@ -742,7 +742,7 @@ export const cmaUpdateExploreCard = createServerFn({ method: "POST" })
 export const cmaDeleteExploreCard = createServerFn({ method: "POST" })
   .validator(idOnlySchema)
   .handler(async ({ data }) => {
-    const { supabase } = await requireAdmin(data.accessToken);
+    const { supabase } = await requireAdminWrite(data.accessToken);
     const { error } = await supabase.from("explore_cards").delete().eq("id", data.id);
     if (error) throw error;
     return { ok: true };
@@ -754,6 +754,6 @@ export const cmaDeleteExploreCard = createServerFn({ method: "POST" })
 export const cmaVerifySession = createServerFn({ method: "POST" })
   .validator(tokenSchema)
   .handler(async ({ data }) => {
-    const { profile, user } = await requireAdmin(data.accessToken);
+    const { profile, user } = await requireAdminWrite(data.accessToken);
     return { id: user.id, email: profile.email, role: profile.role };
   });

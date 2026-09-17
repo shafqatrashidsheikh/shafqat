@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { GPWS_MEDIA_BUCKET } from "@/lib/media/constants";
 import { getSupabaseAdmin } from "@/lib/supabase/server";
-import { requireAdmin } from "@/server/cma/auth";
+import { requireAdminWrite } from "@/server/cma/auth";
 
 const tokenSchema = z.object({ accessToken: z.string().min(1) });
 
@@ -25,7 +25,7 @@ const mediaPayload = z.object({
 export const cmaCreateMediaAsset = createServerFn({ method: "POST" })
   .validator(tokenSchema.extend({ payload: mediaPayload }))
   .handler(async ({ data }) => {
-    const { supabase, user } = await requireAdmin(data.accessToken);
+    const { supabase, user } = await requireAdminWrite(data.accessToken);
     const { data: row, error } = await supabase
       .from("media_assets")
       .insert({ ...data.payload, uploaded_by: user.id })
@@ -43,7 +43,7 @@ export const cmaUpdateMediaAsset = createServerFn({ method: "POST" })
     }),
   )
   .handler(async ({ data }) => {
-    const { supabase } = await requireAdmin(data.accessToken);
+    const { supabase } = await requireAdminWrite(data.accessToken);
     const { data: row, error } = await supabase
       .from("media_assets")
       .update(data.payload)
@@ -57,7 +57,7 @@ export const cmaUpdateMediaAsset = createServerFn({ method: "POST" })
 export const cmaDeleteMediaAsset = createServerFn({ method: "POST" })
   .validator(tokenSchema.extend({ id: z.string().uuid() }))
   .handler(async ({ data }) => {
-    await requireAdmin(data.accessToken);
+    await requireAdminWrite(data.accessToken);
 
     const admin = getSupabaseAdmin();
     const { data: asset, error: fetchError } = await admin
@@ -99,7 +99,7 @@ export const cmaReplaceMediaAssetFile = createServerFn({ method: "POST" })
     }),
   )
   .handler(async ({ data }) => {
-    await requireAdmin(data.accessToken);
+    await requireAdminWrite(data.accessToken);
     const admin = getSupabaseAdmin();
 
     const { data: row, error } = await admin

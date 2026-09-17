@@ -353,7 +353,8 @@ export type HomepageData = {
     image: string;
     imageAlt: string;
     imagePosition: "left" | "right";
-    priority?: boolean;
+    imageObjectClass?: string | undefined;
+    priority?: boolean | undefined;
   }[];
   source: "supabase" | "static";
 };

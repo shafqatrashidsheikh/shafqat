@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { KeepTogether } from "@/components/site/AmpersandText";
+import { KeepTogether, AmpersandText } from "@/components/site/AmpersandText";
 import { EXPLORE_CARDS, type ExploreCard } from "@/lib/explore-data";
 import { cn } from "@/lib/utils";
 
@@ -16,33 +16,41 @@ function FeatureCard({
     <>
       <div
         className={cn(
-          "relative min-h-[220px] overflow-hidden sm:min-h-[260px]",
+          /* Landscape frame while stacked so the full scene reads; fills the column on md+ */
+          "relative aspect-[16/10] overflow-hidden bg-light-blue/40 md:aspect-auto md:h-full",
           card.imagePosition === "left" ? "order-1" : "order-2 sm:order-2",
         )}
       >
         <img
           src={card.image}
           alt={card.imageAlt}
-          width={640}
-          height={480}
+          width={1024}
+          height={640}
           loading={card.priority ? "eager" : "lazy"}
           fetchPriority={card.priority ? "high" : "auto"}
           decoding="async"
-          className="size-full max-w-none object-cover transition-transform duration-500 ease-out group-hover:scale-[1.02]"
+          className={cn(
+            "absolute inset-0 size-full max-w-none object-cover object-center transition-transform duration-500 ease-out group-hover:scale-[1.02]",
+            card.imageObjectClass,
+          )}
         />
       </div>
       <div
         className={cn(
-          "flex flex-col justify-center p-6 sm:p-8",
+          "flex flex-col justify-center p-5 sm:p-6",
           card.imagePosition === "left" ? "order-2" : "order-1 sm:order-1",
         )}
       >
         <p className="text-[11px] font-semibold tracking-[0.16em] text-brand uppercase">
           {card.category}
         </p>
-        <h3 className="mt-3 font-display text-xl font-extrabold text-navy sm:text-2xl">{card.title}</h3>
-        <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-muted-foreground">{card.description}</p>
-        <span className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-brand transition-transform duration-200 group-hover:translate-x-1">
+        <h3 className="mt-2.5 min-w-0 hyphens-none font-display text-lg font-extrabold text-navy sm:text-xl">
+          <AmpersandText>{card.title}</AmpersandText>
+        </h3>
+        <p className="mt-2 line-clamp-3 text-[13px] leading-relaxed text-muted-foreground sm:text-sm">
+          {card.description}
+        </p>
+        <span className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-brand transition-transform duration-200 group-hover:translate-x-1">
           {card.cta}
           <ArrowRight className="size-4" aria-hidden="true" />
         </span>
@@ -52,7 +60,7 @@ function FeatureCard({
 
   return (
     <article
-      className="group w-[min(100%,420px)] shrink-0 sm:w-[min(72%,560px)] lg:w-[min(46%,580px)]"
+      className="group w-[min(100%,370px)] shrink-0 sm:w-[min(64%,480px)] lg:w-[min(40%,500px)]"
       aria-hidden={ariaHidden}
     >
       <Link
@@ -60,10 +68,10 @@ function FeatureCard({
         draggable={false}
         tabIndex={ariaHidden ? -1 : undefined}
         className={cn(
-          "grid h-full min-h-[320px] overflow-hidden rounded-[20px] border border-border bg-surface-white shadow-soft sm:min-h-[360px]",
+          "grid h-full min-h-[280px] overflow-hidden rounded-[18px] border border-border bg-surface-white shadow-soft sm:min-h-[310px]",
           "transition-[transform,box-shadow,border-color] duration-200 ease-out hover:-translate-y-0.5 hover:border-brand/30 hover:shadow-raised",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2",
-          card.imagePosition === "left" ? "md:grid-cols-[42%_1fr]" : "md:grid-cols-[1fr_42%]",
+          card.imagePosition === "left" ? "md:grid-cols-[46%_1fr]" : "md:grid-cols-[1fr_46%]",
         )}
       >
         {content}

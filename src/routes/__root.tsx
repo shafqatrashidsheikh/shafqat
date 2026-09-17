@@ -4,16 +4,18 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useRouterState,
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
-import { type ReactNode } from "react";
+import { useCallback, useEffect, useState, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { loadSiteChrome } from "@/lib/loaders/site-chrome";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
 import { GPWAssistant } from "@/components/gpw-assistant/GPWAssistant";
+import { SiteBackLink } from "@/components/site/SiteBackLink";
 import { PagePreloader } from "@/components/site/PagePreloader";
 import { BOOKS_ART_SRC, GRADUATION_ART_SRC, LOADER_LOGO_SRC } from "@/lib/loader-assets";
 import { PageNavigation } from "@/components/site/PageNavigation";
@@ -21,6 +23,10 @@ import { InternalRouteMemory } from "@/components/site/ContextualBack";
 import { LiveUpdatesTicker } from "@/components/site/LiveUpdatesTicker";
 import { RouteTransition } from "@/components/site/RouteTransition";
 import { ScrollReveal } from "@/components/site/ScrollReveal";
+import { ConnectionErrorState } from "@/components/site/ConnectionErrorState";
+import { NetworkConnectionGuard } from "@/components/site/NetworkConnectionGuard";
+import { RoutePendingState } from "@/components/site/RoutePendingState";
+import { isNetworkLikeError } from "@/lib/network-error";
 
 function NotFoundComponent() {
   return (
@@ -30,76 +36,39 @@ function NotFoundComponent() {
       </div>
       <div className="flex min-h-[70vh] items-center justify-center px-4 py-24">
         <div className="max-w-xl text-center">
-        <svg viewBox="0 0 200 60" className="mx-auto h-16 w-56 text-brand" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-          <path d="M4 52 L52 14 L84 42 L116 10 L164 52" strokeLinejoin="round" />
-          <path d="M0 56h200" />
-        </svg>
-        <p className="mt-6 font-display text-sm font-semibold tracking-[0.2em] text-brand uppercase">Error 404</p>
-        <h1 className="mt-3 font-display text-3xl font-extrabold text-navy sm:text-4xl">
-          Looks like you've taken a wrong turn.
-        </h1>
-        <p className="mt-3 text-sm text-muted-foreground">
-          Let's get you back to the Government Polytechnic for Women, Srinagar campus.
-        </p>
-        <div className="mt-7 flex flex-wrap justify-center gap-3">
-          <Link
-            to="/"
-            className="inline-flex items-center justify-center rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-brand-deep"
+          <svg
+            viewBox="0 0 200 60"
+            className="mx-auto h-16 w-56 text-brand"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            aria-hidden="true"
           >
-            Institute Home
-          </Link>
-          <Link
-            to="/academics"
-            className="inline-flex items-center justify-center rounded-lg border border-border bg-surface px-5 py-2.5 text-sm font-medium text-navy transition-colors hover:bg-light-blue"
-          >
-            Explore Programs
-          </Link>
-        </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-
-function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
-  console.error(error);
-  const router = useRouter();
-
-  return (
-    <div className="bg-background">
-      <div className="container-page pt-8 sm:pt-10">
-        <PageNavigation currentLabel="Page not found" />
-      </div>
-      <div className="flex min-h-[60vh] items-center justify-center px-4 py-16">
-        <div className="max-w-md text-center">
-          <h1 className="text-xl font-semibold tracking-tight text-foreground">
-            This page didn't load
-          </h1>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Something went wrong on our end. You can try refreshing or head back home.
+            <path d="M4 52 L52 14 L84 42 L116 10 L164 52" strokeLinejoin="round" />
+            <path d="M0 56h200" />
+          </svg>
+          <p className="mt-6 font-display text-sm font-semibold tracking-[0.2em] text-brand uppercase">
+            Error 404
           </p>
-          {import.meta.env.DEV && (
-            <p className="mt-4 rounded-md border border-destructive/30 bg-destructive/5 px-3 py-2 text-left font-mono text-xs text-destructive break-words">
-              {error.message}
-            </p>
-          )}
-          <div className="mt-6 flex flex-wrap justify-center gap-2">
-            <button
-              onClick={() => {
-                router.invalidate();
-                reset();
-              }}
-              className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-            >
-              Try again
-            </button>
-            <a
-              href="/"
-              className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
+          <h1 className="mt-3 font-display text-3xl font-extrabold text-navy sm:text-4xl">
+            Looks like you&apos;ve taken a wrong turn.
+          </h1>
+          <p className="mt-3 text-sm text-muted-foreground">
+            Let&apos;s get you back to the Government Polytechnic for Women, Srinagar campus.
+          </p>
+          <div className="mt-7 flex flex-wrap justify-center gap-3">
+            <Link
+              to="/"
+              className="inline-flex items-center justify-center rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-brand-deep"
             >
               Institute Home
-            </a>
+            </Link>
+            <Link
+              to="/academics"
+              className="inline-flex items-center justify-center rounded-lg border border-border bg-surface px-5 py-2.5 text-sm font-medium text-navy transition-colors hover:bg-light-blue"
+            >
+              Explore Programs
+            </Link>
           </div>
         </div>
       </div>
@@ -107,8 +76,56 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   );
 }
 
+function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
+  console.error(error);
+  const router = useRouter();
+  const networkLike = isNetworkLikeError(error);
+
+  const retry = useCallback(() => {
+    if (typeof navigator !== "undefined" && navigator.onLine === false) {
+      window.location.reload();
+      return;
+    }
+    void router.invalidate().finally(() => {
+      reset();
+    });
+  }, [reset, router]);
+
+  useEffect(() => {
+    if (!networkLike) return;
+    const onOnline = () => {
+      void router.invalidate().finally(() => reset());
+    };
+    window.addEventListener("online", onOnline);
+    return () => window.removeEventListener("online", onOnline);
+  }, [networkLike, reset, router]);
+
+  return (
+    <div className="min-w-0 overflow-x-hidden bg-background">
+      <ConnectionErrorState
+        onRetry={retry}
+        detail={import.meta.env.DEV ? error.message : undefined}
+        {...(networkLike
+          ? {}
+          : {
+              statusLabel: "GPW Srinagar",
+              title: "This page isn’t available",
+              body: "Something went wrong while opening this page.",
+              tips: [
+                "Reloading the page",
+                "Checking your internet connection",
+                "Coming back in a few moments",
+              ],
+              errorCode: "ERR_PAGE_LOAD",
+            })}
+      />
+    </div>
+  );
+}
+
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   loader: () => loadSiteChrome(),
+  staleTime: 5 * 60_000,
   head: () => ({
     meta: [
       { charSet: "utf-8" },
@@ -131,35 +148,34 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,600;8..60,700;8..60,800&family=Manrope:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap",
       },
-      { rel: "preload", href: "/gpw-srinagar-logo.jpg", as: "image" },
       { rel: "preload", href: LOADER_LOGO_SRC, as: "image" },
       { rel: "preload", href: BOOKS_ART_SRC, as: "image" },
       { rel: "preload", href: GRADUATION_ART_SRC, as: "image" },
-      { rel: "icon", href: "/favicon.ico?v=2", sizes: "any" },
+      { rel: "icon", href: "/favicon.ico?v=9", sizes: "any" },
       {
         rel: "icon",
-        href: "/favicon-32x32.png?v=2",
+        href: "/favicon-32x32.png?v=9",
         sizes: "32x32",
         type: "image/png",
       },
       {
         rel: "icon",
-        href: "/favicon-16x16.png?v=2",
+        href: "/favicon-16x16.png?v=9",
         sizes: "16x16",
         type: "image/png",
       },
       {
         rel: "icon",
-        href: "/favicon-48x48.png?v=2",
+        href: "/favicon-48x48.png?v=9",
         sizes: "48x48",
         type: "image/png",
       },
       {
         rel: "apple-touch-icon",
-        href: "/apple-touch-icon.png?v=2",
+        href: "/apple-touch-icon.png?v=9",
         sizes: "180x180",
       },
-      { rel: "manifest", href: "/site.webmanifest?v=2" },
+      { rel: "manifest", href: "/site.webmanifest?v=9" },
     ],
     scripts: [
       {
@@ -194,6 +210,13 @@ function RootShell({ children }: { children: ReactNode }) {
     <html lang="en">
       <head>
         <HeadContent />
+        {/* First-paint cover so refresh never shows page content before the loader CSS/JS. */}
+        <style
+          dangerouslySetInnerHTML={{
+            __html:
+              "html:has(.story-loader:not(.story-loader--leaving)) .site-shell>:not(.story-loader){visibility:hidden!important;pointer-events:none!important}html:has(.story-loader),html:has(.story-loader) body{overflow:hidden!important;background:var(--background,#eaf0fa)}",
+          }}
+        />
       </head>
       <body>
         {children}
@@ -206,28 +229,64 @@ function RootShell({ children }: { children: ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const siteChrome = Route.useLoaderData();
+  const isNavigating = useRouterState({
+    select: (s) =>
+      s.status === "pending" &&
+      s.resolvedLocation != null &&
+      s.location.href !== s.resolvedLocation.href,
+  });
+  const [showPending, setShowPending] = useState(false);
+
+  useEffect(() => {
+    if (!isNavigating) {
+      setShowPending(false);
+      return;
+    }
+    // Avoid spinner flash on instant navigations; still never keep the previous page mounted.
+    const timer = window.setTimeout(() => setShowPending(true), 100);
+    return () => window.clearTimeout(timer);
+  }, [isNavigating]);
 
   return (
     <QueryClientProvider client={queryClient}>
-      <PagePreloader />
-      <InternalRouteMemory />
-      <a
-        href="#main"
-        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-md focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-foreground"
-      >
-        Skip to content
-      </a>
-      <Header institute={siteChrome.institute} headerNav={siteChrome.headerNav} />
-      <LiveUpdatesTicker initial={siteChrome.liveNotices} />
-      <main id="main" className="relative z-0 min-w-0 overflow-x-clip bg-background">
-        <RouteTransition>
-          {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-          <Outlet />
-        </RouteTransition>
-      </main>
-      <ScrollReveal />
-      <Footer institute={siteChrome.institute} navLinks={siteChrome.navLinks} />
-      <GPWAssistant />
+      <div className="site-shell flex min-h-svh min-w-0 w-full max-w-full flex-1 flex-col overflow-x-clip">
+        <PagePreloader />
+        <InternalRouteMemory />
+        <NetworkConnectionGuard />
+        <a
+          href="#main"
+          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-md focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-foreground"
+        >
+          Skip to content
+        </a>
+        <Header institute={siteChrome.institute} headerNav={siteChrome.headerNav} />
+        <LiveUpdatesTicker initial={siteChrome.liveNotices} />
+        <main
+          id="main"
+          className="relative z-0 flex min-h-0 min-w-0 max-w-full flex-1 flex-col overflow-x-clip bg-background"
+        >
+          {isNavigating ? (
+            showPending ? (
+              <RoutePendingState />
+            ) : (
+              <div
+                className="min-h-[40vh] w-full flex-1 bg-background"
+                aria-busy="true"
+                aria-label="Loading page"
+              />
+            )
+          ) : (
+            <RouteTransition>
+              {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+              <Outlet />
+            </RouteTransition>
+          )}
+        </main>
+        <ScrollReveal />
+        <Footer institute={siteChrome.institute} navLinks={siteChrome.navLinks} />
+        <SiteBackLink />
+        <GPWAssistant />
+      </div>
     </QueryClientProvider>
   );
 }

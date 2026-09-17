@@ -305,6 +305,10 @@ export const portalInviteUser = createServerFn({ method: "POST" })
       email_confirm: true,
       user_metadata: {
         full_name: data.payload.full_name,
+      },
+      /* Role lives in app metadata — the signup trigger refuses to read a role
+         from user metadata, which visitors can set themselves. */
+      app_metadata: {
         role: data.payload.role,
         department_id: data.payload.department_id,
       },

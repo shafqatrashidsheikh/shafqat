@@ -7,6 +7,8 @@ import { getSupabaseServer } from "@/lib/supabase/server";
 import type { HomepageData } from "@/lib/supabase/types";
 import { buildMediaUrlMap } from "@/server/cda/content";
 
+let supabaseUnreachableLogged = false;
+
 function hasHomepageContent(data: Omit<HomepageData, "source">): boolean {
   return (
     data.announcements.length > 0 ||
@@ -19,6 +21,11 @@ function hasHomepageContent(data: Omit<HomepageData, "source">): boolean {
     Object.keys(data.sections).length > 0 ||
     data.exploreCards.length > 0
   );
+}
+
+function isNetworkishError(err: { message?: string; details?: string } | null): boolean {
+  const blob = `${err?.message ?? ""} ${err?.details ?? ""}`;
+  return /ENOTFOUND|ECONNREFUSED|ETIMEDOUT|fetch failed|502 Bad Gateway|503 Service/i.test(blob);
 }
 
 /** CDA — Client Data Access: read homepage content from Supabase */
@@ -57,7 +64,17 @@ export const fetchHomepageData = createServerFn({ method: "GET" }).handler(
       ].filter(Boolean);
 
       if (queryErrors.length > 0) {
-        console.error("[CDA] fetchHomepageData partial query failures:", queryErrors);
+        const networkish = queryErrors.every((err) => isNetworkishError(err));
+        if (networkish) {
+          if (!supabaseUnreachableLogged) {
+            supabaseUnreachableLogged = true;
+            console.warn(
+              "[CDA] Supabase unreachable — using static homepage fallback. Check internet / VITE_SUPABASE_URL.",
+            );
+          }
+        } else {
+          console.error("[CDA] fetchHomepageData partial query failures:", queryErrors);
+        }
       }
 
       const data = {
@@ -140,6 +157,7 @@ export const fetchHomepageData = createServerFn({ method: "GET" }).handler(
                   image: card.image,
                   imageAlt: card.imageAlt,
                   imagePosition: card.imagePosition,
+                  imageObjectClass: card.imageObjectClass,
                   priority: card.priority,
                 };
               });

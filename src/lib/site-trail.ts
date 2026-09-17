@@ -20,6 +20,17 @@ const PAGE_LABELS: Record<string, string> = {
   "/updates/circulars": "Tenders / Important Circulars",
   "/contact": "Contact",
   "/placements": "Placements",
+  "/examination": "Examination & Results",
+  "/student-welfare": "Student Welfare",
+  "/library": "Library",
+  "/hostel": "Hostel",
+  "/faculty": "Faculty & Staff",
+  "/downloads": "Downloads & Syllabus",
+  "/academic-calendar": "Academic Calendar",
+  "/rti": "RTI",
+  "/mandatory-disclosures": "Mandatory Disclosures",
+  "/privacy-policy": "Privacy Policy",
+  "/website-policy": "Website Policy",
   "/principal-message": "Principal's Message",
   "/login": "Login",
   "/signup": "Sign up",
@@ -34,9 +45,10 @@ const PAGE_LABELS: Record<string, string> = {
 
 const SECTION_LABELS: Record<string, Record<string, string>> = {
   "/academics": {
-    programs: "Programs / Courses",
-    departments: "Departments",
-    "labs-workshops": "Laboratories",
+    programmes: "Diploma Programmes",
+    programs: "Diploma Programmes",
+    departments: "Diploma Programmes",
+    "labs-workshops": "Laboratories & Workshops",
   },
   "/admissions": {
     apply: "Apply",
@@ -49,7 +61,7 @@ const SECTION_LABELS: Record<string, Record<string, string>> = {
   },
   "/campus": {
     "campus-overview": "Overview",
-    facilities: "Facilities",
+    facilities: "Laboratories & Facilities",
     gallery: "Gallery",
     "virtual-tour": "Virtual Tour",
   },
@@ -77,7 +89,7 @@ function departmentMidCrumb(): TrailItem {
   if (previous?.includes("#programs") || previous?.includes("/courses")) {
     return { label: "Programs / Courses", href: "/academics#programs" };
   }
-  return { label: "Departments", href: "/academics#departments" };
+  return { label: "Diploma Programmes", href: "/academics#programmes" };
 }
 
 export function labelForLocation(pathname: string, hash = ""): string {

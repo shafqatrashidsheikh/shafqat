@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, Megaphone } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { AmpersandText } from "@/components/site/AmpersandText";
 import { ANNOUNCEMENTS, UTILITY_STRIP } from "@/lib/site-data";
 import { cn } from "@/lib/utils";
 
@@ -32,8 +33,8 @@ function AnnouncementRow({
           </span>
           <time className="text-muted-foreground">{item.date}</time>
         </div>
-        <p className="mt-1.5 font-display text-sm font-bold text-navy transition-colors group-hover:text-brand sm:text-base">
-          {item.title}
+        <p className="mt-1.5 min-w-0 hyphens-none font-display text-sm font-bold text-navy transition-colors group-hover:text-brand sm:text-base">
+          <AmpersandText>{item.title}</AmpersandText>
         </p>
       </div>
       <span className="link-cta shrink-0 text-sm opacity-80 group-hover:opacity-100">

@@ -3,7 +3,8 @@ import { CalendarDays, ExternalLink } from "lucide-react";
 import { NaturalWrap } from "@/components/site/AmpersandText";
 import { PageHeader } from "@/components/site/PageHeader";
 import { UpdatesFeedScroll } from "@/components/site/UpdatesFeedScroll";
-import { getCampusEvents } from "@/lib/updates-data";
+import { safeHrefOr } from "@/lib/security/safe-url";
+import { getCampusEvents, JKBOTE_NOTICES_URL } from "@/lib/updates-data";
 
 export const Route = createFileRoute("/updates/events")({
   head: () => ({
@@ -41,7 +42,7 @@ function EventsPage() {
           />
         }
       />
-      <section className="section-y !pt-4 sm:!pt-5 md:!pt-6 lg:!pt-8">
+      <section className="section-y !pt-2 sm:!pt-2.5 md:!pt-3 lg:!pt-3.5">
         <div className="container-page">
           {events.length === 0 ? (
             <div className="rounded-2xl border border-dashed border-border bg-surface p-12 text-center">
@@ -85,7 +86,7 @@ function EventsPage() {
                         </ul>
                       ) : null}
                       <a
-                        href={event.sourceUrl}
+                        href={safeHrefOr(event.sourceUrl, JKBOTE_NOTICES_URL)}
                         target="_blank"
                         rel="noopener noreferrer"
                         tabIndex={ariaHidden ? -1 : undefined}

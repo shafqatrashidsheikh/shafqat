@@ -34,7 +34,7 @@ type DepartmentCardProps = {
 };
 
 export function DepartmentCard({ department, className }: DepartmentCardProps) {
-  const Icon = DEPARTMENT_ICONS[department.icon];
+  const Icon = DEPARTMENT_ICONS[department.icon] ?? Monitor;
   const detailPath = departmentDetailPath(department.slug);
 
   return (

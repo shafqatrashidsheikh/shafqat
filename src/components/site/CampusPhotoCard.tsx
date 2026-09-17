@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
+import { AmpersandText } from "@/components/site/AmpersandText";
 import {
   Carousel,
   CarouselContent,
@@ -60,7 +61,9 @@ export function CampusPhotoCard({
 
       <div className="flex flex-1 flex-col p-5 sm:p-6">
         <p className="text-[11px] font-semibold tracking-[0.14em] text-brand uppercase">{category}</p>
-        <h3 className="mt-2 font-display text-lg font-bold leading-snug text-navy">{title}</h3>
+        <h3 className="mt-2 min-w-0 hyphens-none font-display text-lg font-bold leading-snug text-navy">
+          <AmpersandText>{title}</AmpersandText>
+        </h3>
         <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">{description}</p>
         <Link
           to={exploreHref}

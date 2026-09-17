@@ -1,4 +1,5 @@
 import { getSupabaseAsUser } from "@/lib/supabase/server";
+import { invalidateAssistantKnowledgeCache } from "@/server/assistant/knowledge-cache";
 
 export class AuthError extends Error {
   constructor(message: string) {
@@ -26,4 +27,14 @@ export async function requireAdmin(accessToken: string) {
   }
 
   return { supabase, user: userData.user, profile };
+}
+
+/**
+ * Same as requireAdmin, then clears assistant knowledge cache.
+ * Use in CMS write handlers so website updates reach the assistant immediately.
+ */
+export async function requireAdminWrite(accessToken: string) {
+  const session = await requireAdmin(accessToken);
+  invalidateAssistantKnowledgeCache();
+  return session;
 }

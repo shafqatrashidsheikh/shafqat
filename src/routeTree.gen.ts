@@ -11,18 +11,31 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutRouteImport } from './routes/about'
+import { Route as AcademicCalendarRouteImport } from './routes/academic-calendar'
 import { Route as AcademicsRouteImport } from './routes/academics'
 import { Route as AdmissionsRouteImport } from './routes/admissions'
 import { Route as CampusRouteImport } from './routes/campus'
 import { Route as ContactRouteImport } from './routes/contact'
+import { Route as DownloadsRouteImport } from './routes/downloads'
+import { Route as ExaminationRouteImport } from './routes/examination'
+import { Route as FacultyRouteImport } from './routes/faculty'
+import { Route as HostelRouteImport } from './routes/hostel'
+import { Route as LibraryRouteImport } from './routes/library'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as MandatoryDisclosuresRouteImport } from './routes/mandatory-disclosures'
 import { Route as NoticesRouteImport } from './routes/notices'
 import { Route as PlacementsRouteImport } from './routes/placements'
 import { Route as PrincipalMessageRouteImport } from './routes/principal-message'
+import { Route as PrivacyPolicyRouteImport } from './routes/privacy-policy'
+import { Route as RtiRouteImport } from './routes/rti'
 import { Route as SignupRouteImport } from './routes/signup'
+import { Route as StudentWelfareRouteImport } from './routes/student-welfare'
+import { Route as WebsitePolicyRouteImport } from './routes/website-policy'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as AdminLoginRouteImport } from './routes/admin/login'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
+import { Route as ApiJkboteAdmissionDatesRouteImport } from './routes/api/jkbote-admission-dates'
+import { Route as ApiJkboteAdmissionStatusRouteImport } from './routes/api/jkbote-admission-status'
 import { Route as ApiJkboteNoticesRouteImport } from './routes/api/jkbote-notices'
 import { Route as AuthCallbackRouteImport } from './routes/auth/callback'
 import { Route as PortalIndexRouteImport } from './routes/portal/index'
@@ -46,6 +59,11 @@ const AboutRoute = AboutRouteImport.update({
   path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AcademicCalendarRoute = AcademicCalendarRouteImport.update({
+  id: '/academic-calendar',
+  path: '/academic-calendar',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AcademicsRoute = AcademicsRouteImport.update({
   id: '/academics',
   path: '/academics',
@@ -66,9 +84,39 @@ const ContactRoute = ContactRouteImport.update({
   path: '/contact',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DownloadsRoute = DownloadsRouteImport.update({
+  id: '/downloads',
+  path: '/downloads',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ExaminationRoute = ExaminationRouteImport.update({
+  id: '/examination',
+  path: '/examination',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FacultyRoute = FacultyRouteImport.update({
+  id: '/faculty',
+  path: '/faculty',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HostelRoute = HostelRouteImport.update({
+  id: '/hostel',
+  path: '/hostel',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LibraryRoute = LibraryRouteImport.update({
+  id: '/library',
+  path: '/library',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MandatoryDisclosuresRoute = MandatoryDisclosuresRouteImport.update({
+  id: '/mandatory-disclosures',
+  path: '/mandatory-disclosures',
   getParentRoute: () => rootRouteImport,
 } as any)
 const NoticesRoute = NoticesRouteImport.update({
@@ -86,9 +134,29 @@ const PrincipalMessageRoute = PrincipalMessageRouteImport.update({
   path: '/principal-message',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PrivacyPolicyRoute = PrivacyPolicyRouteImport.update({
+  id: '/privacy-policy',
+  path: '/privacy-policy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RtiRoute = RtiRouteImport.update({
+  id: '/rti',
+  path: '/rti',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
   path: '/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StudentWelfareRoute = StudentWelfareRouteImport.update({
+  id: '/student-welfare',
+  path: '/student-welfare',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WebsitePolicyRoute = WebsitePolicyRouteImport.update({
+  id: '/website-policy',
+  path: '/website-policy',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
@@ -106,6 +174,17 @@ const ApiChatRoute = ApiChatRouteImport.update({
   path: '/api/chat',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiJkboteAdmissionDatesRoute = ApiJkboteAdmissionDatesRouteImport.update({
+  id: '/api/jkbote-admission-dates',
+  path: '/api/jkbote-admission-dates',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiJkboteAdmissionStatusRoute =
+  ApiJkboteAdmissionStatusRouteImport.update({
+    id: '/api/jkbote-admission-status',
+    path: '/api/jkbote-admission-status',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiJkboteNoticesRoute = ApiJkboteNoticesRouteImport.update({
   id: '/api/jkbote-notices',
   path: '/api/jkbote-notices',
@@ -171,17 +250,30 @@ const AcademicsDepartmentsSlugRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/academic-calendar': typeof AcademicCalendarRoute
   '/academics': typeof AcademicsRoute
   '/admissions': typeof AdmissionsRoute
   '/campus': typeof CampusRoute
   '/contact': typeof ContactRoute
+  '/downloads': typeof DownloadsRoute
+  '/examination': typeof ExaminationRoute
+  '/faculty': typeof FacultyRoute
+  '/hostel': typeof HostelRoute
+  '/library': typeof LibraryRoute
   '/login': typeof LoginRoute
+  '/mandatory-disclosures': typeof MandatoryDisclosuresRoute
   '/notices': typeof NoticesRoute
   '/placements': typeof PlacementsRoute
   '/principal-message': typeof PrincipalMessageRoute
+  '/privacy-policy': typeof PrivacyPolicyRoute
+  '/rti': typeof RtiRoute
   '/signup': typeof SignupRoute
+  '/student-welfare': typeof StudentWelfareRoute
+  '/website-policy': typeof WebsitePolicyRoute
   '/admin/login': typeof AdminLoginRoute
   '/api/chat': typeof ApiChatRoute
+  '/api/jkbote-admission-dates': typeof ApiJkboteAdmissionDatesRoute
+  '/api/jkbote-admission-status': typeof ApiJkboteAdmissionStatusRoute
   '/api/jkbote-notices': typeof ApiJkboteNoticesRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/student/onboarding': typeof StudentOnboardingRoute
@@ -199,17 +291,30 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/academic-calendar': typeof AcademicCalendarRoute
   '/academics': typeof AcademicsRoute
   '/admissions': typeof AdmissionsRoute
   '/campus': typeof CampusRoute
   '/contact': typeof ContactRoute
+  '/downloads': typeof DownloadsRoute
+  '/examination': typeof ExaminationRoute
+  '/faculty': typeof FacultyRoute
+  '/hostel': typeof HostelRoute
+  '/library': typeof LibraryRoute
   '/login': typeof LoginRoute
+  '/mandatory-disclosures': typeof MandatoryDisclosuresRoute
   '/notices': typeof NoticesRoute
   '/placements': typeof PlacementsRoute
   '/principal-message': typeof PrincipalMessageRoute
+  '/privacy-policy': typeof PrivacyPolicyRoute
+  '/rti': typeof RtiRoute
   '/signup': typeof SignupRoute
+  '/student-welfare': typeof StudentWelfareRoute
+  '/website-policy': typeof WebsitePolicyRoute
   '/admin/login': typeof AdminLoginRoute
   '/api/chat': typeof ApiChatRoute
+  '/api/jkbote-admission-dates': typeof ApiJkboteAdmissionDatesRoute
+  '/api/jkbote-admission-status': typeof ApiJkboteAdmissionStatusRoute
   '/api/jkbote-notices': typeof ApiJkboteNoticesRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/student/onboarding': typeof StudentOnboardingRoute
@@ -228,17 +333,30 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/academic-calendar': typeof AcademicCalendarRoute
   '/academics': typeof AcademicsRoute
   '/admissions': typeof AdmissionsRoute
   '/campus': typeof CampusRoute
   '/contact': typeof ContactRoute
+  '/downloads': typeof DownloadsRoute
+  '/examination': typeof ExaminationRoute
+  '/faculty': typeof FacultyRoute
+  '/hostel': typeof HostelRoute
+  '/library': typeof LibraryRoute
   '/login': typeof LoginRoute
+  '/mandatory-disclosures': typeof MandatoryDisclosuresRoute
   '/notices': typeof NoticesRoute
   '/placements': typeof PlacementsRoute
   '/principal-message': typeof PrincipalMessageRoute
+  '/privacy-policy': typeof PrivacyPolicyRoute
+  '/rti': typeof RtiRoute
   '/signup': typeof SignupRoute
+  '/student-welfare': typeof StudentWelfareRoute
+  '/website-policy': typeof WebsitePolicyRoute
   '/admin/login': typeof AdminLoginRoute
   '/api/chat': typeof ApiChatRoute
+  '/api/jkbote-admission-dates': typeof ApiJkboteAdmissionDatesRoute
+  '/api/jkbote-admission-status': typeof ApiJkboteAdmissionStatusRoute
   '/api/jkbote-notices': typeof ApiJkboteNoticesRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/student/onboarding': typeof StudentOnboardingRoute
@@ -258,17 +376,30 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about'
+    | '/academic-calendar'
     | '/academics'
     | '/admissions'
     | '/campus'
     | '/contact'
+    | '/downloads'
+    | '/examination'
+    | '/faculty'
+    | '/hostel'
+    | '/library'
     | '/login'
+    | '/mandatory-disclosures'
     | '/notices'
     | '/placements'
     | '/principal-message'
+    | '/privacy-policy'
+    | '/rti'
     | '/signup'
+    | '/student-welfare'
+    | '/website-policy'
     | '/admin/login'
     | '/api/chat'
+    | '/api/jkbote-admission-dates'
+    | '/api/jkbote-admission-status'
     | '/api/jkbote-notices'
     | '/auth/callback'
     | '/student/onboarding'
@@ -286,17 +417,30 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/about'
+    | '/academic-calendar'
     | '/academics'
     | '/admissions'
     | '/campus'
     | '/contact'
+    | '/downloads'
+    | '/examination'
+    | '/faculty'
+    | '/hostel'
+    | '/library'
     | '/login'
+    | '/mandatory-disclosures'
     | '/notices'
     | '/placements'
     | '/principal-message'
+    | '/privacy-policy'
+    | '/rti'
     | '/signup'
+    | '/student-welfare'
+    | '/website-policy'
     | '/admin/login'
     | '/api/chat'
+    | '/api/jkbote-admission-dates'
+    | '/api/jkbote-admission-status'
     | '/api/jkbote-notices'
     | '/auth/callback'
     | '/student/onboarding'
@@ -314,17 +458,30 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/about'
+    | '/academic-calendar'
     | '/academics'
     | '/admissions'
     | '/campus'
     | '/contact'
+    | '/downloads'
+    | '/examination'
+    | '/faculty'
+    | '/hostel'
+    | '/library'
     | '/login'
+    | '/mandatory-disclosures'
     | '/notices'
     | '/placements'
     | '/principal-message'
+    | '/privacy-policy'
+    | '/rti'
     | '/signup'
+    | '/student-welfare'
+    | '/website-policy'
     | '/admin/login'
     | '/api/chat'
+    | '/api/jkbote-admission-dates'
+    | '/api/jkbote-admission-status'
     | '/api/jkbote-notices'
     | '/auth/callback'
     | '/student/onboarding'
@@ -343,17 +500,30 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  AcademicCalendarRoute: typeof AcademicCalendarRoute
   AcademicsRoute: typeof AcademicsRoute
   AdmissionsRoute: typeof AdmissionsRoute
   CampusRoute: typeof CampusRoute
   ContactRoute: typeof ContactRoute
+  DownloadsRoute: typeof DownloadsRoute
+  ExaminationRoute: typeof ExaminationRoute
+  FacultyRoute: typeof FacultyRoute
+  HostelRoute: typeof HostelRoute
+  LibraryRoute: typeof LibraryRoute
   LoginRoute: typeof LoginRoute
+  MandatoryDisclosuresRoute: typeof MandatoryDisclosuresRoute
   NoticesRoute: typeof NoticesRoute
   PlacementsRoute: typeof PlacementsRoute
   PrincipalMessageRoute: typeof PrincipalMessageRoute
+  PrivacyPolicyRoute: typeof PrivacyPolicyRoute
+  RtiRoute: typeof RtiRoute
   SignupRoute: typeof SignupRoute
+  StudentWelfareRoute: typeof StudentWelfareRoute
+  WebsitePolicyRoute: typeof WebsitePolicyRoute
   AdminLoginRoute: typeof AdminLoginRoute
   ApiChatRoute: typeof ApiChatRoute
+  ApiJkboteAdmissionDatesRoute: typeof ApiJkboteAdmissionDatesRoute
+  ApiJkboteAdmissionStatusRoute: typeof ApiJkboteAdmissionStatusRoute
   ApiJkboteNoticesRoute: typeof ApiJkboteNoticesRoute
   AuthCallbackRoute: typeof AuthCallbackRoute
   StudentOnboardingRoute: typeof StudentOnboardingRoute
@@ -385,6 +555,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/academic-calendar': {
+      id: '/academic-calendar'
+      path: '/academic-calendar'
+      fullPath: '/academic-calendar'
+      preLoaderRoute: typeof AcademicCalendarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/academics': {
       id: '/academics'
       path: '/academics'
@@ -413,11 +590,53 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ContactRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/downloads': {
+      id: '/downloads'
+      path: '/downloads'
+      fullPath: '/downloads'
+      preLoaderRoute: typeof DownloadsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/examination': {
+      id: '/examination'
+      path: '/examination'
+      fullPath: '/examination'
+      preLoaderRoute: typeof ExaminationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/faculty': {
+      id: '/faculty'
+      path: '/faculty'
+      fullPath: '/faculty'
+      preLoaderRoute: typeof FacultyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/hostel': {
+      id: '/hostel'
+      path: '/hostel'
+      fullPath: '/hostel'
+      preLoaderRoute: typeof HostelRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/library': {
+      id: '/library'
+      path: '/library'
+      fullPath: '/library'
+      preLoaderRoute: typeof LibraryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/login': {
       id: '/login'
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mandatory-disclosures': {
+      id: '/mandatory-disclosures'
+      path: '/mandatory-disclosures'
+      fullPath: '/mandatory-disclosures'
+      preLoaderRoute: typeof MandatoryDisclosuresRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/notices': {
@@ -441,11 +660,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrincipalMessageRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/privacy-policy': {
+      id: '/privacy-policy'
+      path: '/privacy-policy'
+      fullPath: '/privacy-policy'
+      preLoaderRoute: typeof PrivacyPolicyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/rti': {
+      id: '/rti'
+      path: '/rti'
+      fullPath: '/rti'
+      preLoaderRoute: typeof RtiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/signup': {
       id: '/signup'
       path: '/signup'
       fullPath: '/signup'
       preLoaderRoute: typeof SignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/student-welfare': {
+      id: '/student-welfare'
+      path: '/student-welfare'
+      fullPath: '/student-welfare'
+      preLoaderRoute: typeof StudentWelfareRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/website-policy': {
+      id: '/website-policy'
+      path: '/website-policy'
+      fullPath: '/website-policy'
+      preLoaderRoute: typeof WebsitePolicyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/': {
@@ -467,6 +714,20 @@ declare module '@tanstack/react-router' {
       path: '/api/chat'
       fullPath: '/api/chat'
       preLoaderRoute: typeof ApiChatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/jkbote-admission-dates': {
+      id: '/api/jkbote-admission-dates'
+      path: '/api/jkbote-admission-dates'
+      fullPath: '/api/jkbote-admission-dates'
+      preLoaderRoute: typeof ApiJkboteAdmissionDatesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/jkbote-admission-status': {
+      id: '/api/jkbote-admission-status'
+      path: '/api/jkbote-admission-status'
+      fullPath: '/api/jkbote-admission-status'
+      preLoaderRoute: typeof ApiJkboteAdmissionStatusRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/jkbote-notices': {
@@ -559,17 +820,30 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  AcademicCalendarRoute: AcademicCalendarRoute,
   AcademicsRoute: AcademicsRoute,
   AdmissionsRoute: AdmissionsRoute,
   CampusRoute: CampusRoute,
   ContactRoute: ContactRoute,
+  DownloadsRoute: DownloadsRoute,
+  ExaminationRoute: ExaminationRoute,
+  FacultyRoute: FacultyRoute,
+  HostelRoute: HostelRoute,
+  LibraryRoute: LibraryRoute,
   LoginRoute: LoginRoute,
+  MandatoryDisclosuresRoute: MandatoryDisclosuresRoute,
   NoticesRoute: NoticesRoute,
   PlacementsRoute: PlacementsRoute,
   PrincipalMessageRoute: PrincipalMessageRoute,
+  PrivacyPolicyRoute: PrivacyPolicyRoute,
+  RtiRoute: RtiRoute,
   SignupRoute: SignupRoute,
+  StudentWelfareRoute: StudentWelfareRoute,
+  WebsitePolicyRoute: WebsitePolicyRoute,
   AdminLoginRoute: AdminLoginRoute,
   ApiChatRoute: ApiChatRoute,
+  ApiJkboteAdmissionDatesRoute: ApiJkboteAdmissionDatesRoute,
+  ApiJkboteAdmissionStatusRoute: ApiJkboteAdmissionStatusRoute,
   ApiJkboteNoticesRoute: ApiJkboteNoticesRoute,
   AuthCallbackRoute: AuthCallbackRoute,
   StudentOnboardingRoute: StudentOnboardingRoute,

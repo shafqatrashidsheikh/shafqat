@@ -6,10 +6,16 @@ const VALID_ROLES = ["admin", "editor", "principal", "hod", "staff", "student"] 
 
 const PROFILE_SELECT = "*, department:department_id(id, name, slug)";
 
-function resolveRoleFromUser(meta: Record<string, unknown>, email?: string | null): UserRole {
-  const metaRole = typeof meta.role === "string" ? meta.role : null;
-  if (metaRole && (VALID_ROLES as readonly string[]).includes(metaRole)) {
-    return metaRole as UserRole;
+/**
+ * Only app metadata is trusted here: user metadata is written by the visitor
+ * during signup (and via auth.updateUser), so reading a role from it would let
+ * anyone register as an admin. Invited staff get their role from app metadata,
+ * which only the service role can set.
+ */
+function resolveRoleFromUser(appMeta: Record<string, unknown>, email?: string | null): UserRole {
+  const trustedRole = typeof appMeta["role"] === "string" ? appMeta["role"] : null;
+  if (trustedRole && (VALID_ROLES as readonly string[]).includes(trustedRole)) {
+    return trustedRole as UserRole;
   }
   if (email && email.toLowerCase() === env.adminEmail.toLowerCase()) {
     return "admin";
@@ -62,9 +68,15 @@ export async function ensureUserProfile(accessToken: string) {
   if (existing) return existing;
 
   const meta = (user.user_metadata ?? {}) as Record<string, unknown>;
-  const role = resolveRoleFromUser(meta, user.email);
+  const appMeta = (user.app_metadata ?? {}) as Record<string, unknown>;
+  const role = resolveRoleFromUser(appMeta, user.email);
+  /* Students are placed in a department during onboarding, not from metadata. */
   const departmentId =
-    typeof meta.department_id === "string" && meta.department_id.length > 0 ? meta.department_id : null;
+    role !== "student" &&
+    typeof appMeta["department_id"] === "string" &&
+    appMeta["department_id"].length > 0
+      ? appMeta["department_id"]
+      : null;
 
   const { data: created, error: insertError } = await admin
     .from("profiles")

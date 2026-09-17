@@ -4,6 +4,7 @@ import { Mail, MapPin, Phone } from "lucide-react";
 import { z } from "zod";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
+import { AmpersandText, NaturalWrap } from "@/components/site/AmpersandText";
 import { PageHeader } from "@/components/site/PageHeader";
 import { LocationMap } from "@/components/site/LocationMap";
 import { Input } from "@/components/ui/input";
@@ -63,13 +64,23 @@ function Contact() {
     <>
       <Toaster />
       <PageHeader
+        compact
         crumb="Contact"
-        title="Contact & Grievance"
-        intro="Reach the institute office for admissions queries, grievance redressal or general enquiries."
+        title={<AmpersandText>Contact & Grievance</AmpersandText>}
+        titleClassName="max-w-none"
+        introClassName="mt-3 w-full min-w-0 max-w-none text-base leading-relaxed text-muted-foreground md:mt-3.5"
+        intro={
+          <NaturalWrap
+            phrases={[
+              "Institute office address, phone and email,",
+              "with enquiry form and grievance redressal.",
+            ]}
+          />
+        }
       />
-      <section className="section-y">
-        <div className="container-page grid min-w-0 gap-8 lg:grid-cols-[minmax(0,1fr)_min(360px,34%)] lg:gap-12">
-          <form onSubmit={onSubmit} noValidate className="min-w-0 rounded-3xl border border-border bg-surface p-5 shadow-soft sm:p-8">
+      <section className="section-y !pt-2 md:!pt-2.5 lg:!pt-3">
+        <div className="container-page grid min-w-0 items-start gap-8 lg:grid-cols-[minmax(0,1fr)_min(360px,34%)] lg:gap-12">
+          <form onSubmit={onSubmit} noValidate className="min-w-0 h-fit rounded-3xl border border-border bg-surface p-5 shadow-soft sm:p-8">
             <h2 className="font-display text-xl font-extrabold text-navy">Enquiry form</h2>
             <div className="mt-6 grid gap-5 sm:grid-cols-2">
               <Field id="name" label="Full name" error={errors["name"] ?? ""} />

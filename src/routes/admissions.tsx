@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ChevronRight } from "lucide-react";
+import { Check, ChevronRight } from "lucide-react";
+import { ApplyOnlineButton } from "@/components/site/ApplyOnlineButton";
 import { PageHeader } from "@/components/site/PageHeader";
 import { openGPWAssistant } from "@/components/gpw-assistant/events";
 import {
@@ -20,17 +21,39 @@ import {
   ADMISSIONS_PROGRAMMES_NOTE,
   ADMISSIONS_STRIP,
   ADMISSIONS_TITLE,
-  JKBOTE_APPLY_URL,
   filledAdmissionText,
   programmeDurationLabel,
-  resolveAdmissionDates,
   resolveAdmissionDocuments,
   resolveAdmissionEligibility,
   resolveAdmissionProgrammes,
   resolveAdmissionSteps,
 } from "@/lib/admissions-data";
+import {
+  emptyAdmissionDateRows,
+  formatAdmissionSourceUpdated,
+  JKBOTE_ADMISSION_PORTAL_URL,
+  type JkboteAdmissionDatesPayload,
+} from "@/lib/jkbote-admission-dates";
+import type { JkboteAdmissionStatusPayload } from "@/lib/jkbote-admission-status";
 import { loadAdmissionsData } from "@/lib/loaders/homepage";
+import { safeHref, safeHrefOr } from "@/lib/security/safe-url";
 import { getStaticAdmissionCycle } from "@/lib/supabase/fallback";
+
+function statusFromLiveDates(
+  liveDates: JkboteAdmissionDatesPayload | null | undefined,
+): JkboteAdmissionStatusPayload | null {
+  if (!liveDates) return null;
+  return {
+    fetchedAt: liveDates.fetchedAt,
+    checkedAt: liveDates.fetchedAt,
+    ok: liveDates.ok,
+    refreshed: liveDates.ok,
+    status: liveDates.portalStatus,
+    portalUrl: liveDates.portalUrl || JKBOTE_ADMISSION_PORTAL_URL,
+    officialSource: "JKBOTE",
+    ...(liveDates.error ? { error: liveDates.error } : {}),
+  };
+}
 
 export const Route = createFileRoute("/admissions")({
   loader: () => loadAdmissionsData(),
@@ -54,7 +77,7 @@ export const Route = createFileRoute("/admissions")({
   component: Admissions,
 });
 
-function ApplyLink({
+function QuietLink({
   href,
   label,
   className,
@@ -63,10 +86,13 @@ function ApplyLink({
   label: string;
   className: string;
 }) {
-  const isExternal = /^https?:\/\//i.test(href);
+  const safe = safeHref(href);
+  if (!safe) return null;
+
+  const isExternal = /^https?:\/\//i.test(safe);
   return (
     <a
-      href={href}
+      href={safe}
       className={className}
       {...(isExternal ? { target: "_blank", rel: "noopener noreferrer" } : {})}
     >
@@ -83,7 +109,6 @@ function Admissions() {
   const title = filledAdmissionText(cycle.title, ADMISSIONS_TITLE);
   const intro = filledAdmissionText(cycle.intro, ADMISSIONS_INTRO);
   const stripText = filledAdmissionText(cycle.strip_text, ADMISSIONS_STRIP);
-  const applyUrl = filledAdmissionText(cycle.apply_url, JKBOTE_APPLY_URL);
   const applyLabel = filledAdmissionText(cycle.apply_label, ADMISSIONS_APPLY_LABEL);
   const feeAmount = filledAdmissionText(cycle.fee_amount, ADMISSIONS_FEE_AMOUNT);
   const feeNote = filledAdmissionText(cycle.fee_note, ADMISSIONS_FEE_NOTE);
@@ -99,16 +124,25 @@ function Admissions() {
 
   const steps = resolveAdmissionSteps(data.steps);
   const documents = resolveAdmissionDocuments(data.documents);
-  const dates = resolveAdmissionDates(data.dates);
   const programmes = resolveAdmissionProgrammes(data.programmes);
   const eligibilityGroups = resolveAdmissionEligibility(data.eligibilityGroups);
+  const liveDates = data.liveDates;
+  const initialApplyStatus = statusFromLiveDates(liveDates);
+  const dates =
+    liveDates?.rows?.length === 4 ? liveDates.rows : emptyAdmissionDateRows();
+  const sourceHref =
+    liveDates?.latestNotice?.url?.trim() ||
+    liveDates?.portalUrl ||
+    JKBOTE_ADMISSION_PORTAL_URL;
+  const sourceTitle = liveDates?.latestNotice?.title?.trim() || "Official JKBOTE admission updates";
+  const lastUpdatedLabel = formatAdmissionSourceUpdated(liveDates?.fetchedAt);
 
   const applyButtonClass =
     "inline-flex min-h-11 w-auto shrink-0 self-start items-center justify-center rounded-lg bg-primary px-5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-brand-deep";
   const strongApplyClass =
     "inline-flex min-h-12 shrink-0 items-center justify-center rounded-lg bg-primary px-6 text-base font-semibold text-primary-foreground transition-colors hover:bg-brand-deep";
   const quietButtonClass =
-    "inline-flex min-h-11 shrink-0 self-start items-center justify-center rounded-lg border border-border bg-card px-5 text-sm font-semibold text-navy transition-colors hover:bg-light-blue/60";
+    "inline-flex min-h-11 shrink-0 self-start items-center justify-center rounded-lg bg-primary px-5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-brand-deep";
   const sectionLeadClass = "mt-2 w-full min-w-0 text-sm leading-relaxed text-muted-foreground";
 
   return (
@@ -118,7 +152,11 @@ function Admissions() {
       <div id="apply" className="scroll-mt-28 bg-background">
         <div className="container-page pb-6 pt-1 md:pb-7">
           <div className="flex w-full flex-col gap-3 rounded-2xl border border-border bg-surface-white px-4 py-4 shadow-soft sm:flex-row sm:items-center sm:justify-between sm:gap-8 sm:px-5">
-            <ApplyLink href={applyUrl} label={applyLabel} className={applyButtonClass} />
+            <ApplyOnlineButton
+              label={applyLabel}
+              className={applyButtonClass}
+              initialStatus={initialApplyStatus}
+            />
             <p className="min-w-0 flex-1 text-sm leading-relaxed text-muted-foreground sm:text-right">
               {stripText}
             </p>
@@ -241,7 +279,11 @@ function Admissions() {
               ))}
             </ol>
             <div className="mt-6">
-              <ApplyLink href={applyUrl} label={applyLabel} className={strongApplyClass} />
+              <ApplyOnlineButton
+                label={applyLabel}
+                className={strongApplyClass}
+                initialStatus={initialApplyStatus}
+              />
             </div>
           </section>
 
@@ -257,46 +299,120 @@ function Admissions() {
                     className="flex flex-col gap-1 py-3 first:pt-0 last:pb-0 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6"
                   >
                     <dt className="text-sm text-muted-foreground">{date.label}</dt>
-                    <dd className="text-sm font-semibold text-navy sm:text-right">{date.date_value}</dd>
+                    <dd className="min-w-0 text-sm font-semibold text-navy sm:text-right">
+                      {safeHref(date.href) ? (
+                        <a
+                          href={safeHref(date.href)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="underline-offset-2 hover:text-brand hover:underline"
+                        >
+                          {date.date_value}
+                        </a>
+                      ) : (
+                        date.date_value
+                      )}
+                    </dd>
                   </div>
                 ))}
               </dl>
+              <div className="mt-4 border-t border-border pt-3">
+                <p className="text-[11px] leading-relaxed text-muted-foreground">
+                  Source:{" "}
+                  <a
+                    href={safeHrefOr(sourceHref, JKBOTE_ADMISSION_PORTAL_URL)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-medium text-brand underline-offset-2 hover:underline"
+                  >
+                    JKBOTE
+                  </a>
+                  {" · "}
+                  Last updated: {lastUpdatedLabel}
+                </p>
+                {liveDates?.latestNotice && safeHref(liveDates.latestNotice.url) ? (
+                  <p className="mt-1.5 min-w-0 text-[11px] leading-snug text-muted-foreground">
+                    Latest notice:{" "}
+                    <a
+                      href={safeHref(liveDates.latestNotice.url)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-medium text-navy underline-offset-2 hover:text-brand hover:underline"
+                    >
+                      {sourceTitle}
+                    </a>
+                  </p>
+                ) : null}
+                {liveDates?.portalStatus === "closed" ? (
+                  <p className="mt-1.5 text-[11px] leading-snug text-muted-foreground">
+                    Official admission portal status: closed.{" "}
+                    <a
+                      href={JKBOTE_ADMISSION_PORTAL_URL}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-medium text-brand underline-offset-2 hover:underline"
+                    >
+                      Check admission.jkbote.ac.in
+                    </a>
+                  </p>
+                ) : null}
+              </div>
             </div>
           </section>
 
-          <section id="required-documents" className="scroll-mt-28">
-            <h2 className="font-display text-[1.375rem] font-extrabold text-navy md:text-2xl">
-              Documents You May Need
-            </h2>
-            <ul className="mt-5 grid gap-2 sm:grid-cols-2">
-              {documents.map((document) => (
-                <li
-                  key={document.label}
-                  className="flex gap-3 rounded-xl border border-border bg-card px-4 py-3 text-sm text-navy"
-                >
-                  <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-brand" aria-hidden="true" />
-                  <span>
-                    <span className="font-medium">{document.label}</span>
-                    {document.detail ? (
-                      <span className="mt-1 block text-xs text-muted-foreground">{document.detail}</span>
-                    ) : null}
-                  </span>
-                </li>
-              ))}
-            </ul>
-            <p className="mt-3 w-full min-w-0 text-xs leading-relaxed text-muted-foreground">{documentsNote}</p>
-          </section>
+          <div className="space-y-6 md:space-y-7">
+            <section id="required-documents" className="scroll-mt-28">
+              <h2 className="font-display text-[1.375rem] font-extrabold text-navy md:text-2xl">
+                Documents You May Need
+              </h2>
+              <ul className="mt-4 overflow-hidden rounded-lg border border-border bg-surface-white">
+                {documents.map((document) => (
+                  <li
+                    key={document.label}
+                    className="flex items-start gap-3 border-b border-border px-3.5 py-2.5 text-sm text-navy transition-colors last:border-b-0 hover:bg-light-blue/40"
+                  >
+                    <Check
+                      className="mt-0.5 size-4 shrink-0 text-brand"
+                      strokeWidth={2.25}
+                      aria-hidden="true"
+                    />
+                    <span className="min-w-0 leading-snug">
+                      <span className="font-medium">{document.label}</span>
+                      {document.detail ? (
+                        <span className="mt-0.5 block text-xs text-muted-foreground">{document.detail}</span>
+                      ) : null}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+              <p className="mt-3 w-full min-w-0 text-xs leading-relaxed text-muted-foreground">
+                {documentsNote}
+              </p>
+            </section>
 
-          <section id="fee-information" className="scroll-mt-28">
-            <h2 className="font-display text-[1.375rem] font-extrabold text-navy md:text-2xl">Fee Information</h2>
-            <article className="mt-5 flex flex-col gap-4 rounded-2xl border border-border bg-card p-5 shadow-soft sm:flex-row sm:items-center sm:justify-between sm:gap-8 sm:p-6">
-              <div className="min-w-0">
-                <p className="text-sm font-semibold text-navy">{feeAmount}</p>
-                <p className="mt-2 text-xs leading-relaxed text-muted-foreground">{feeNote}</p>
+            <section id="fee-information" className="scroll-mt-28">
+              <h2 className="font-display text-[1.375rem] font-extrabold text-navy md:text-2xl">
+                Fee Information
+              </h2>
+              <div className="mt-4 overflow-hidden rounded-lg border border-border bg-surface-white">
+                <dl className="divide-y divide-border">
+                  <div className="flex flex-col gap-1 px-3.5 py-2.5 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6">
+                    <dt className="text-sm text-muted-foreground">Annual fee</dt>
+                    <dd className="min-w-0 text-sm font-semibold text-navy sm:text-right">{feeAmount}</dd>
+                  </div>
+                  <div className="flex flex-col gap-1 px-3.5 py-2.5 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6">
+                    <dt className="text-sm text-muted-foreground">Note</dt>
+                    <dd className="min-w-0 text-sm leading-snug text-navy sm:max-w-[70%] sm:text-right">
+                      {feeNote}
+                    </dd>
+                  </div>
+                </dl>
               </div>
-              <ApplyLink href={noticeUrl} label={noticeLabel} className={quietButtonClass} />
-            </article>
-          </section>
+              <div className="mt-3">
+                <QuietLink href={noticeUrl} label={noticeLabel} className={quietButtonClass} />
+              </div>
+            </section>
+          </div>
 
           <section className="scroll-mt-28 rounded-2xl border border-border bg-light-blue/30 p-5 sm:p-6">
             <h2 className="font-display text-[1.375rem] font-extrabold text-navy md:text-2xl">{assistantTitle}</h2>
@@ -314,7 +430,11 @@ function Admissions() {
             <h2 className="font-display text-xl font-extrabold text-navy">{ADMISSIONS_FINAL_CTA_TITLE}</h2>
             <p className="mt-1.5 w-full text-sm leading-relaxed text-muted-foreground">{ADMISSIONS_FINAL_CTA_BODY}</p>
           </div>
-          <ApplyLink href={applyUrl} label={applyLabel} className={strongApplyClass} />
+          <ApplyOnlineButton
+            label={applyLabel}
+            className={strongApplyClass}
+            initialStatus={initialApplyStatus}
+          />
         </div>
       </section>
     </div>

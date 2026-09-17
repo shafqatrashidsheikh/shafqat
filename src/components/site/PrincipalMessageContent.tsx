@@ -50,7 +50,6 @@ export function PrincipalMessageContent({ principal = {
               <p className="font-display text-xs font-semibold tracking-[0.2em] text-brand uppercase">
                 Message from the Principal
               </p>
-              <div className="mt-3 h-0.5 w-10 rounded-full bg-brand" />
 
               <header className="mt-5 max-w-[46rem]">
                 <p className="font-display text-xl font-extrabold text-navy sm:text-2xl">

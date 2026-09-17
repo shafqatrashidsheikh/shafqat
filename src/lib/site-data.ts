@@ -17,14 +17,85 @@ export const INSTITUTE = {
 
 export type NavItem = { label: string; to: string; children?: { label: string; to: string }[] };
 
-/** Quick access links — homepage announcements & footer */
+/** Quick access links — homepage announcements strip */
 export const UTILITY_STRIP = [
   { label: "Notices", to: "/updates/notices" },
-  { label: "Examination", to: "/updates/notices#examination" },
-  { label: "Results", to: "/updates/notices#examination" },
+  { label: "Examination", to: "/examination" },
+  { label: "Downloads", to: "/downloads" },
   { label: "Tenders", to: "/updates/circulars#tenders" },
   { label: "Contact", to: "/contact" },
 ];
+
+/**
+ * Official footer Quick Links — institute navigation only (no duplicate Academics items).
+ * Matches what J&K / AICTE polytechnic sites typically expose for visitors.
+ */
+export const FOOTER_QUICK_LINKS = [
+  { label: "About the Institute", to: "/about" },
+  { label: "Admissions", to: "/admissions" },
+  { label: "Notices & Updates", to: "/updates/notices" },
+  { label: "Downloads", to: "/downloads" },
+  { label: "Examination & Results", to: "/examination" },
+  { label: "RTI", to: "/rti" },
+  { label: "Contact", to: "/contact" },
+] as const;
+
+/** Official footer Academics column */
+export const FOOTER_ACADEMIC_LINKS = [
+  { label: "Diploma Programmes", to: "/academics#programmes" },
+  { label: "Syllabus & Downloads", to: "/downloads" },
+  { label: "Academic Calendar", to: "/academic-calendar" },
+  { label: "Faculty & Staff", to: "/faculty" },
+  { label: "Principal's Message", to: "/principal-message" },
+] as const;
+
+/** Campus life / explore — visitor-facing facilities and support */
+export const FOOTER_EXPLORE_LINKS = [
+  { label: "Campus & Facilities", to: "/campus" },
+  { label: "Laboratories", to: "/campus#facilities" },
+  { label: "Library", to: "/library" },
+  { label: "Hostel", to: "/hostel" },
+  { label: "Student Welfare", to: "/student-welfare" },
+  { label: "Placements", to: "/placements" },
+  { label: "News & Events", to: "/updates/news" },
+] as const;
+
+/** GIGW-style mandatory bar for a government institute site */
+export const FOOTER_MANDATORY_LINKS = [
+  { label: "RTI", to: "/rti" },
+  { label: "Mandatory Disclosures", to: "/mandatory-disclosures" },
+  { label: "Privacy Policy", to: "/privacy-policy" },
+  { label: "Website Policy", to: "/website-policy" },
+] as const;
+
+/** Official board portals used by GPW Srinagar admissions & exams (JKBOTE) */
+export const FOOTER_BOARD_LINKS = [
+  { label: "JKBOTE Admission Portal", href: "https://admission.jkbote.ac.in/" },
+  { label: "JKBOTE Board", href: "https://jkbote.ac.in/" },
+] as const;
+
+/**
+ * Official institute social profiles only
+ * (listed on facebook.com/GPWSrinagar About).
+ * Do not add YouTube / LinkedIn until an official page is confirmed.
+ */
+export const FOOTER_SOCIAL_LINKS = [
+  {
+    id: "facebook" as const,
+    label: "Facebook — Govt. Polytechnic for Women, Srinagar",
+    href: "https://www.facebook.com/GPWSrinagar",
+  },
+  {
+    id: "instagram" as const,
+    label: "Instagram — @wpolysgr",
+    href: "https://www.instagram.com/wpolysgr/",
+  },
+  {
+    id: "x" as const,
+    label: "X — @GWP_SRINAGAR",
+    href: "https://x.com/GWP_SRINAGAR",
+  },
+] as const;
 
 /** Hero discovery panels — inspired by IITD Research / News / Startups spotlights */
 export const INSTITUTE_SPOTLIGHTS = [
@@ -50,12 +121,28 @@ export const INSTITUTE_SPOTLIGHTS = [
   },
 ] as const;
 
-/** Academic unit tiles — IITD Academic Units pattern */
+/** Academic gateway tiles — one purpose each (no programmes/departments or labs/facilities split). */
 export const ACADEMIC_UNITS = [
-  { title: "Departments", subtitle: "Specialized teaching units", to: "/academics#departments" },
-  { title: "Programs", subtitle: "Three-year diploma courses", to: "/academics#programs" },
-  { title: "Laboratories", subtitle: "Hands-on technical practice", to: "/academics#labs-workshops" },
-  { title: "Facilities", subtitle: "Library, workshop & campus", to: "/campus#facilities" },
+  {
+    title: "Diploma Programmes",
+    subtitle: "Eight three-year full-time diploma programmes",
+    to: "/academics#programmes",
+  },
+  {
+    title: "Syllabus & Downloads",
+    subtitle: "Board syllabus references and institute documents",
+    to: "/downloads",
+  },
+  {
+    title: "Examination & Results",
+    subtitle: "Schedules, forms and result guidance",
+    to: "/examination",
+  },
+  {
+    title: "Laboratories & Workshops",
+    subtitle: "Practical training spaces on campus",
+    to: "/campus#facilities",
+  },
 ] as const;
 
 export const HOME_FAQS = [
@@ -68,8 +155,12 @@ export const HOME_FAQS = [
     a: "Most diploma programs are three-year full-time courses combining classroom instruction with laboratory practice.",
   },
   {
+    q: "Where can I find syllabus and downloads?",
+    a: "Programme syllabus references and institute documents are listed on the Downloads page. Board syllabi follow JKBOTE notifications.",
+  },
+  {
     q: "Where can I find examination and result notices?",
-    a: "All examination schedules, results and circulars are published on the Notices page as they are released by the institute.",
+    a: "Use the Examination & Results page for hubs and links, and the Notices page for the latest official circulars.",
   },
   {
     q: "How do I contact the institute for admissions queries?",
@@ -83,6 +174,8 @@ export type HeaderCtaPillItem = {
   primary?: boolean;
   /** Non-link placeholder (e.g. coming soon) */
   comingSoon?: boolean;
+  /** Smart Apply Online flow (JKBOTE open/closed) instead of a route link */
+  action?: "apply-online";
 };
 
 export type HeaderCtaPill = {
@@ -98,7 +191,7 @@ export const HEADER_CTA_PILLS: HeaderCtaPill[] = [
     label: "Admissions",
     to: "/admissions",
     items: [
-      { label: "Apply Now", to: "/admissions#apply", primary: true },
+      { label: "Apply Now", action: "apply-online", primary: true },
       { label: "Admission Information", to: "/admissions#admission-overview" },
       { label: "Eligibility", to: "/admissions#eligibility" },
       { label: "Application Process", to: "/admissions#application-process" },
@@ -112,12 +205,11 @@ export const HEADER_CTA_PILLS: HeaderCtaPill[] = [
     label: "Academics",
     to: "/academics",
     items: [
-      { label: "Programs / Courses", to: "/academics#programs", primary: true },
-      { label: "Departments", to: "/academics#departments" },
-      { label: "Academic Calendar", to: "/updates/notices#academics" },
-      { label: "Curriculum & Syllabus", to: "/updates/notices" },
-      { label: "Examination", to: "/updates/notices#examination" },
-      { label: "Results", to: "/updates/notices#examination" },
+      { label: "Diploma Programmes", to: "/academics#programmes", primary: true },
+      { label: "Syllabus & Downloads", to: "/downloads" },
+      { label: "Academic Calendar", to: "/academic-calendar" },
+      { label: "Examination & Results", to: "/examination" },
+      { label: "Faculty & Staff", to: "/faculty" },
     ],
   },
   {
@@ -126,9 +218,9 @@ export const HEADER_CTA_PILLS: HeaderCtaPill[] = [
     items: [
       { label: "Campus Overview", to: "/campus#campus-overview", primary: true },
       { label: "Laboratories & Facilities", to: "/campus#facilities" },
-      { label: "Library", to: "/campus#facilities" },
-      { label: "Hostel", to: "/campus#facilities" },
-      { label: "Student Facilities", to: "/campus#facilities" },
+      { label: "Library", to: "/library" },
+      { label: "Hostel", to: "/hostel" },
+      { label: "Student Welfare", to: "/student-welfare" },
       { label: "Campus Gallery", to: "/campus#gallery" },
       { label: "Contact / Location", to: "/contact" },
       { label: "360° Virtual Tour — Coming Soon", to: "/campus#virtual-tour", comingSoon: true },
@@ -140,6 +232,7 @@ export const HEADER_CTA_PILLS: HeaderCtaPill[] = [
     items: [
       { label: "Latest News", to: "/updates/news", primary: true },
       { label: "Notices", to: "/updates/notices" },
+      { label: "Examination Notices", to: "/examination" },
       { label: "Events", to: "/updates/events" },
       { label: "Tenders / Important Circulars", to: "/updates/circulars" },
     ],

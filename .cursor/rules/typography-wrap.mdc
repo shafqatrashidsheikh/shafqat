@@ -1,0 +1,34 @@
+---
+description: Site-wide heading and ampersand line-wrap conventions for GPW Srinagar UI
+alwaysApply: true
+---
+
+# Typography — one-line cards & phrase wrap
+
+When editing copy or card/heading UI on this site, keep titles readable and consistent **everywhere** (home rails, campus cards, academics, explore, notices, events):
+
+## Always wrap titles with `AmpersandText`
+- Import from `src/components/site/AmpersandText.tsx` (`TitleText` alias is fine).
+- Use it on **every** card/rail/list heading that can wrap mid-phrase — not only text that contains `&`.
+- Examples fixed by the helper:
+  - `Electronics & Communication Engineering` → `Electronics & Communication` / `Engineering`
+  - `Medical Lab Technology Laboratory` → `Medical Lab Technology` / `Laboratory`
+  - `Diploma programs & departments` → stays readable (`Diploma programs &` / `departments` or one line when space allows)
+  - `Travel & Tourism` → `Travel &` / `Tourism`
+
+## Short card subtitles
+- Spotlight / unit supporting lines should stay on **one line** when possible (`whitespace-nowrap` + `truncate`).
+- Prefer canonical one-line strings from `src/lib/site-data.ts` over stale CMS variants when titles match.
+
+## Centered supporting paragraphs
+- Prefer `text-pretty` on centered short blurbs so a single word (e.g. `institute.`) is not stranded on the last line.
+- Widen `max-w-*` slightly or rewrite the sentence if an orphan remains.
+
+## Ampersand rule
+- Never leave `&` alone at the start of a line.
+
+## Alignment
+- In equal-height card grids, pin footer CTAs (`Discover`, `Explore`) with `mt-auto`.
+
+## Do not skip components
+If a new card/rail is added, wire `AmpersandText` on its title in the same change. Missing it on one rail (e.g. facilities) is a bug.

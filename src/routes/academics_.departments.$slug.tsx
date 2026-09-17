@@ -5,15 +5,26 @@ import { fetchDepartmentBySlug } from "@/server/cda/site-extended";
 
 export const Route = createFileRoute("/academics_/departments/$slug")({
   loader: async ({ params }) => {
+    // Official programme content is maintained in GPW_DEPARTMENTS (static source of truth).
+    // CMS may supply media overlays when available.
+    const staticDepartment = getDepartmentBySlug(params.slug);
     let fromDb = null;
     try {
       fromDb = await fetchDepartmentBySlug({ data: { slug: params.slug } });
     } catch {
       fromDb = null;
     }
-    const department = fromDb ?? getDepartmentBySlug(params.slug);
-    if (!department) throw notFound();
-    return department;
+
+    if (!staticDepartment && !fromDb) throw notFound();
+
+    if (staticDepartment) {
+      return {
+        ...staticDepartment,
+        ...(fromDb?.image ? { image: fromDb.image } : {}),
+      };
+    }
+
+    return fromDb!;
   },
   head: ({ loaderData }) => ({
     meta: [
@@ -24,7 +35,10 @@ export const Route = createFileRoute("/academics_/departments/$slug")({
       },
       {
         name: "description",
-        content: loaderData?.overview ?? "Department at Government Polytechnic for Women, Srinagar.",
+        content:
+          loaderData?.heroIntro ??
+          loaderData?.overview ??
+          "Department at Government Polytechnic for Women, Srinagar.",
       },
       {
         property: "og:title",

@@ -10,6 +10,8 @@ export type ExploreCard = {
   image: string;
   imageAlt: string;
   imagePosition: "left" | "right";
+  /** Tailwind object-position utility, e.g. object-[35%_center] */
+  imageObjectClass?: string | undefined;
   priority?: boolean;
 };
 
@@ -22,8 +24,7 @@ export const EXPLORE_CARDS: ExploreCard[] = [
     cta: "Discover Our Story",
     href: "/about",
     image: CAMPUS_IMAGES.winterGate,
-    imageAlt:
-      "Snow-covered entrance gate of Government Polytechnic for Women, Srinagar, Bemina",
+    imageAlt: "Snow-covered entrance gate of Government Polytechnic for Women, Srinagar, Bemina",
     imagePosition: "right",
     priority: true,
   },
@@ -35,7 +36,8 @@ export const EXPLORE_CARDS: ExploreCard[] = [
     cta: "Explore Academics",
     href: "/academics",
     image: CAMPUS_IMAGES.computerLab,
-    imageAlt: "Students working in the computer laboratory at Government Polytechnic for Women, Srinagar",
+    imageAlt:
+      "Students working in the computer laboratory at Government Polytechnic for Women, Srinagar",
     imagePosition: "right",
     priority: true,
   },
@@ -58,9 +60,12 @@ export const EXPLORE_CARDS: ExploreCard[] = [
     description: "Eligibility, process, important dates and how to apply.",
     cta: "Admission Information",
     href: "/admissions",
-    image: CAMPUS_IMAGES.smartClassroomStudents,
-    imageAlt: "Students in a smart classroom session at Government Polytechnic for Women, Srinagar",
+    image: CAMPUS_IMAGES.admissionsDesk,
+    imageAlt:
+      "Admission desk at Government Polytechnic for Women, Srinagar — a counsellor helping an applicant complete her admission form",
     imagePosition: "right",
+    /* Keeps the "Admission Desk" nameplate in frame in both the stacked and portrait crops */
+    imageObjectClass: "object-[50%_80%] md:object-[8%_50%]",
   },
   {
     id: "placement",
@@ -69,8 +74,11 @@ export const EXPLORE_CARDS: ExploreCard[] = [
     description: "Training, internships and career development for graduating students.",
     cta: "Explore Careers",
     href: "/placements",
-    image: CAMPUS_IMAGES.summer,
-    imageAlt: "Training and career development at GPW Srinagar",
-    imagePosition: "left",
+    image: CAMPUS_IMAGES.placementCareerGuidance,
+    imageAlt:
+      "Placement and career guidance at Government Polytechnic for Women, Srinagar — student interview and career counselling session",
+    imagePosition: "right",
+    /* Keeps the interview table and student in frame when the column crops to portrait */
+    imageObjectClass: "object-[38%_45%]",
   },
 ];

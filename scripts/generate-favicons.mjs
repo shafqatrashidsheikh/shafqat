@@ -1,3 +1,7 @@
+/**
+ * Generate favicons from the official crest.
+ * Downscales only (lanczos) — no upscale, sharpen, blur, or recolor.
+ */
 import { writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -7,26 +11,37 @@ import toIco from "to-ico";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(__dirname, "..");
-const source = path.join(root, "public", "gpw-srinagar-logo.jpg");
 const publicDir = path.join(root, "public");
 
-async function circularPng(input, size) {
-  const circle = Buffer.from(
-    `<svg width="${size}" height="${size}"><circle cx="${size / 2}" cy="${size / 2}" r="${size / 2}" fill="white"/></svg>`,
-  );
+async function loadSource() {
+  try {
+    return await sharp(path.join(publicDir, "gpw-srinagar-logo.png")).toBuffer();
+  } catch {
+    return await sharp(path.join(publicDir, "gpw-srinagar-logo.jpg")).toBuffer();
+  }
+}
 
-  return sharp(input)
-    .trim({ threshold: 12 })
-    .resize(size, size, { fit: "cover", position: "center" })
-    .composite([{ input: circle, blend: "dest-in" }])
+function circleMask(size) {
+  return Buffer.from(
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}">
+      <circle cx="${size / 2}" cy="${size / 2}" r="${size / 2}" fill="#fff"/>
+    </svg>`,
+  );
+}
+
+/** Exact crest pixels, downscaled only for the tab icon size. */
+async function crestPng(source, size) {
+  return sharp(source)
+    .resize(size, size, { fit: "contain", background: "#ffffff", kernel: "lanczos3" })
+    .composite([{ input: circleMask(size), blend: "dest-in" }])
     .png({ compressionLevel: 9, adaptiveFiltering: true })
     .toBuffer();
 }
 
 async function main() {
-  const trimmed = await sharp(source).trim({ threshold: 12 }).toBuffer();
-  const meta = await sharp(trimmed).metadata();
-  console.log(`Trimmed logo: ${meta.width}x${meta.height}`);
+  const source = await loadSource();
+  const meta = await sharp(source).metadata();
+  console.log(`Favicon source: ${meta.width}x${meta.height}`);
 
   const outputs = [
     { size: 16, file: "favicon-16x16.png" },
@@ -40,15 +55,15 @@ async function main() {
   const icoSizes = [];
 
   for (const { size, file } of outputs) {
-    const buffer = await circularPng(trimmed, size);
+    const buffer = await crestPng(source, size);
     await writeFile(path.join(publicDir, file), buffer);
-    console.log(`Wrote ${file} (${size}x${size})`);
+    console.log(`Wrote ${file} (${size}x${size}, ${Math.round(buffer.byteLength / 1024)}KB)`);
     if (size <= 48) icoSizes.push(buffer);
   }
 
   const ico = await toIco(icoSizes);
   await writeFile(path.join(publicDir, "favicon.ico"), ico);
-  console.log("Wrote favicon.ico");
+  console.log("Wrote favicon.ico (16, 32, 48)");
 }
 
 main().catch((error) => {

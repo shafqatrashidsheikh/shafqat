@@ -14,20 +14,21 @@ import { StoryLoaderScene } from "@/components/site/StoryLoaderScene";
 import { INSTITUTE } from "@/lib/site-data";
 import { cn } from "@/lib/utils";
 
-const EXIT_HOLD_MS = 240;
-const SAFETY_MS = 9000;
+const EXIT_HOLD_MS = 180;
+/** Hard ceiling — never leave the user staring at the crest. */
+const SAFETY_MS = 4200;
 
 /**
- * Compact GPWS identity lockup: logo + wordmark from the first frame,
- * then a continuous emblem handoff through books and the graduation cap.
+ * Compact GPWS identity lockup — plays on every full page load / refresh.
+ * Starts visible on first paint (SSR + client) so the page never flashes underneath.
+ * Client-side route changes do not remount this, so in-app navigation stays clean.
  */
 export function PagePreloader() {
+  // Must start true — otherwise first paint shows the site, then the loader (wrong order).
   const [visible, setVisible] = useState(true);
   const [leaving, setLeaving] = useState(false);
   const [phase, setPhase] = useState(LOGO_PHASE);
   const [reducedMotion, setReducedMotion] = useState(false);
-  const pageReadyRef = useRef(false);
-  const animationDoneRef = useRef(false);
   const leavingRef = useRef(false);
   const timersRef = useRef<number[]>([]);
 
@@ -56,6 +57,8 @@ export function PagePreloader() {
   }, [visible]);
 
   useEffect(() => {
+    if (!visible) return;
+
     let cancelled = false;
 
     const clearTimers = () => {
@@ -77,55 +80,27 @@ export function PagePreloader() {
       later(() => setVisible(false), EXIT_MS);
     };
 
-    const tryFinish = () => {
-      if (cancelled || leavingRef.current) return;
-      if (pageReadyRef.current && animationDoneRef.current) {
-        later(beginLeave, EXIT_HOLD_MS);
-      }
-    };
-
-    const markReady = () => {
-      animationDoneRef.current = true;
-      setPhase(reducedMotion ? LOGO_PHASE : HOLD_PHASE);
-      tryFinish();
-    };
-
-    const onReady = () => {
-      pageReadyRef.current = true;
-      tryFinish();
-    };
-
-    const startTimeline = () => {
-      if (cancelled) return;
-
-      if (reducedMotion) {
-        setPhase(LOGO_PHASE);
-        later(markReady, REDUCED_FADE_MS);
-        return;
-      }
-
+    if (reducedMotion) {
+      setPhase(LOGO_PHASE);
+      later(beginLeave, REDUCED_FADE_MS + EXIT_HOLD_MS);
+    } else {
       setPhase(LOGO_PHASE);
       later(() => setPhase(BOOKS_PHASE), BOOKS_AT_MS);
       later(() => setPhase(GRAD_PHASE), GRAD_AT_MS);
-      later(markReady, HOLD_AT_MS);
-    };
-
-    startTimeline();
-
-    if (document.readyState === "complete") {
-      requestAnimationFrame(onReady);
-    } else {
-      window.addEventListener("load", onReady, { once: true });
+      later(() => {
+        setPhase(HOLD_PHASE);
+        later(beginLeave, EXIT_HOLD_MS);
+      }, HOLD_AT_MS);
     }
 
+    // Absolute fallback — ignores animation / asset stalls.
     later(beginLeave, SAFETY_MS);
 
     return () => {
       cancelled = true;
       clearTimers();
-      window.removeEventListener("load", onReady);
     };
-  }, [reducedMotion]);
+  }, [reducedMotion, visible]);
 
   if (!visible) return null;
 

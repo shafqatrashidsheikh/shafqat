@@ -2,9 +2,20 @@ import { createFileRoute } from "@tanstack/react-router";
 import { NaturalWrap } from "@/components/site/AmpersandText";
 import { PageHeader } from "@/components/site/PageHeader";
 import { UpdateNoticesBoard } from "@/components/site/UpdateNoticesBoard";
-import { getNotices } from "@/lib/updates-data";
+import { formatOfficialSyncLabel, officialUpdatesForChannel } from "@/lib/official-updates";
+import { JKBOTE_NOTICES_URL } from "@/lib/updates-data";
+import { fetchLiveJkboteNotices } from "@/server/cda/jkbote-notices";
 
 export const Route = createFileRoute("/updates/notices")({
+  loader: async () => {
+    const live = await fetchLiveJkboteNotices({ data: { limit: 40 } }).catch(() => null);
+    return {
+      items: officialUpdatesForChannel(live?.notices, "notice"),
+      syncLabel: formatOfficialSyncLabel(live?.fetchedAt),
+      liveOk: Boolean(live?.ok && live.notices.length > 0),
+    };
+  },
+  staleTime: 5 * 60_000,
   head: () => ({
     meta: [
       { title: "Notices — GPW Srinagar" },
@@ -22,6 +33,8 @@ export const Route = createFileRoute("/updates/notices")({
 });
 
 function NoticesPage() {
+  const { items, syncLabel, liveOk } = Route.useLoaderData();
+
   return (
     <>
       <PageHeader
@@ -33,14 +46,26 @@ function NoticesPage() {
           <NaturalWrap
             phrases={[
               "Official JKBOTE notifications for admissions, examinations,",
-              "academics and related institutional updates.",
+              "academics and related institutional updates — dates refresh automatically from the Board.",
             ]}
           />
         }
       />
-      <section className="section-y !pt-4 sm:!pt-5 md:!pt-6 lg:!pt-8">
-        <div className="container-page">
-          <UpdateNoticesBoard items={getNotices()} />
+      <section className="section-y !pt-2 sm:!pt-2.5 md:!pt-3 lg:!pt-3.5">
+        <div className="container-page space-y-4">
+          <p className="text-xs text-muted-foreground">
+            {liveOk ? syncLabel : "Showing verified notices · live JKBOTE sync unavailable right now"}
+            {" · "}
+            <a
+              href={JKBOTE_NOTICES_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-medium text-brand underline-offset-2 hover:underline"
+            >
+              Official JKBOTE notices
+            </a>
+          </p>
+          <UpdateNoticesBoard items={items} />
         </div>
       </section>
     </>

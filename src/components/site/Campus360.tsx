@@ -81,14 +81,13 @@ export function Campus360({
           <p className="font-display text-xs font-semibold tracking-[0.2em] text-brand uppercase">
             Campus Experience
           </p>
-          <div className="mt-3 h-0.5 w-10 rounded-full bg-brand" />
           <h2
             id="campus-360-heading"
             className="heading-section mt-3 font-display font-extrabold text-balance text-navy"
           >
             {title}
           </h2>
-          <p className="mt-4 text-base leading-relaxed text-muted-foreground sm:text-lg">
+          <p className="mt-4 text-pretty text-base leading-relaxed text-muted-foreground sm:text-lg">
             Campus photographs of Government Polytechnic for Women, Srinagar at Bemina.
           </p>
         </div>

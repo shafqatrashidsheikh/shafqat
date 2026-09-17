@@ -34,17 +34,17 @@ const FOOTER_QUICK_STATIC = [
   { label: "Admissions", to: "/admissions" },
   { label: "Academics", to: "/academics" },
   { label: "Campus", to: "/campus" },
-  { label: "Updates / Notices", to: "/updates/notices" },
-  { label: "Results", to: "/updates/notices#examination" },
+  { label: "Downloads", to: "/downloads" },
+  { label: "Examination", to: "/examination" },
   { label: "Contact", to: "/contact" },
 ];
 
 const FOOTER_ACADEMIC_STATIC = [
-  { label: "Programs / Courses", to: "/academics#programs" },
-  { label: "Departments", to: "/academics#departments" },
-  { label: "Examination", to: "/updates/notices#examination" },
-  { label: "Academic Calendar", to: "/updates/notices#academics" },
-  { label: "Results", to: "/updates/notices#examination" },
+  { label: "Diploma Programmes", to: "/academics#programmes" },
+  { label: "Syllabus & Downloads", to: "/downloads" },
+  { label: "Academic Calendar", to: "/academic-calendar" },
+  { label: "Faculty & Staff", to: "/faculty" },
+  { label: "Examination & Results", to: "/examination" },
 ];
 
 /** CDA — department detail by slug */
@@ -316,8 +316,12 @@ export function getStaticFooterLinks() {
     utility: UTILITY_STRIP.map((l) => ({ label: l.label, href: l.to })),
     footerQuick: FOOTER_QUICK_STATIC.map((l) => ({ label: l.label, href: l.to })),
     footerAcademic: FOOTER_ACADEMIC_STATIC.map((l) => ({ label: l.label, href: l.to })),
-    footerMandatory: ["RTI", "Mandatory Disclosures", "Privacy Policy", "Website Policy"].map(
-      (label) => ({ label, href: "#" }),
-    ),
+    footerMandatory: [
+      { label: "RTI", href: "/rti" },
+      { label: "Mandatory Disclosures", href: "/mandatory-disclosures" },
+      { label: "Student Welfare", href: "/student-welfare" },
+      { label: "Privacy Policy", href: "/privacy-policy" },
+      { label: "Website Policy", href: "/website-policy" },
+    ],
   };
 }

@@ -21,13 +21,6 @@ export type ProjectTeamMember = {
 
 export const PROJECT_TEAM: ProjectTeamMember[] = [
   {
-    id: "trainer",
-    name: "Sajid Mir",
-    role: "Web Development Trainer",
-    photoKey: "sajid-mir",
-    initials: "SM",
-  },
-  {
     id: "developer",
     name: "Shafqat Rashid",
     role: "Developer",

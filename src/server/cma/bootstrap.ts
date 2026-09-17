@@ -7,6 +7,9 @@ import { NOTICES } from "@/lib/notices-data";
 import {
   ACADEMIC_UNITS,
   CAMPUS_EVENTS,
+  FOOTER_ACADEMIC_LINKS,
+  FOOTER_MANDATORY_LINKS,
+  FOOTER_QUICK_LINKS,
   HEADER_CTA_PILLS,
   HOME_FAQS,
   INSTITUTE,
@@ -46,7 +49,7 @@ import {
 import { PRINCIPAL } from "@/lib/principal-data";
 import { isSupabaseConfigured } from "@/lib/env";
 import { getSupabaseAdmin } from "@/lib/supabase/server";
-import { requireAdmin } from "@/server/cma/auth";
+import { requireAdminWrite } from "@/server/cma/auth";
 
 
 const ANNOUNCEMENT_TAGS: Record<string, string> = {
@@ -62,8 +65,8 @@ const EXPLORE_IMAGE_KEYS: Record<string, string> = {
   about: "campus-winter-gate",
   academics: "computer-lab",
   facilities: "microscope-lab",
-  admissions: "smart-classroom-students",
-  placement: "campus-summer",
+  admissions: "admissions-desk",
+  placement: "placement-career-guidance",
 };
 
 const GALLERY_ASSET_KEYS = [
@@ -162,7 +165,7 @@ export const cmaBootstrapCms = createServerFn({ method: "POST" })
       throw new Error("Supabase is not configured. Add credentials to .env first.");
     }
 
-    await requireAdmin(data.accessToken);
+    await requireAdminWrite(data.accessToken);
     const supabase = getSupabaseAdmin();
     const seeded: string[] = [];
 
@@ -465,24 +468,6 @@ export const cmaBootstrapCms = createServerFn({ method: "POST" })
       }
 
       if ((await countRows(supabase, "nav_links")) === 0) {
-        const footerQuick = [
-          { label: "About", to: "/about" },
-          { label: "Admissions", to: "/admissions" },
-          { label: "Academics", to: "/academics" },
-          { label: "Campus", to: "/campus" },
-          { label: "Updates / Notices", to: "/updates/notices" },
-          { label: "Results", to: "/updates/notices#examination" },
-          { label: "Contact", to: "/contact" },
-        ];
-        const footerAcademic = [
-          { label: "Programs / Courses", to: "/academics#programs" },
-          { label: "Departments", to: "/academics#departments" },
-          { label: "Examination", to: "/updates/notices#examination" },
-          { label: "Academic Calendar", to: "/updates/notices#academics" },
-          { label: "Results", to: "/updates/notices#examination" },
-        ];
-        const mandatory = ["RTI", "Mandatory Disclosures", "Privacy Policy", "Website Policy"];
-
         let order = 1;
         for (const link of UTILITY_STRIP) {
           await supabase.from("nav_links").insert({
@@ -493,7 +478,7 @@ export const cmaBootstrapCms = createServerFn({ method: "POST" })
           });
         }
         order = 1;
-        for (const link of footerQuick) {
+        for (const link of FOOTER_QUICK_LINKS) {
           await supabase.from("nav_links").insert({
             link_group: "footer_quick",
             label: link.label,
@@ -502,7 +487,7 @@ export const cmaBootstrapCms = createServerFn({ method: "POST" })
           });
         }
         order = 1;
-        for (const link of footerAcademic) {
+        for (const link of FOOTER_ACADEMIC_LINKS) {
           await supabase.from("nav_links").insert({
             link_group: "footer_academic",
             label: link.label,
@@ -511,11 +496,11 @@ export const cmaBootstrapCms = createServerFn({ method: "POST" })
           });
         }
         order = 1;
-        for (const label of mandatory) {
+        for (const link of FOOTER_MANDATORY_LINKS) {
           await supabase.from("nav_links").insert({
             link_group: "footer_mandatory",
-            label,
-            href: "#",
+            label: link.label,
+            href: link.to,
             sort_order: order++,
           });
         }

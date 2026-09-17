@@ -52,7 +52,6 @@ export function PrincipalsCorner({
       <p className="font-display text-xs font-semibold tracking-[0.2em] text-brand uppercase">
         Principal&apos;s Corner
       </p>
-      <div className="mt-3 h-0.5 w-10 rounded-full bg-brand" />
       <h2 className="heading-section mt-3 font-display font-extrabold text-navy">
         Message from the Principal
       </h2>

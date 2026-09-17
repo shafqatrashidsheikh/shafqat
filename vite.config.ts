@@ -7,6 +7,10 @@ import { nitro } from "nitro/vite";
 export default defineConfig({
   server: {
     port: 3000,
+    watch: {
+      /* Windows often locks generated files under .cache and crashes Vite with EBUSY. */
+      ignored: ["**/.cache/**", "**/node_modules/**", "**/.output/**", "**/.tanstack/**"],
+    },
   },
   resolve: {
     tsconfigPaths: true,

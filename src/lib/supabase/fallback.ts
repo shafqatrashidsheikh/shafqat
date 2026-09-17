@@ -67,6 +67,7 @@ export function getStaticHomepageData(): HomepageData {
       image: c.image,
       imageAlt: c.imageAlt,
       imagePosition: c.imagePosition,
+      imageObjectClass: c.imageObjectClass,
       priority: c.priority,
     })),
     source: "static",

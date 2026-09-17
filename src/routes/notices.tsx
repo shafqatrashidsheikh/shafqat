@@ -19,7 +19,7 @@ export const Route = createFileRoute("/notices")({
 
     throw redirect({
       to: "/updates/notices",
-      hash: hash || undefined,
+      ...(hash ? { hash } : {}),
     });
   },
 });

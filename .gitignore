@@ -29,6 +29,9 @@ supabase/.temp
 .dev.vars
 .cache/
 
+# Temporary crest upload used by logo:generate
+public/_crest-source-upload.jpg
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
