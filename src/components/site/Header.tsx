@@ -35,10 +35,10 @@ export function Header({ institute: _institute = INSTITUTE, headerNav }: HeaderP
   }, []);
 
   return (
-    <header className="site-header sticky top-0 z-[60] w-full min-w-0 overflow-x-clip bg-background px-3 pt-2 sm:px-4 sm:pt-2.5 lg:px-5">
+    <header className="site-header sticky top-0 z-[60] w-full min-w-0 overflow-x-clip bg-background px-3 pt-2 sm:px-4 sm:pt-2.5 lg:px-5 xl:overflow-visible">
       <div
         className={cn(
-          "flex w-full min-w-0 items-center gap-2.5 overflow-x-clip rounded-2xl border border-border bg-surface-white px-2.5 shadow-soft transition-[box-shadow,padding] duration-300 sm:gap-4 sm:px-4 lg:gap-5 lg:px-5 xl:px-6",
+          "flex w-full min-w-0 items-center gap-2.5 overflow-x-clip rounded-2xl border border-border bg-surface-white px-2.5 shadow-soft transition-[box-shadow,padding] duration-300 sm:gap-4 sm:px-4 lg:gap-5 lg:px-5 xl:overflow-visible xl:px-6",
           "py-2 sm:py-2.5 xl:py-3",
           scrolled && "shadow-raised",
         )}
@@ -84,7 +84,7 @@ export function Header({ institute: _institute = INSTITUTE, headerNav }: HeaderP
             aria-label="Primary navigation"
             className="hidden items-center gap-1.5 xl:flex 2xl:gap-2"
           >
-            <HeaderCtaPills pills={pills} />
+            <HeaderCtaPills {...(pills ? { pills } : {})} />
             <HeaderAuthButtons />
           </nav>
 

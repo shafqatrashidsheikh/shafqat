@@ -26,4 +26,4 @@ export type ChatSendOptions = {
   };
 };
 
-export const ASSISTANT_STORAGE_KEY = "gpw-assistant-messages-v1";
+export const ASSISTANT_STORAGE_KEY = "gpw-assistant-messages-v2";

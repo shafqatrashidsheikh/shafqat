@@ -2608,9 +2608,17 @@ footer,
   overflow-x: clip;
 }
 
+/* Mobile: clip horizontal bleed. Desktop: allow nav dropdowns to paint outside. */
 header.site-header,
 .site-header > div {
   overflow-x: clip;
+}
+
+@media (min-width: 1280px) {
+  header.site-header,
+  .site-header > div {
+    overflow: visible;
+  }
 }
 
 /* Long unbroken strings (URLs, emails) must wrap inside cards/copy */

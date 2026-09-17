@@ -9,6 +9,7 @@ import {
   type KeyboardEvent as ReactKeyboardEvent,
 } from "react";
 import { ApplyOnlineButton } from "@/components/site/ApplyOnlineButton";
+import { splitHref } from "@/lib/contextual-return";
 import { HEADER_CTA_PILLS, type HeaderCtaPill, type HeaderCtaPillItem } from "@/lib/site-data";
 import { cn } from "@/lib/utils";
 
@@ -67,7 +68,7 @@ function DropdownItem({
   onClose: () => void;
 }) {
   const menuClass = cn(
-    "block w-full cursor-pointer rounded-xl px-3.5 py-2.5 text-left text-sm transition-[background-color,color] duration-150 ease-out",
+    "block w-full cursor-pointer rounded-xl px-3.5 py-2.5 text-left text-sm whitespace-nowrap transition-[background-color,color] duration-150 ease-out",
     "text-navy hover:bg-light-blue hover:text-brand focus-visible:bg-light-blue focus-visible:text-brand focus-visible:outline-none",
     item.primary && "font-semibold text-brand",
   );
@@ -75,7 +76,7 @@ function DropdownItem({
   if (item.comingSoon || (!item.to && item.action !== "apply-online")) {
     return (
       <span
-        className="block cursor-default rounded-xl px-3.5 py-2.5 text-sm text-muted-foreground"
+        className="block cursor-default rounded-xl px-3.5 py-2.5 text-sm whitespace-nowrap text-muted-foreground"
         aria-disabled="true"
       >
         {item.label}
@@ -97,11 +98,14 @@ function DropdownItem({
     );
   }
 
+  const { to, hash } = splitHref(item.to!);
+
   return (
     <Link
       ref={itemRef as (el: HTMLAnchorElement | null) => void}
       role="menuitem"
-      to={item.to!}
+      to={to as "/"}
+      {...(hash ? { hash } : {})}
       tabIndex={open ? 0 : -1}
       onClick={onClose}
       className={menuClass}
@@ -221,7 +225,8 @@ function HoverNavItem({
         aria-label={`${pill.label} menu`}
         aria-hidden={!open}
         className={cn(
-          "absolute top-[calc(100%-2px)] z-[100] w-[min(15rem,calc(100%-2rem))] pt-2 transition-[opacity,transform,visibility] duration-200 ease-out motion-reduce:transition-none",
+          /* Width must NOT use parent % — pill wrapper is only ~button-wide. */
+          "absolute top-[calc(100%+0.2rem)] z-[100] min-w-[14.5rem] w-max max-w-[min(20rem,calc(100vw-1.5rem))] pt-1.5 transition-[opacity,transform,visibility] duration-200 ease-out motion-reduce:transition-none",
           alignEnd ? "right-0 left-auto" : "left-0",
           open
             ? "visible translate-y-0 opacity-100"
@@ -236,8 +241,8 @@ function HoverNavItem({
         }}
         onKeyDown={onMenuKeyDown}
       >
-        <div className="rounded-xl border border-border bg-surface-white p-1.5 shadow-[0_10px_32px_rgba(23,54,93,0.1)]">
-          <ul className="m-0 list-none p-0">
+        <div className="rounded-xl border border-border bg-surface-white p-2 shadow-[0_10px_32px_rgba(23,54,93,0.1)]">
+          <ul className="m-0 list-none space-y-0.5 p-0">
             {pill.items.map((item, index) => (
               <li key={item.label} role="none">
                 <DropdownItem
@@ -373,25 +378,37 @@ export function HeaderCtaMobileGroups({
                     View {pill.label}
                   </Link>
                 </li>
-                {pill.items.map((item) => (
-                  <li key={item.label}>
-                    {item.comingSoon || (!item.to && item.action !== "apply-online") ? (
-                      <span className="block min-h-11 rounded-lg px-3 py-2.5 text-sm text-muted-foreground">
-                        {item.label}
-                      </span>
-                    ) : item.action === "apply-online" ? (
-                      <ApplyOnlineButton
-                        label={item.label}
-                        prefetch={false}
-                        {...(onNavigate ? { onBeforeApply: onNavigate } : {})}
-                        className={cn(
-                          "block min-h-11 w-full cursor-pointer rounded-lg px-3 py-2.5 text-left text-sm transition-[background-color,color] duration-150 ease-out hover:bg-light-blue hover:text-brand",
-                          item.primary ? "font-semibold text-brand" : "font-medium text-navy",
-                        )}
-                      />
-                    ) : (
+                {pill.items.map((item) => {
+                  if (item.comingSoon || (!item.to && item.action !== "apply-online")) {
+                    return (
+                      <li key={item.label}>
+                        <span className="block min-h-11 rounded-lg px-3 py-2.5 text-sm text-muted-foreground">
+                          {item.label}
+                        </span>
+                      </li>
+                    );
+                  }
+                  if (item.action === "apply-online") {
+                    return (
+                      <li key={item.label}>
+                        <ApplyOnlineButton
+                          label={item.label}
+                          prefetch={false}
+                          {...(onNavigate ? { onBeforeApply: onNavigate } : {})}
+                          className={cn(
+                            "block min-h-11 w-full cursor-pointer rounded-lg px-3 py-2.5 text-left text-sm transition-[background-color,color] duration-150 ease-out hover:bg-light-blue hover:text-brand",
+                            item.primary ? "font-semibold text-brand" : "font-medium text-navy",
+                          )}
+                        />
+                      </li>
+                    );
+                  }
+                  const { to, hash } = splitHref(item.to!);
+                  return (
+                    <li key={item.label}>
                       <Link
-                        to={item.to!}
+                        to={to as "/"}
+                        {...(hash ? { hash } : {})}
                         onClick={onNavigate}
                         className={cn(
                           "block min-h-11 cursor-pointer rounded-lg px-3 py-2.5 text-sm transition-[background-color,color] duration-150 ease-out hover:bg-light-blue hover:text-brand",
@@ -400,9 +417,9 @@ export function HeaderCtaMobileGroups({
                       >
                         {item.label}
                       </Link>
-                    )}
-                  </li>
-                ))}
+                    </li>
+                  );
+                })}
               </ul>
             )}
           </div>

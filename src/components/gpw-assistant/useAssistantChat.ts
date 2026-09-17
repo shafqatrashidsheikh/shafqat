@@ -22,6 +22,24 @@ import {
 const FALLBACK_ERROR =
   "Sorry, I'm having trouble responding right now. Please try again or use the Contact section for official assistance.";
 
+/** Developer / Cursor-style prompts accidentally pasted into the campus chat. */
+function isDeveloperAuditPrompt(text: string): boolean {
+  const t = text.toLowerCase();
+  return (
+    (/audit|codebase|project structure|fix (the )?(website|bugs|css|react)/i.test(t) &&
+      /(do not delete|kuch (mat )?uda|leave unchanged|tanstack|refactor)/i.test(t)) ||
+    /exploring the project|before auditing|read files|cursor agent/i.test(t) ||
+    (/\b(fix|audit)\b/.test(t) && /\b(full website|entire site|whole site)\b/.test(t) && t.length > 280)
+  );
+}
+
+function developerAuditRedirect(language: ReturnType<typeof resolveAssistantLanguage>): string {
+  if (language === "english") {
+    return "I'm the campus GPWS Assistant for admissions, programmes, notices, and campus help — not a website developer. Ask me something about GPW Srinagar (for example Eligibility, Fees, or Latest Notices), or tap New chat and start fresh.";
+  }
+  return "Main GPWS Assistant hoon — admissions, programmes, notices aur campus help ke liye. Website code audit / developer kaam main nahi karta. GPW Srinagar ke baare mein poochhein (jaise Eligibility, Fees, Latest Notices), ya New chat dabakar naya sawal shuru karein.";
+}
+
 function createId() {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
 }
@@ -29,10 +47,24 @@ function createId() {
 function loadStoredMessages(): AssistantMessage[] {
   if (typeof window === "undefined") return [];
   try {
+    /* Drop stale v1 chats that may contain developer-audit junk. */
+    sessionStorage.removeItem("gpw-assistant-messages-v1");
     const raw = sessionStorage.getItem(ASSISTANT_STORAGE_KEY);
     if (!raw) return [];
     const parsed = JSON.parse(raw) as AssistantMessage[];
-    return Array.isArray(parsed) ? parsed.slice(-12) : [];
+    if (!Array.isArray(parsed)) return [];
+    const cleaned = parsed
+      .slice(-12)
+      .filter((m) => {
+        const c = String(m?.content ?? "");
+        if (/exploring the project|codebase before auditing|audit the codebase/i.test(c)) {
+          return false;
+        }
+        return Boolean(m?.id && m?.role && c.trim());
+      });
+    /* If audit junk polluted the thread, start fresh. */
+    if (cleaned.length < parsed.length) return [];
+    return cleaned;
   } catch {
     return [];
   }
@@ -44,7 +76,8 @@ type ChatApiError = { error?: string; message?: string };
 export function useAssistantChat() {
   const navigate = useNavigate();
   const { session } = useAuth();
-  const [messages, setMessages] = useState<AssistantMessage[]>(loadStoredMessages);
+  const [messages, setMessages] = useState<AssistantMessage[]>([]);
+  const [storageReady, setStorageReady] = useState(false);
   const [input, setInput] = useState("");
   const [isStreaming, setIsStreaming] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -53,9 +86,16 @@ export function useAssistantChat() {
   /** Assistant message ids that must be spoken when they arrive (mic / live). */
   const speakIdsRef = useRef<Set<string>>(new Set());
 
+  /* Restore after mount — avoid SSR [] wiping sessionStorage on hydrate. */
   useEffect(() => {
+    setMessages(loadStoredMessages());
+    setStorageReady(true);
+  }, []);
+
+  useEffect(() => {
+    if (!storageReady) return;
     sessionStorage.setItem(ASSISTANT_STORAGE_KEY, JSON.stringify(messages.slice(-12)));
-  }, [messages]);
+  }, [messages, storageReady]);
 
   const lastUserMessage = useMemo(() => {
     for (let i = messages.length - 1; i >= 0; i -= 1) {
@@ -130,6 +170,23 @@ export function useAssistantChat() {
 
       /* Instant local FAQ — no network / no “typing…” wait. */
       if (!options?.image) {
+        if (isDeveloperAuditPrompt(text)) {
+          const lang = resolveAssistantLanguage(
+            historyForApi.map((m) => ({ role: m.role, content: m.content })),
+          );
+          isStreamingRef.current = false;
+          setMessages((prev) => [
+            ...prev,
+            {
+              id: assistantId,
+              role: "assistant",
+              content: developerAuditRedirect(lang),
+              createdAt: Date.now(),
+            },
+          ]);
+          return;
+        }
+
         const capability = detectCapabilityIntent(text);
         if (capability && !capabilityNeedsLive(capability)) {
           const lang = resolveAssistantLanguage(
