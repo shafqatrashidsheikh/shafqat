@@ -62,14 +62,14 @@ export function PracticalLearningShowcase() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-2 gap-3 sm:gap-4">
+          <div className="grid grid-cols-1 gap-3 min-[380px]:grid-cols-2 sm:gap-4">
             {media.map((item, index) => (
               <figure
                 key={item.src}
                 className={
                   index === 0
-                    ? "col-span-2 overflow-hidden rounded-2xl border border-border"
-                    : "overflow-hidden rounded-2xl border border-border"
+                    ? "col-span-1 min-w-0 overflow-hidden rounded-2xl border border-border min-[380px]:col-span-2"
+                    : "min-w-0 overflow-hidden rounded-2xl border border-border"
                 }
               >
                 <img

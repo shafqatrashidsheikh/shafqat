@@ -192,7 +192,7 @@ export function ApplyOnlineButton({
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent
-          className="max-h-[min(90dvh,36rem)] w-[calc(100vw-1.5rem)] max-w-lg overflow-x-hidden overflow-y-auto rounded-2xl border-border p-5 sm:p-6"
+          className="max-h-[min(90dvh,36rem)] w-[calc(100%-1.5rem)] max-w-lg overflow-x-hidden overflow-y-auto rounded-2xl border-border p-5 sm:p-6"
           aria-labelledby={titleId}
         >
           <DialogHeader className="space-y-2 text-left">

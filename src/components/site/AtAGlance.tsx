@@ -42,7 +42,7 @@ export function AtAGlance({
 
           <dl
             className={cn(
-              "mt-8 grid grid-cols-2 gap-x-6 gap-y-7 sm:mt-10 sm:gap-x-10 sm:gap-y-8",
+              "mt-8 grid grid-cols-1 gap-x-6 gap-y-7 min-[380px]:grid-cols-2 sm:mt-10 sm:gap-x-10 sm:gap-y-8",
               wide ? "lg:grid-cols-3" : "lg:grid-cols-4",
             )}
           >

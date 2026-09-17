@@ -1,6 +1,17 @@
 import { aiEnv } from "@/lib/assistant/ai-env";
 import type { ChatMessage } from "@/lib/assistant/chat-schemas";
 import {
+  buildWeatherDirectReply,
+  detectWeatherIntent,
+  fetchCampusWeather,
+} from "@/lib/campus-weather";
+import {
+  capabilityNeedsLive,
+  detectCapabilityIntent,
+  needsLiveOfficialContext,
+  resolveCapabilityReply,
+} from "@/lib/assistant/capability-intent";
+import {
   buildSyllabusDirectReply,
   detectSyllabusIntent,
 } from "@/lib/assistant/syllabus-intent";
@@ -15,14 +26,11 @@ import {
   buildResultSystemHint,
   detectResultIntent,
 } from "@/lib/assistant/result-intent";
-import {
-  buildTranslatedAnswerHint,
-  resolveAssistantLanguage,
-} from "@/lib/assistant/language-intent";
+import { resolveAssistantLanguage } from "@/lib/assistant/language-intent";
 import { buildAssistantSystemPrompt } from "@/lib/assistant/system-prompt";
 import { getAssistantKnowledgeJson } from "@/server/assistant/build-knowledge";
 import { createAssistantClient } from "@/server/assistant/client";
-import { loadAssistantLiveContext } from "@/server/assistant/live-context";
+import { loadAssistantLiveContext, loadAssistantNoticesQuick } from "@/server/assistant/live-context";
 
 export class AssistantNotConfiguredError extends Error {
   constructor() {
@@ -54,6 +62,41 @@ export async function runAssistantChat(messages: ChatMessage[]): Promise<string>
   const cseFacultyAsk = isComputerEngineeringFacultyAsk(lastUserMessage);
   const resultIntent = detectResultIntent(lastUserMessage);
 
+  if (syllabusIntent) {
+    return buildSyllabusDirectReply(syllabusIntent);
+  }
+  if (cseFacultyAsk) {
+    return buildComputerEngineeringFacultyReply();
+  }
+
+  if (detectWeatherIntent(lastUserMessage)) {
+    const weather = await fetchCampusWeather().catch((error) => {
+      console.warn("[GPWS Assistant] Campus weather unavailable:", error);
+      return null;
+    });
+    if (weather) {
+      return buildWeatherDirectReply(weather, englishReply ? "english" : "local");
+    }
+  }
+
+  const capability = detectCapabilityIntent(lastUserMessage);
+  if (capability) {
+    if (capabilityNeedsLive(capability)) {
+      const liveForCap =
+        capability === "notices"
+          ? await loadAssistantNoticesQuick().catch((error) => {
+              console.warn("[GPWS Assistant] Live JKBOTE context unavailable:", error);
+              return null;
+            })
+          : await loadAssistantLiveContext().catch((error) => {
+              console.warn("[GPWS Assistant] Live JKBOTE context unavailable:", error);
+              return null;
+            });
+      return resolveCapabilityReply(capability, language, liveForCap);
+    }
+    return resolveCapabilityReply(capability, language);
+  }
+
   const liveEarly =
     resultIntent != null
       ? await loadAssistantLiveContext().catch((error) => {
@@ -69,30 +112,18 @@ export async function runAssistantChat(messages: ChatMessage[]): Promise<string>
     });
   }
 
-  if (englishReply && syllabusIntent) {
-    return buildSyllabusDirectReply(syllabusIntent);
-  }
-  if (englishReply && cseFacultyAsk) {
-    return buildComputerEngineeringFacultyReply();
-  }
-
-  /* Non-English turns route the same verified answer through the model so it
-     can be delivered in the student's language. */
-  const directAnswerHint = syllabusIntent
-    ? buildTranslatedAnswerHint(buildSyllabusDirectReply(syllabusIntent))
-    : cseFacultyAsk
-      ? buildTranslatedAnswerHint(buildComputerEngineeringFacultyReply())
-      : resultIntent && liveEarly
-        ? buildResultSystemHint(
-            resultIntent,
-            liveEarly.allNoticesForMatching,
-            liveEarly.fetchedAt,
-          )
-        : detectFacultyIntent(lastUserMessage)
-          ? buildFacultySystemHint(lastUserMessage)
-          : null;
+  const directAnswerHint = detectFacultyIntent(lastUserMessage)
+    ? buildFacultySystemHint(lastUserMessage)
+    : resultIntent && liveEarly
+      ? buildResultSystemHint(
+          resultIntent,
+          liveEarly.allNoticesForMatching,
+          liveEarly.fetchedAt,
+        )
+      : null;
 
   const client = createAssistantClient();
+  const wantLive = Boolean(liveEarly) || needsLiveOfficialContext(lastUserMessage);
 
   const [knowledgeJson, live] = await Promise.all([
     getAssistantKnowledgeJson().catch((error) => {
@@ -101,10 +132,12 @@ export async function runAssistantChat(messages: ChatMessage[]): Promise<string>
     }),
     liveEarly
       ? Promise.resolve(liveEarly)
-      : loadAssistantLiveContext().catch((error) => {
-          console.warn("[GPWS Assistant] Live JKBOTE context unavailable:", error);
-          return null;
-        }),
+      : wantLive
+        ? loadAssistantLiveContext().catch((error) => {
+            console.warn("[GPWS Assistant] Live JKBOTE context unavailable:", error);
+            return null;
+          })
+        : Promise.resolve(null),
   ]);
 
   const { serializeKnowledgeForPrompt } = await import("@/data/gpwKnowledge");
@@ -113,7 +146,7 @@ export async function runAssistantChat(messages: ChatMessage[]): Promise<string>
     const completion = await client.chat.completions.create({
       model: aiEnv.model,
       stream: false,
-      max_tokens: aiEnv.maxOutputTokens,
+      max_tokens: Math.min(aiEnv.maxOutputTokens, 520),
       temperature: 0.35,
       messages: [
         {

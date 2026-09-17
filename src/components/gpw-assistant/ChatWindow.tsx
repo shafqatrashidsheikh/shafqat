@@ -5,9 +5,9 @@ import {
   ArrowUp,
   AudioLines,
   Mic,
-  MicOff,
   Minus,
   RotateCcw,
+  Square,
   Volume2,
   VolumeX,
   X,
@@ -21,6 +21,7 @@ import { INSTITUTE } from "@/lib/site-data";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ChatMessage, ErrorMessage, WelcomeMessage } from "./ChatMessage";
+import { ComposerWaveform } from "./ComposerWaveform";
 import { LiveTalkOverlay, type LiveTalkPhase, type LiveTalkPulseState } from "./LiveTalkOverlay";
 import { QuickActions } from "./QuickActions";
 import { TypingIndicator } from "./TypingIndicator";
@@ -50,6 +51,7 @@ export function ChatWindow({ panelState, chat, onClose, onMinimize }: ChatWindow
     language,
     showWelcome,
     consumeSpeakFor,
+    cancelInFlight,
   } = chat;
 
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -57,6 +59,7 @@ export function ChatWindow({ panelState, chat, onClose, onMinimize }: ChatWindow
   const [liveMode, setLiveMode] = useState(false);
   const [livePhase, setLivePhase] = useState<LiveTalkPhase | null>(null);
   const [micMuted, setMicMuted] = useState(false);
+  const [dictatedTurn, setDictatedTurn] = useState(false);
   const liveModeRef = useRef(false);
   const micMutedRef = useRef(false);
   const isStreamingRef = useRef(isStreaming);
@@ -65,6 +68,8 @@ export function ChatWindow({ panelState, chat, onClose, onMinimize }: ChatWindow
   const resumeListenTimerRef = useRef<number | null>(null);
   const sendMessageRef = useRef(sendMessage);
   sendMessageRef.current = sendMessage;
+  const setInputRef = useRef(setInput);
+  setInputRef.current = setInput;
 
   const playback = useSpeechPlayback(language);
   const { speak: speakReply, stop: stopPlayback, speaking, unlock: unlockSpeech } = playback;
@@ -81,28 +86,54 @@ export function ChatWindow({ panelState, chat, onClose, onMinimize }: ChatWindow
     }
   }, []);
 
+  const cancelInFlightRef = useRef(cancelInFlight);
+  cancelInFlightRef.current = cancelInFlight;
+
   const voice = useVoiceInput({
     lang: speechRecognitionLang(language),
     live: liveMode,
+    dictate: !liveMode,
+    onPartial: (text) => {
+      if (liveModeRef.current) return;
+      setInputRef.current(text);
+    },
+    onSpeechActivity: () => {
+      /* Instant barge-in: cut TTS / cancel think as soon as speech is heard. */
+      if (!liveModeRef.current) return;
+      if (speakingRef.current) stopPlayback();
+      if (isStreamingRef.current) cancelInFlightRef.current();
+    },
     onTranscript: (text) => {
-      void sendMessageRef.current(text, { speakReply: true });
+      const trimmed = text.trim();
+      if (!trimmed) return;
+      if (speakingRef.current) stopPlayback();
+      if (isStreamingRef.current) cancelInFlightRef.current();
+      /* Ignore lone stop-words used only to interrupt. */
+      if (/^(ruk|rukho|stop|bas|band|wait|chup|quiet|enough)$/i.test(trimmed)) return;
+      void sendMessageRef.current(trimmed, {
+        speakReply: true,
+        live: liveModeRef.current,
+      });
     },
     onSessionEnd: (hadTranscript) => {
-      if (!liveModeRef.current || hadTranscript) return;
-      if (micMutedRef.current) return;
-      if (isStreamingRef.current || speakingRef.current) return;
-      if (panelState !== "open") return;
-      clearResumeTimer();
-      resumeListenTimerRef.current = window.setTimeout(() => {
-        if (
-          liveModeRef.current &&
-          !micMutedRef.current &&
-          !isStreamingRef.current &&
-          !speakingRef.current
-        ) {
-          voiceStartRef.current?.();
-        }
-      }, 400);
+      if (!liveModeRef.current) return;
+      if (!hadTranscript) {
+        if (micMutedRef.current) return;
+        if (isStreamingRef.current) return;
+        if (speakingRef.current) return;
+        if (panelState !== "open") return;
+        clearResumeTimer();
+        resumeListenTimerRef.current = window.setTimeout(() => {
+          if (
+            liveModeRef.current &&
+            !micMutedRef.current &&
+            !isStreamingRef.current &&
+            !speakingRef.current
+          ) {
+            voiceStartRef.current?.({ dictate: false, live: true });
+          }
+        }, 220);
+      }
     },
   });
 
@@ -113,19 +144,22 @@ export function ChatWindow({ panelState, chat, onClose, onMinimize }: ChatWindow
   const resumeListening = useCallback(() => {
     if (!liveModeRef.current || panelState !== "open") return;
     if (micMutedRef.current) return;
-    if (isStreamingRef.current || speakingRef.current) return;
+    if (isStreamingRef.current) return;
     clearResumeTimer();
     resumeListenTimerRef.current = window.setTimeout(() => {
-      if (
-        liveModeRef.current &&
-        !micMutedRef.current &&
-        !isStreamingRef.current &&
-        !speakingRef.current
-      ) {
-        voiceStartRef.current?.();
+      if (liveModeRef.current && !micMutedRef.current && !isStreamingRef.current) {
+        voiceStartRef.current?.({ dictate: false, live: true });
       }
-    }, 350);
+    }, 180);
   }, [clearResumeTimer, panelState]);
+
+  const interruptSpeech = useCallback(() => {
+    stopPlayback();
+    if (isStreamingRef.current) cancelInFlightRef.current();
+    if (!liveModeRef.current || micMutedRef.current) return;
+    clearResumeTimer();
+    voiceStartRef.current?.({ dictate: false, live: true });
+  }, [clearResumeTimer, stopPlayback]);
 
   useEffect(() => {
     if (isStreaming) return;
@@ -138,7 +172,7 @@ export function ChatWindow({ panelState, chat, onClose, onMinimize }: ChatWindow
     if (!shouldSpeak) return;
 
     spokenIdRef.current = last.id;
-    abortListening();
+    /* Keep mic available for barge-in — do not abort listening before TTS. */
     window.speechSynthesis?.resume();
     speakReply(last.content, {
       onEnd: () => {
@@ -150,15 +184,31 @@ export function ChatWindow({ panelState, chat, onClose, onMinimize }: ChatWindow
     isStreaming,
     playback.enabled,
     speakReply,
-    abortListening,
     resumeListening,
     consumeSpeakFor,
   ]);
 
+  /* Only pause the mic while the model is thinking — not while TTS is playing. */
   useEffect(() => {
     if (!liveMode) return;
-    if (isStreaming || speaking) abortListening();
-  }, [liveMode, isStreaming, speaking, abortListening]);
+    if (isStreaming) abortListening();
+  }, [liveMode, isStreaming, abortListening]);
+
+  /* Barge-in listen: reopen the mic almost immediately after TTS starts. */
+  useEffect(() => {
+    if (!liveMode || !speaking || micMuted) return;
+    const timer = window.setTimeout(() => {
+      if (
+        liveModeRef.current &&
+        speakingRef.current &&
+        !micMutedRef.current &&
+        !isStreamingRef.current
+      ) {
+        voiceStartRef.current?.({ dictate: false, live: true });
+      }
+    }, 280);
+    return () => window.clearTimeout(timer);
+  }, [liveMode, speaking, micMuted]);
 
   useEffect(() => {
     if (!liveMode || !error || isStreaming || speaking) return;
@@ -231,10 +281,26 @@ export function ChatWindow({ panelState, chat, onClose, onMinimize }: ChatWindow
 
   function handleSubmit(event?: React.FormEvent) {
     event?.preventDefault();
-    if (!input.trim()) return;
+    const text = input.trim();
+    if (!text) return;
+    if (voice.listening && !liveMode) voice.stop();
     stopListening();
     stopPlayback();
-    void sendMessage(input);
+    const speak = dictatedTurn || liveModeRef.current;
+    setDictatedTurn(false);
+    void sendMessage(text, speak ? { speakReply: true } : undefined);
+  }
+
+  function startComposeDictate() {
+    if (isStreaming) return;
+    if (speakingRef.current) interruptSpeech();
+    unlockSpeech();
+    setDictatedTurn(true);
+    voice.start({ prefix: input, dictate: true, live: false });
+  }
+
+  function stopComposeDictate() {
+    voice.stop();
   }
 
   function openVoicePicker() {
@@ -258,10 +324,14 @@ export function ChatWindow({ panelState, chat, onClose, onMinimize }: ChatWindow
     setLivePhase("session");
     setMicMuted(false);
     micMutedRef.current = false;
-    voiceStartRef.current?.();
+    voiceStartRef.current?.({ dictate: false, live: true });
   }
 
   function toggleMute() {
+    if (speakingRef.current || isStreamingRef.current) {
+      interruptSpeech();
+      return;
+    }
     const next = !micMutedRef.current;
     micMutedRef.current = next;
     setMicMuted(next);
@@ -270,23 +340,29 @@ export function ChatWindow({ panelState, chat, onClose, onMinimize }: ChatWindow
       abortListening();
       return;
     }
-    if (!speakingRef.current && !isStreamingRef.current) {
-      voiceStartRef.current?.();
+    if (!isStreamingRef.current) {
+      voiceStartRef.current?.({ dictate: false, live: true });
     }
   }
 
   function toggleMic() {
     if (liveMode) {
+      if (speakingRef.current || isStreamingRef.current) {
+        interruptSpeech();
+        return;
+      }
       endLiveTalk();
       return;
     }
-    if (!voice.listening) {
-      unlockSpeech();
-      playback.setEnabled(true);
-      const last = messages[messages.length - 1];
-      if (last?.role === "assistant") spokenIdRef.current = last.id;
+    if (speakingRef.current) {
+      interruptSpeech();
+      return;
     }
-    voice.toggle();
+    if (voice.listening) {
+      stopComposeDictate();
+      return;
+    }
+    startComposeDictate();
   }
 
   const pulseState: LiveTalkPulseState = speaking
@@ -298,7 +374,7 @@ export function ChatWindow({ panelState, chat, onClose, onMinimize }: ChatWindow
         : "idle";
 
   const liveStatus = (() => {
-    if (micMuted) return language === "english" ? "Microphone muted" : "Mic band hai";
+    if (micMuted) return language === "english" ? "Mic muted" : "Mic band";
     if (speaking) return chrome.speakingAnswer;
     if (isStreaming) return chrome.liveThinking;
     if (voice.listening) return chrome.liveSpeakNow;
@@ -306,13 +382,10 @@ export function ChatWindow({ panelState, chat, onClose, onMinimize }: ChatWindow
     return chrome.liveReady;
   })();
 
+  /* Only the student's interim speech — never dump the assistant answer into the dock. */
   const liveTranscript = (() => {
-    if (!liveMode) return null;
+    if (!liveMode || isStreaming) return null;
     if (voice.listening && voice.interimText.trim()) return voice.interimText.trim();
-    if (speaking || isStreaming) {
-      const last = messages[messages.length - 1];
-      if (last?.role === "assistant" && last.content.trim()) return last.content.trim();
-    }
     return null;
   })();
 
@@ -334,6 +407,7 @@ export function ChatWindow({ panelState, chat, onClose, onMinimize }: ChatWindow
       id="gpw-assistant-panel"
       className="gpw-assistant-panel"
       data-state={panelState}
+      data-live={livePhase === "session" ? "true" : "false"}
       role="dialog"
       aria-modal="true"
       aria-label={ASSISTANT_NAME}
@@ -413,8 +487,8 @@ export function ChatWindow({ panelState, chat, onClose, onMinimize }: ChatWindow
                     <ChatMessage key={message.id} message={message} />
                   ))}
                   {liveMode && voice.listening && voice.interimText.trim() ? (
-                    <div className="flex justify-end">
-                      <div className="gpw-assistant-bubble gpw-assistant-bubble--user max-w-[88%] opacity-80">
+                    <div className="gpw-assistant-msg gpw-assistant-msg--user">
+                      <div className="gpw-assistant-bubble gpw-assistant-bubble--user opacity-80">
                         {voice.interimText.trim()}
                       </div>
                     </div>
@@ -426,6 +500,7 @@ export function ChatWindow({ panelState, chat, onClose, onMinimize }: ChatWindow
                     </div>
                   ) : null}
                   {error ? <ErrorMessage onContact={goToContact} message={error} /> : null}
+                  {livePhase === "session" ? <div className="h-2 shrink-0" aria-hidden="true" /> : null}
                 </div>
 
                 {!liveMode ? (
@@ -459,22 +534,38 @@ export function ChatWindow({ panelState, chat, onClose, onMinimize }: ChatWindow
                   statusText={liveStatus}
                   liveTranscript={liveTranscript}
                   muted={micMuted}
+                  speaking={speaking}
+                  thinking={isStreaming}
                   voices={playback.voices}
                   selectedUri={playback.voiceUri}
                   onSelectVoice={playback.setVoiceUri}
                   onPreviewVoice={playback.previewVoice}
                   onStart={startLiveTalk}
                   onToggleMute={toggleMute}
+                  onInterrupt={interruptSpeech}
+                  interruptLabel={chrome.micInterruptTitle}
                   onClose={endLiveTalk}
                 />
               ) : (
                 <form className="gpw-assistant-composer" onSubmit={handleSubmit}>
-                  <div className="gpw-assistant-composer-shell">
+                  <div
+                    className="gpw-assistant-composer-shell"
+                    data-listening={voice.listening && !liveMode ? "true" : "false"}
+                  >
                     <Textarea
                       ref={inputRef}
                       value={input}
-                      onChange={(e) => setInput(e.target.value)}
-                      placeholder={chrome.placeholderDefault}
+                      onChange={(e) => {
+                        setDictatedTurn(false);
+                        setInput(e.target.value);
+                      }}
+                      placeholder={
+                        voice.listening && !liveMode
+                          ? language === "english"
+                            ? "Listening… speak now"
+                            : "Sun rahe hain… boliye"
+                          : chrome.placeholderDefault
+                      }
                       rows={1}
                       maxLength={2000}
                       disabled={isStreaming}
@@ -489,53 +580,55 @@ export function ChatWindow({ panelState, chat, onClose, onMinimize }: ChatWindow
                     />
 
                     <div className="gpw-assistant-composer-actions">
-                      {voice.supported ? (
-                        <button
-                          type="button"
-                          onClick={toggleMic}
-                          disabled={isStreaming}
-                          aria-pressed={voice.listening}
-                          aria-label={voice.listening ? "Stop listening" : "Dictate with microphone"}
-                          title={voice.listening ? "Stop" : chrome.micSpeakTitle}
-                          className="gpw-assistant-tool"
-                          data-active={voice.listening ? "true" : "false"}
-                        >
-                          {voice.listening ? <MicOff className="size-4" /> : <Mic className="size-4" />}
-                        </button>
+                      {voice.supported && voice.listening && !liveMode ? (
+                        <>
+                          <ComposerWaveform active />
+                          <button
+                            type="button"
+                            onClick={stopComposeDictate}
+                            className="gpw-assistant-stop-btn"
+                            aria-label="Stop listening"
+                            title="Stop"
+                          >
+                            <Square className="size-3.5" fill="currentColor" />
+                          </button>
+                        </>
                       ) : null}
 
-                      {hasDraft ? (
-                        <button
-                          type="submit"
-                          disabled={isStreaming || !hasDraft}
-                          className="gpw-assistant-voice-btn gpw-assistant-voice-btn--send"
-                          aria-label="Send message"
-                          title="Send"
-                        >
-                          <ArrowUp className="size-4" strokeWidth={2.5} />
-                        </button>
-                      ) : voice.supported ? (
-                        <button
-                          type="button"
-                          onClick={openVoicePicker}
-                          disabled={isStreaming}
-                          aria-label="Start voice mode"
-                          title={chrome.liveStartTitle}
-                          className="gpw-assistant-voice-btn"
-                        >
-                          <AudioLines className="size-4" />
-                        </button>
-                      ) : (
-                        <button
-                          type="submit"
-                          disabled={isStreaming || !hasDraft}
-                          className="gpw-assistant-voice-btn gpw-assistant-voice-btn--send"
-                          aria-label="Send message"
-                          title="Send"
-                        >
-                          <ArrowUp className="size-4" strokeWidth={2.5} />
-                        </button>
-                      )}
+                      {voice.supported && !(voice.listening && !liveMode) ? (
+                        <>
+                          <button
+                            type="button"
+                            onClick={toggleMic}
+                            disabled={isStreaming}
+                            aria-label="Dictate with microphone"
+                            title={chrome.micSpeakTitle}
+                            className="gpw-assistant-tool gpw-assistant-tool--mic"
+                          >
+                            <Mic className="size-4" strokeWidth={2.25} />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={openVoicePicker}
+                            disabled={isStreaming}
+                            aria-label="Start live voice chat"
+                            title={chrome.liveStartTitle}
+                            className="gpw-assistant-tool gpw-assistant-tool--live"
+                          >
+                            <AudioLines className="size-4" strokeWidth={2.25} />
+                          </button>
+                        </>
+                      ) : null}
+
+                      <button
+                        type="submit"
+                        disabled={isStreaming || !hasDraft}
+                        className="gpw-assistant-voice-btn gpw-assistant-voice-btn--send"
+                        aria-label="Send message"
+                        title="Send"
+                      >
+                        <ArrowUp className="size-4" strokeWidth={2.5} />
+                      </button>
                     </div>
                   </div>
                 </form>

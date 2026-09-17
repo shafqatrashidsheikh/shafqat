@@ -11,16 +11,22 @@ type LiveTalkOverlayProps = {
   phase: LiveTalkPhase;
   pulseState: LiveTalkPulseState;
   statusText: string;
-  /** Live spoken / interim text shown like ChatGPT transcript. */
+  /** Only the user's live/interim speech — never the assistant answer. */
   liveTranscript?: string | null;
   muted: boolean;
+  speaking?: boolean;
+  /** Model is generating — mic button interrupts / cancels. */
+  thinking?: boolean;
   voices: AssistantVoiceChoice[];
   selectedUri: string | null;
   onSelectVoice: (uri: string) => void;
   onPreviewVoice: (uri: string) => void;
   onStart: () => void;
   onToggleMute: () => void;
+  /** Stop TTS immediately and listen again. */
+  onInterrupt?: () => void;
   onClose: () => void;
+  interruptLabel?: string;
 };
 
 const VOICE_BLURBS = [
@@ -58,14 +64,19 @@ export function LiveTalkOverlay({
   statusText,
   liveTranscript,
   muted,
+  speaking = false,
+  thinking = false,
   voices,
   selectedUri,
   onSelectVoice,
   onPreviewVoice,
   onStart,
   onToggleMute,
+  onInterrupt,
   onClose,
+  interruptLabel = "Interrupt",
 }: LiveTalkOverlayProps) {
+  const canInterrupt = speaking || thinking;
   const initialIndex = useMemo(() => {
     if (!voices.length) return 0;
     const found = voices.findIndex((v) => v.uri === selectedUri);
@@ -168,9 +179,11 @@ export function LiveTalkOverlay({
   return (
     <div className="gpw-live-dock" role="region" aria-label="Voice conversation controls">
       {liveTranscript ? (
-        <p className="gpw-live-transcript" role="status">
-          {liveTranscript}
-        </p>
+        <div className="gpw-assistant-msg gpw-assistant-msg--user">
+          <p className="gpw-assistant-bubble gpw-assistant-bubble--user gpw-live-user-interim" role="status">
+            {liveTranscript}
+          </p>
+        </div>
       ) : null}
 
       <div className="gpw-live-dock-bar">
@@ -186,12 +199,31 @@ export function LiveTalkOverlay({
           <button
             type="button"
             className="gpw-live-bar-btn"
-            onClick={onToggleMute}
-            aria-pressed={muted}
-            aria-label={muted ? "Unmute microphone" : "Mute microphone"}
-            title={muted ? "Unmute" : "Mute"}
+            data-interrupt={canInterrupt ? "true" : "false"}
+            onClick={() => {
+              if (canInterrupt && onInterrupt) {
+                onInterrupt();
+                return;
+              }
+              onToggleMute();
+            }}
+            aria-pressed={canInterrupt ? undefined : muted}
+            aria-label={
+              canInterrupt
+                ? interruptLabel
+                : muted
+                  ? "Unmute microphone"
+                  : "Mute microphone"
+            }
+            title={canInterrupt ? interruptLabel : muted ? "Unmute" : "Mute"}
           >
-            {muted ? <MicOff className="size-4" /> : <Mic className="size-4" />}
+            {canInterrupt ? (
+              <Mic className="size-4" strokeWidth={2.25} />
+            ) : muted ? (
+              <MicOff className="size-4" strokeWidth={2.25} />
+            ) : (
+              <Mic className="size-4" strokeWidth={2.25} />
+            )}
           </button>
           <button
             type="button"

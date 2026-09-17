@@ -150,7 +150,7 @@ export function ExploreGPWSrinagar({ cards = EXPLORE_CARDS }: { cards?: ExploreC
           >
             Explore GPW Srinagar
           </h2>
-          <p className="mt-4 w-full min-w-0 hyphens-none text-base leading-relaxed text-muted-foreground lg:whitespace-nowrap">
+          <p className="mt-4 w-full min-w-0 max-w-3xl hyphens-none text-pretty text-base leading-relaxed text-muted-foreground">
             A focused path through academics, campus life, admissions and careers at{" "}
             <KeepTogether>GPW Srinagar.</KeepTogether>
           </p>

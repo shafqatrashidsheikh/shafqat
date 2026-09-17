@@ -73,7 +73,7 @@ function SignupPage() {
     <div className="flex min-h-screen items-center justify-center bg-background px-4 py-10">
       <div className="flex w-full max-w-md flex-col items-start gap-4">
         <PageNavigation />
-        <div className="card-premium w-full p-8">
+        <div className="card-premium w-full min-w-0 p-5 sm:p-8">
           <p className="text-xs font-semibold tracking-[0.16em] text-brand uppercase">Student Portal</p>
           <h1 className="mt-2 font-display text-2xl font-extrabold text-navy">Create your account</h1>
           <p className="mt-2 text-sm text-muted-foreground">

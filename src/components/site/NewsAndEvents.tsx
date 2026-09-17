@@ -31,7 +31,7 @@ export function NewsAndEvents({ events }: { events?: CampusEvent[] }) {
         {!featured ? (
           <p className="mt-8 text-sm text-muted-foreground">No published events at the moment.</p>
         ) : (
-          <div className="mt-6 grid min-w-0 gap-3 min-[720px]:mt-8 min-[720px]:grid-cols-3 min-[720px]:gap-4 lg:gap-5">
+          <div className="mt-8 grid min-w-0 gap-4 lg:grid-cols-3 lg:gap-5">
             <FeaturedEvent event={featured} spanFull={rest.length === 0} />
             {rest.map((e) => (
               <CompactEvent key={e.id} event={e} />
@@ -54,12 +54,12 @@ function FeaturedEvent({ event, spanFull }: { event: CampusEvent; spanFull: bool
     <article
       className={
         spanFull
-          ? "card-premium min-w-0 p-5 sm:p-7 min-[720px]:col-span-3 lg:p-8"
-          : "card-premium min-w-0 p-5 sm:p-7 min-[720px]:col-span-2"
+          ? "card-premium min-w-0 p-6 sm:p-7 lg:col-span-3 lg:p-8"
+          : "card-premium min-w-0 p-6 sm:p-7 lg:col-span-2"
       }
       data-motion-from="left"
     >
-      <div className="flex min-w-0 flex-row gap-4 sm:gap-6 lg:gap-8">
+      <div className="flex min-w-0 flex-col gap-6 sm:flex-row sm:gap-8">
         <DateBlock date={event.date} />
 
         <div className="min-w-0 flex-1">
@@ -129,7 +129,7 @@ function DateBlock({ date }: { date: string }) {
 
   return (
     <div className="flex shrink-0 items-center gap-3 sm:flex-col sm:items-stretch sm:gap-2">
-      <div className="grid min-w-[4.5rem] place-items-center rounded-2xl border border-border/80 bg-light-blue px-3 py-3 text-brand">
+      <div className="grid min-w-[3.75rem] place-items-center rounded-2xl border border-border/80 bg-light-blue px-2.5 py-2.5 text-brand sm:min-w-[4.5rem] sm:px-3 sm:py-3">
         {parts.length === 3 && day && month && year ? (
           <>
             <span className="font-display text-2xl font-extrabold leading-none text-navy">{day}</span>

@@ -15,8 +15,8 @@ export function HomeFaqs({ items }: { items?: FaqItem[] }) {
   const list = items && items.length > 0 ? items : HOME_FAQS;
   return (
     <section aria-labelledby="home-faqs-heading" className="section-misty section-y !pt-0">
-      <div className="container-page grid min-w-0 gap-6 min-[720px]:grid-cols-[minmax(0,16rem)_minmax(0,1fr)] min-[720px]:items-start min-[720px]:gap-8 lg:grid-cols-[minmax(0,20rem)_minmax(0,1fr)] lg:gap-12">
-        <div className="min-w-0 min-[720px]:sticky min-[720px]:top-28" data-motion-from="up">
+      <div className="container-page grid min-w-0 gap-8 lg:grid-cols-[minmax(0,20rem)_minmax(0,1fr)] lg:items-start lg:gap-12">
+        <div className="min-w-0 lg:sticky lg:top-28" data-motion-from="up">
           <p className="font-display text-xs font-semibold tracking-[0.2em] text-brand uppercase">
             FAQs
           </p>

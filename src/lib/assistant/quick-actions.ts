@@ -4,6 +4,7 @@ export type QuickAction = {
   message: string;
 };
 
+/** Welcome chips — each maps to an instant capability / result / syllabus path. */
 export const WELCOME_QUICK_ACTIONS: QuickAction[] = [
   {
     id: "admissions",
@@ -21,6 +22,11 @@ export const WELCOME_QUICK_ACTIONS: QuickAction[] = [
     message: "What is the eligibility for diploma admissions?",
   },
   {
+    id: "fees",
+    label: "Fees",
+    message: "What is the annual fee for diploma programmes?",
+  },
+  {
     id: "notices",
     label: "Latest Notices",
     message: "What are the latest official JKBOTE notices for GPW Srinagar?",
@@ -36,6 +42,11 @@ export const WELCOME_QUICK_ACTIONS: QuickAction[] = [
     message: "What campus facilities are available at the college?",
   },
   {
+    id: "hostel",
+    label: "Hostel",
+    message: "Does GPW Srinagar have hostel facilities?",
+  },
+  {
     id: "exams",
     label: "Examinations",
     message: "Where can I find examination schedules and information?",
@@ -46,9 +57,29 @@ export const WELCOME_QUICK_ACTIONS: QuickAction[] = [
     message: "6th semester result aya kya? Official JKBOTE notice batao.",
   },
   {
+    id: "faculty",
+    label: "Faculty",
+    message: "Tell me about faculty and staff at GPW Srinagar",
+  },
+  {
+    id: "library",
+    label: "Library",
+    message: "Tell me about the library at GPW Srinagar.",
+  },
+  {
+    id: "weather",
+    label: "Campus Weather",
+    message: "What is the live weather at GPW Srinagar campus right now?",
+  },
+  {
     id: "contact",
     label: "Contact & Location",
     message: "Where is the college located and how can I contact GPW Srinagar?",
+  },
+  {
+    id: "languages",
+    label: "Languages",
+    message: "Which languages do you support?",
   },
 ];
 
@@ -66,6 +97,16 @@ export function getContextualQuickActions(userMessage: string): QuickAction[] {
         id: "process",
         label: "Application Process",
         message: "What is the admission application process?",
+      },
+      {
+        id: "fees",
+        label: "Fees",
+        message: "What is the annual fee for diploma programmes?",
+      },
+      {
+        id: "documents",
+        label: "Documents",
+        message: "What documents are required for admission?",
       },
       {
         id: "dates",
@@ -122,6 +163,11 @@ export function getContextualQuickActions(userMessage: string): QuickAction[] {
         label: "Admission Notices",
         message: "Are there recent admission-related JKBOTE notices?",
       },
+      {
+        id: "portal",
+        label: "Portal Status",
+        message: "Is the JKBOTE online admission portal open right now?",
+      },
     ];
   }
 
@@ -174,6 +220,31 @@ export function getContextualQuickActions(userMessage: string): QuickAction[] {
         label: "All semesters",
         message: "Give me all semester syllabus PDF links for diploma programmes",
       },
+      {
+        id: "calendar",
+        label: "Academic Calendar",
+        message: "Where can I find the academic calendar?",
+      },
+    ];
+  }
+
+  if (/(faculty|staff|hod|lecturer|teacher|principal)/.test(m)) {
+    return [
+      {
+        id: "faculty",
+        label: "Faculty page",
+        message: "Tell me about faculty and staff at GPW Srinagar",
+      },
+      {
+        id: "cse-faculty",
+        label: "CSE faculty",
+        message: "Computer Engineering faculty details",
+      },
+      {
+        id: "principal",
+        label: "Principal",
+        message: "Show me the Principal's message",
+      },
     ];
   }
 
@@ -181,6 +252,16 @@ export function getContextualQuickActions(userMessage: string): QuickAction[] {
     return [
       { id: "location", label: "Location", message: "Where is GPW Srinagar located?" },
       { id: "contact-page", label: "Contact College", message: "How can I contact GPW Srinagar?" },
+    ];
+  }
+
+  if (/(language|languages|urdu|hinglish|kashmiri|hindi)/.test(m)) {
+    return [
+      {
+        id: "languages",
+        label: "Languages",
+        message: "Which languages do you support?",
+      },
     ];
   }
 

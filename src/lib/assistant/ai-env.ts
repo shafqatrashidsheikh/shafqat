@@ -92,11 +92,11 @@ export const aiEnv = {
   },
   get maxOutputTokens(): number {
     const raw = read("AI_MAX_OUTPUT_TOKENS");
-    const n = raw ? Number.parseInt(raw, 10) : 700;
-    return Number.isFinite(n) ? Math.min(Math.max(n, 200), 1200) : 700;
+    const n = raw ? Number.parseInt(raw, 10) : 420;
+    return Number.isFinite(n) ? Math.min(Math.max(n, 200), 700) : 420;
   },
   get maxHistoryMessages(): number {
-    return 12;
+    return 6;
   },
   get isConfigured(): boolean {
     return Boolean(aiEnv.openaiApiKey);

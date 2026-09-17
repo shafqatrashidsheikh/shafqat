@@ -32,7 +32,7 @@ export function MediaRail({ items, className, label = "Campus media gallery" }: 
       {items.map((item) => (
         <figure
           key={item.id}
-          className="w-[min(78vw,320px)] shrink-0 snap-start overflow-hidden rounded-2xl border border-border bg-surface-white shadow-soft sm:w-[280px] lg:w-[320px]"
+          className="w-[min(85%,17.5rem)] shrink-0 snap-start overflow-hidden rounded-2xl border border-border bg-surface-white shadow-soft sm:w-[280px] lg:w-[320px]"
         >
           <AdaptiveMedia
             src={item.src}

@@ -189,8 +189,13 @@
   img,
   video,
   canvas,
-  svg {
+  svg,
+  iframe {
     max-width: 100%;
+  }
+
+  iframe {
+    width: 100%;
   }
 
   /* Body copy & descriptive text */
@@ -272,7 +277,20 @@
     height: auto;
   }
 
+  /* Sized frames (aspect boxes / fill parents) keep explicit height */
+  img.h-full,
+  img.size-full,
+  .size-full > img,
+  [class*="aspect-"] img,
+  .college-logo-img {
+    height: 100%;
+  }
+
   svg {
+    max-width: 100%;
+  }
+
+  table {
     max-width: 100%;
   }
 
@@ -425,19 +443,23 @@
   width: 100%;
   max-width: min(80rem, 100%);
   margin-inline: auto;
-  padding-inline-start: max(clamp(1rem, 3.5vw, 1.25rem), env(safe-area-inset-left, 0px));
-  padding-inline-end: max(clamp(1rem, 3.5vw, 1.25rem), env(safe-area-inset-right, 0px));
+  padding-inline: clamp(0.875rem, 3.5vw, 1.25rem);
   box-sizing: border-box;
 }
 
 @utility section-y {
-  /* Fluid vertical rhythm — same structure at every width, only scale changes */
-  padding-block: clamp(2.25rem, 1.4rem + 3.2vw, 5.5rem);
+  padding-block: clamp(2.5rem, 5vw, 3.5rem);
   background-color: var(--background);
+  @media (min-width: 768px) {
+    padding-block: clamp(3rem, 5vw, 4.5rem);
+  }
+  @media (min-width: 1024px) {
+    padding-block: 5.5rem;
+  }
 }
 
 @utility heading-section {
-  font-size: clamp(1.25rem, 0.95rem + 1.35vw, 2.25rem);
+  font-size: clamp(1.375rem, 2.5vw + 0.75rem, 2.25rem);
   line-height: var(--leading-h2);
 }
 
@@ -775,6 +797,13 @@ html.js-motion footer nav a:hover {
 
 @media (hover: hover) and (pointer: fine) {
   .explore-marquee-viewport:hover .explore-marquee-track {
+    animation-play-state: paused;
+  }
+}
+
+/* Touch: pause while finger is down so users can read cards */
+@media (hover: none) {
+  .explore-marquee-viewport:active .explore-marquee-track {
     animation-play-state: paused;
   }
 }
@@ -1118,24 +1147,31 @@ html.js-motion footer nav a:hover {
   transition: transform 260ms cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
-/* Cursor hover — soft zoom / pop (fine pointers only) */
+/* Cursor hover — soft zoom / pop (fine pointers only; header crest stays clipped) */
 @media (hover: hover) and (pointer: fine) {
   .college-logo-wrap:not(.college-logo-wrap--static):hover,
   a:is(:hover, :focus-visible) .college-logo-wrap:not(.college-logo-wrap--static) {
     z-index: 5;
-    transform: scale(1.12);
+    transform: scale(1.06);
     box-shadow:
       0 0 0 2px color-mix(in srgb, var(--primary-blue) 35%, transparent),
       0 10px 24px color-mix(in srgb, var(--deep-blue) 28%, transparent);
   }
 
+  .header-brand-seal .college-logo-wrap:not(.college-logo-wrap--static):hover,
+  .header-brand-seal a:is(:hover, :focus-visible) .college-logo-wrap:not(.college-logo-wrap--static),
+  a.header-brand-seal:is(:hover, :focus-visible) .college-logo-wrap:not(.college-logo-wrap--static) {
+    transform: scale(1.03);
+    box-shadow: 0 0 0 1.5px color-mix(in srgb, var(--primary-blue) 32%, transparent);
+  }
+
   .college-logo-wrap:not(.college-logo-wrap--static):hover .college-logo-img,
   a:is(:hover, :focus-visible) .college-logo-wrap:not(.college-logo-wrap--static) .college-logo-img {
-    transform: scale(1.04);
+    transform: scale(1.03);
   }
 
   .college-logo-wrap:not(.college-logo-wrap--static):active {
-    transform: scale(1.06);
+    transform: scale(1.04);
   }
 }
 
@@ -1155,8 +1191,7 @@ html.js-motion footer nav a:hover {
 
 /* ——— Institutional GPWS preloader ——— */
 html {
-  /* Mobile: auto. Desktop override lives in Responsive safeguards. */
-  scrollbar-gutter: auto;
+  scrollbar-gutter: stable;
 }
 
 html.story-loader-lock,
@@ -1221,7 +1256,8 @@ html.site-arming .site-shell > :not(.story-loader) {
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: min(22.5rem, calc(100vw - 2.5rem));
+  width: min(22.5rem, calc(100% - 2.5rem));
+  max-width: 100%;
 }
 
 .story-emblem-stage {
@@ -1345,7 +1381,7 @@ html.site-arming .site-shell > :not(.story-loader) {
 
 @media (max-width: 768px) {
   .story-loader-lockup {
-    width: min(20.5rem, calc(100vw - 2rem));
+    width: min(20.5rem, calc(100% - 2rem));
   }
 
   .story-emblem-stage {
@@ -1467,7 +1503,8 @@ html.site-arming .site-shell > :not(.story-loader) {
 .gpw-assistant-panel {
   display: flex;
   flex-direction: column;
-  width: min(100vw - 2rem, 26rem);
+  width: min(calc(100% - 2rem), 26rem);
+  max-width: calc(100vw - 2rem);
   overflow: hidden;
   box-sizing: border-box;
   border-radius: 1.25rem;
@@ -1516,6 +1553,10 @@ html.site-arming .site-shell > :not(.story-loader) {
   background: color-mix(in srgb, var(--background) 55%, var(--surface-white));
 }
 
+.gpw-assistant-panel[data-live="true"] .gpw-assistant-scroll {
+  padding-bottom: 0.25rem;
+}
+
 .gpw-assistant-messages {
   display: flex;
   flex-direction: column;
@@ -1523,20 +1564,38 @@ html.site-arming .site-shell > :not(.story-loader) {
   padding: 1rem;
 }
 
+.gpw-assistant-msg {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+}
+
+.gpw-assistant-msg--user {
+  justify-content: flex-end;
+}
+
+.gpw-assistant-msg--assistant {
+  justify-content: flex-start;
+}
+
 .gpw-assistant-bubble {
   border-radius: 1rem;
   padding: 0.75rem 0.875rem;
   font-size: 0.875rem;
   line-height: var(--leading-body);
+  max-width: min(92%, 22rem);
 }
 
 .gpw-assistant-bubble--user {
+  max-width: min(88%, 20rem);
+  margin-inline-start: auto;
   background: var(--primary-blue);
   color: var(--surface-white);
   border-bottom-right-radius: 0.35rem;
 }
 
 .gpw-assistant-bubble--assistant {
+  max-width: min(92%, 22rem);
   background: var(--surface-white);
   color: var(--foreground);
   border: 1px solid var(--border);
@@ -1641,9 +1700,84 @@ html.site-arming .site-shell > :not(.story-loader) {
     0 8px 24px color-mix(in srgb, var(--deep-blue) 10%, transparent);
 }
 
-.gpw-assistant-composer-shell[data-live="true"] {
-  border-color: color-mix(in srgb, var(--primary-blue) 40%, transparent);
-  background: color-mix(in srgb, var(--light-blue) 28%, var(--surface-white));
+.gpw-assistant-composer-shell[data-listening="true"] {
+  border-color: color-mix(in srgb, var(--primary-blue) 42%, transparent);
+  background: color-mix(in srgb, var(--light-blue) 22%, var(--surface-white));
+}
+
+.gpw-composer-wave {
+  display: inline-flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 2px;
+  width: 1.35rem;
+  height: 1rem;
+}
+
+.gpw-composer-wave i {
+  display: block;
+  width: 2.5px;
+  height: 40%;
+  border-radius: 99px;
+  background: color-mix(in srgb, var(--navy) 45%, transparent);
+}
+
+.gpw-composer-wave[data-active="true"] i {
+  background: var(--primary-blue);
+  animation: gpw-composer-wave 0.9s ease-in-out infinite;
+}
+
+.gpw-composer-wave[data-active="true"] i:nth-child(1) {
+  animation-delay: 0ms;
+  height: 45%;
+}
+.gpw-composer-wave[data-active="true"] i:nth-child(2) {
+  animation-delay: 120ms;
+  height: 85%;
+}
+.gpw-composer-wave[data-active="true"] i:nth-child(3) {
+  animation-delay: 240ms;
+  height: 60%;
+}
+.gpw-composer-wave[data-active="true"] i:nth-child(4) {
+  animation-delay: 360ms;
+  height: 95%;
+}
+
+@keyframes gpw-composer-wave {
+  0%,
+  100% {
+    transform: scaleY(0.45);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+
+.gpw-assistant-stop-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border: 0;
+  border-radius: 9999px;
+  color: #fff;
+  background: #111827;
+  cursor: pointer;
+  transition: background-color 160ms ease, transform 160ms ease;
+}
+
+.gpw-assistant-stop-btn:hover {
+  background: #0b1220;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gpw-composer-wave[data-active="true"] i {
+    animation: none;
+    transform: none;
+    opacity: 0.85;
+  }
 }
 
 .gpw-assistant-composer .gpw-assistant-input {
@@ -1697,7 +1831,8 @@ html.site-arming .site-shell > :not(.story-loader) {
   cursor: pointer;
   transition:
     background-color 160ms ease,
-    color 160ms ease;
+    color 160ms ease,
+    box-shadow 160ms ease;
 }
 
 .gpw-assistant-tool:hover:not(:disabled) {
@@ -1708,6 +1843,30 @@ html.site-arming .site-shell > :not(.story-loader) {
 .gpw-assistant-tool[data-active="true"] {
   color: var(--primary-blue);
   background: color-mix(in srgb, var(--light-blue) 70%, transparent);
+}
+
+.gpw-assistant-tool--mic {
+  color: var(--primary-blue);
+  background: color-mix(in srgb, var(--light-blue) 70%, #fff);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--primary-blue) 18%, transparent);
+}
+
+.gpw-assistant-tool--mic:hover:not(:disabled) {
+  color: var(--deep-blue);
+  background: var(--light-blue);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--primary-blue) 28%, transparent);
+}
+
+.gpw-assistant-tool--live {
+  color: #fff;
+  background: var(--deep-blue);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--deep-blue) 28%, transparent);
+}
+
+.gpw-assistant-tool--live:hover:not(:disabled) {
+  color: #fff;
+  background: var(--primary-blue);
+  box-shadow: 0 3px 10px color-mix(in srgb, var(--primary-blue) 32%, transparent);
 }
 
 .gpw-assistant-tool:disabled {
@@ -1955,20 +2114,27 @@ html.site-arming .site-shell > :not(.story-loader) {
   flex: 0 0 auto;
   flex-direction: column;
   gap: 0.55rem;
+  position: relative;
+  z-index: 5;
   padding: 0.55rem 0.85rem 0.9rem;
   border-top: 1px solid color-mix(in srgb, var(--border) 70%, transparent);
   background: #ffffff;
+  box-shadow: 0 -8px 24px color-mix(in srgb, var(--deep-blue) 6%, transparent);
 }
 
-.gpw-live-transcript {
-  max-height: 4.5rem;
-  overflow: auto;
-  border-radius: 0.85rem;
-  background: color-mix(in srgb, var(--light-blue) 35%, #ffffff);
-  padding: 0.65rem 0.8rem;
-  font-size: 0.8125rem;
-  line-height: 1.45;
-  color: var(--navy);
+.gpw-live-user-interim {
+  max-width: min(88%, 18rem);
+  opacity: 0.92;
+  /* Never show assistant prose in the dock — only the student's spoken draft */
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.gpw-live-bar-btn[data-interrupt="true"] {
+  color: #fff;
+  background: var(--primary-blue);
 }
 
 .gpw-live-dock-bar {
@@ -2205,7 +2371,7 @@ html.site-arming .site-shell > :not(.story-loader) {
     left: auto;
     right: auto;
     bottom: auto;
-    width: min(100vw - 1.5rem, 26rem);
+    width: min(calc(100% - 1.5rem), 26rem);
   }
 
   .gpw-assistant-composer {
@@ -2384,6 +2550,7 @@ html.site-arming .site-shell > :not(.story-loader) {
   display: grid;
   place-items: center;
   isolation: isolate;
+  overflow: visible;
 }
 
 .header-brand-seal .college-logo-wrap {
@@ -2394,9 +2561,15 @@ html.site-arming .site-shell > :not(.story-loader) {
 .header-brand-seal-orbit {
   position: absolute;
   z-index: 0;
-  inset: -1.05rem;
+  inset: -0.85rem;
   pointer-events: none;
   animation: header-brand-orbit 36s linear infinite;
+}
+
+@media (max-width: 639px) {
+  .header-brand-seal-orbit {
+    inset: -0.65rem;
+  }
 }
 
 .header-brand-seal-orbit-text {
@@ -2423,8 +2596,9 @@ html.site-arming .site-shell > :not(.story-loader) {
 #main,
 .site-shell,
 header.site-header,
+.site-header > div,
 footer,
-.container-page {
+.site-footer {
   min-width: 0;
   max-width: 100%;
 }
@@ -2434,108 +2608,32 @@ footer,
   overflow-x: clip;
 }
 
-header.site-header {
+header.site-header,
+.site-header > div {
   overflow-x: clip;
 }
 
-/* Phone / tablet: avoid horizontal page scroll from long words & embeds */
-#main :where(p, li, td, th, a, figcaption, address) {
+/* Long unbroken strings (URLs, emails) must wrap inside cards/copy */
+.card-premium,
+.container-page,
+#main p,
+#main li,
+#main dd,
+#main td,
+#main th {
   overflow-wrap: break-word;
   word-break: normal;
 }
 
-#main :where(h1, h2, h3, h4, .heading-section, .font-brand) {
-  overflow-wrap: break-word;
-  hyphens: manual;
-}
-
-#main img,
-#main video,
-#main iframe,
-#main svg,
-#main embed,
-#main object {
-  max-width: 100%;
-  height: auto;
-}
-
-#main iframe {
-  width: 100%;
-}
-
-#main pre,
-#main code {
-  max-width: 100%;
-  overflow-x: auto;
-}
-
-#main .table-scroll,
-#main [data-table-scroll] {
-  width: 100%;
-  max-width: 100%;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-}
-
-/* Touch-friendly tap targets on coarse pointers */
-@media (pointer: coarse) {
-  .btn-primary,
-  .btn-secondary,
-  .link-cta,
-  header.site-header button,
-  header.site-header a[role="button"] {
-    min-height: 2.75rem;
-  }
-}
-
-/* Compact phones */
-@media (max-width: 379px) {
-  .container-page {
-    padding-inline-start: max(0.875rem, env(safe-area-inset-left, 0px));
-    padding-inline-end: max(0.875rem, env(safe-area-inset-right, 0px));
+@media (max-width: 640px) {
+  .site-back-btn {
+    padding: 0.5rem 0.8rem;
+    font-size: 0.75rem;
   }
 
-  .header-brand-seal-orbit {
-    inset: -0.7rem;
-  }
-
-  .header-brand-seal-orbit-text {
-    font-size: 6.25px;
-    letter-spacing: 0.1em;
-  }
-}
-
-@media (max-width: 639px) {
-  .container-page {
-    padding-inline-start: max(1rem, env(safe-area-inset-left, 0px));
-    padding-inline-end: max(1rem, env(safe-area-inset-right, 0px));
-  }
-
-  header.site-header {
-    padding-left: max(0.75rem, env(safe-area-inset-left, 0px));
-    padding-right: max(0.75rem, env(safe-area-inset-right, 0px));
-  }
-
-  .card-premium {
-    border-radius: 1rem;
-  }
-
-  /* Marquee cards: readable width without forcing page overflow */
-  .explore-marquee-track {
-    gap: 1rem;
-  }
-}
-
-/* Prefer stable scrollbar only where it does not shrink phone layouts */
-@media (min-width: 768px) {
-  html {
-    scrollbar-gutter: stable;
-  }
-}
-
-@media (max-width: 767px) {
-  html {
-    scrollbar-gutter: auto;
+  .site-back-btn--float {
+    bottom: max(1rem, env(safe-area-inset-bottom, 0px));
+    left: max(0.65rem, env(safe-area-inset-left, 0px));
   }
 }
 

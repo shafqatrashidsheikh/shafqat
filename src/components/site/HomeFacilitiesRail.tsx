@@ -90,7 +90,7 @@ function FacilityCard({
   return (
     <article
       aria-hidden={ariaHidden}
-      className="card-premium group flex w-[min(88vw,20rem)] shrink-0 flex-col p-5 transition-[border-color,box-shadow,transform] duration-300 hover:-translate-y-0.5 hover:border-brand/40 hover:shadow-raised sm:w-[19.5rem] sm:p-6 lg:w-[21rem]"
+      className="card-premium group flex w-[min(82%,20rem)] shrink-0 flex-col p-5 transition-[border-color,box-shadow,transform] duration-300 hover:-translate-y-0.5 hover:border-brand/40 hover:shadow-raised sm:w-[19.5rem] sm:p-6 lg:w-[21rem]"
     >
       <p className="text-[11px] font-semibold tracking-[0.14em] text-brand uppercase">
         {facility.category}

@@ -56,24 +56,56 @@ const ERROR_MESSAGES: Record<string, string> = {
 
 /** Silence window after the last recognised words before dictation auto-stops. */
 const DEFAULT_SILENCE_TIMEOUT_MS = 2500;
-/** Faster turn-taking for live conversation. */
-const LIVE_SILENCE_TIMEOUT_MS = 1500;
+/** Live talk: short silence = snappy turn-taking. */
+const LIVE_SILENCE_TIMEOUT_MS = 850;
+/** Compose/dictate (Cursor-style): stay open until the user presses Stop. */
+const DICTATE_SILENCE_TIMEOUT_MS = 120_000;
+
+/** Words that mean “stop talking” even as a single token (barge-in). */
+const BARGE_IN_STOP =
+  /^(ruk|rukho|stop|bas|band|wait|chup|quiet|enough|cancel|cancel\s*karo)$/i;
 
 export type VoiceInputOptions = {
   /** BCP-47 tag, e.g. en-IN for Hinglish, ur-PK, hi-IN. */
   lang: string;
-  /** Receives the final transcript for the current dictation. */
+  /**
+   * Final transcript for the session.
+   * Live mode: auto-sends. Dictate mode: usually ignored (text already in the box).
+   */
   onTranscript: (text: string) => void;
+  /**
+   * Live partial text (final + interim) — used to fill the composer while speaking
+   * like Cursor’s voice input.
+   */
+  onPartial?: (text: string) => void;
   /**
    * Live talk: shorter silence window and soft “no speech” handling so the
    * host can keep the conversation loop running.
    */
   live?: boolean;
+  /**
+   * Cursor-style compose dictate: keep listening until Stop; stream text via onPartial;
+   * do not auto-fire onTranscript on end (user sends manually).
+   */
+  dictate?: boolean;
   /** Called whenever a recognition session ends (with or without text). */
   onSessionEnd?: (hadTranscript: boolean) => void;
+  /**
+   * Fired as soon as meaningful speech is heard (interim or final).
+   * Used to stop TTS immediately during live barge-in.
+   */
+  onSpeechActivity?: (text: string) => void;
 };
 
-export function useVoiceInput({ lang, onTranscript, live = false, onSessionEnd }: VoiceInputOptions) {
+export function useVoiceInput({
+  lang,
+  onTranscript,
+  onPartial,
+  live = false,
+  dictate = false,
+  onSessionEnd,
+  onSpeechActivity,
+}: VoiceInputOptions) {
   const [supported, setSupported] = useState(false);
   const [listening, setListening] = useState(false);
   const [interimText, setInterimText] = useState("");
@@ -84,10 +116,19 @@ export function useVoiceInput({ lang, onTranscript, live = false, onSessionEnd }
   const silenceRef = useRef<number | null>(null);
   const liveRef = useRef(live);
   liveRef.current = live;
+  const dictateRef = useRef(dictate);
+  dictateRef.current = dictate;
   const onTranscriptRef = useRef(onTranscript);
   onTranscriptRef.current = onTranscript;
+  const onPartialRef = useRef(onPartial);
+  onPartialRef.current = onPartial;
   const onSessionEndRef = useRef(onSessionEnd);
   onSessionEndRef.current = onSessionEnd;
+  const onSpeechActivityRef = useRef(onSpeechActivity);
+  onSpeechActivityRef.current = onSpeechActivity;
+  const bargeFiredRef = useRef(false);
+  /** Prefix already in the composer when dictate started. */
+  const composePrefixRef = useRef("");
 
   useEffect(() => {
     setSupported(Boolean(getRecognitionCtor()));
@@ -113,68 +154,109 @@ export function useVoiceInput({ lang, onTranscript, live = false, onSessionEnd }
     finalRef.current = "";
   }, [clearSilenceTimer]);
 
-  const start = useCallback(() => {
-    const Ctor = getRecognitionCtor();
-    if (!Ctor) {
-      setError("Voice input is not supported in this browser. Try Chrome or Edge.");
-      return;
-    }
-
-    recognitionRef.current?.abort();
-    setError(null);
-    setInterimText("");
-    finalRef.current = "";
-
-    const recognition = new Ctor();
-    recognition.lang = lang;
-    recognition.continuous = true;
-    recognition.interimResults = true;
-    recognition.maxAlternatives = 1;
-
-    const silenceMs = liveRef.current ? LIVE_SILENCE_TIMEOUT_MS : DEFAULT_SILENCE_TIMEOUT_MS;
-
-    recognition.onstart = () => setListening(true);
-
-    recognition.onresult = (event) => {
-      let interim = "";
-      for (let i = event.resultIndex; i < event.results.length; i += 1) {
-        const result = event.results[i];
-        const transcript = result?.[0]?.transcript ?? "";
-        if (result?.isFinal) finalRef.current = `${finalRef.current} ${transcript}`.trim();
-        else interim = `${interim} ${transcript}`.trim();
+  const start = useCallback(
+    (options?: { prefix?: string; dictate?: boolean; live?: boolean }) => {
+      const Ctor = getRecognitionCtor();
+      if (!Ctor) {
+        setError("Voice input is not supported in this browser. Try Chrome or Edge.");
+        return;
       }
-      setInterimText(interim);
 
-      clearSilenceTimer();
-      silenceRef.current = window.setTimeout(() => recognition.stop(), silenceMs);
-    };
-
-    recognition.onerror = (event) => {
-      if (event.error === "aborted") return;
-      /* Live mode: keep the loop quiet on empty turns; host restarts listening. */
-      if (liveRef.current && event.error === "no-speech") return;
-      setError(ERROR_MESSAGES[event.error] ?? "Voice input failed. Please type instead.");
-    };
-
-    recognition.onend = () => {
-      clearSilenceTimer();
-      setListening(false);
+      recognitionRef.current?.abort();
+      setError(null);
       setInterimText("");
-      const text = finalRef.current.trim();
       finalRef.current = "";
-      if (text) onTranscriptRef.current(text);
-      onSessionEndRef.current?.(Boolean(text));
-    };
+      bargeFiredRef.current = false;
+      composePrefixRef.current = options?.prefix?.trim() ? `${options.prefix.trim()} ` : "";
 
-    recognitionRef.current = recognition;
+      const sessionDictate = options?.dictate ?? dictateRef.current;
+      const sessionLive = options?.live ?? liveRef.current;
+      dictateRef.current = sessionDictate;
+      liveRef.current = sessionLive;
 
-    try {
-      recognition.start();
-    } catch {
-      setError("Voice input could not start. Please try again.");
-      setListening(false);
-    }
-  }, [clearSilenceTimer, lang]);
+      const recognition = new Ctor();
+      recognition.lang = lang;
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.maxAlternatives = 1;
+
+      const silenceMs = sessionDictate
+        ? DICTATE_SILENCE_TIMEOUT_MS
+        : sessionLive
+          ? LIVE_SILENCE_TIMEOUT_MS
+          : DEFAULT_SILENCE_TIMEOUT_MS;
+
+      recognition.onstart = () => setListening(true);
+
+      recognition.onresult = (event) => {
+        let interim = "";
+        for (let i = event.resultIndex; i < event.results.length; i += 1) {
+          const result = event.results[i];
+          const transcript = result?.[0]?.transcript ?? "";
+          if (result?.isFinal) finalRef.current = `${finalRef.current} ${transcript}`.trim();
+          else interim = `${interim} ${transcript}`.trim();
+        }
+        setInterimText(interim);
+
+        const spoken = `${finalRef.current} ${interim}`.trim();
+        const combined = `${composePrefixRef.current}${spoken}`.trim();
+        if (sessionDictate && combined) onPartialRef.current?.(combined);
+
+        /* Barge-in: notify host as soon as real speech is heard (don’t wait for silence). */
+        if (sessionLive && spoken && !bargeFiredRef.current) {
+          const words = spoken.split(/\s+/).filter(Boolean);
+          const first = words[0] ?? "";
+          const meaningful =
+            BARGE_IN_STOP.test(spoken.trim()) ||
+            BARGE_IN_STOP.test(first) ||
+            words.length >= 2 ||
+            (words.length === 1 && first.length >= 4);
+          if (meaningful) {
+            bargeFiredRef.current = true;
+            onSpeechActivityRef.current?.(spoken);
+          }
+        }
+
+        clearSilenceTimer();
+        silenceRef.current = window.setTimeout(() => recognition.stop(), silenceMs);
+      };
+
+      recognition.onerror = (event) => {
+        if (event.error === "aborted") return;
+        if ((sessionLive || sessionDictate) && event.error === "no-speech") return;
+        setError(ERROR_MESSAGES[event.error] ?? "Voice input failed. Please type instead.");
+      };
+
+      recognition.onend = () => {
+        clearSilenceTimer();
+        setListening(false);
+        setInterimText("");
+        const spoken = finalRef.current.trim();
+        finalRef.current = "";
+        const combined = `${composePrefixRef.current}${spoken}`.trim();
+        composePrefixRef.current = "";
+
+        if (sessionDictate) {
+          if (combined) onPartialRef.current?.(combined);
+          onSessionEndRef.current?.(Boolean(spoken));
+          return;
+        }
+
+        if (spoken) onTranscriptRef.current(spoken);
+        onSessionEndRef.current?.(Boolean(spoken));
+      };
+
+      recognitionRef.current = recognition;
+
+      try {
+        recognition.start();
+      } catch {
+        setError("Voice input could not start. Please try again.");
+        setListening(false);
+      }
+    },
+    [clearSilenceTimer, lang],
+  );
 
   const toggle = useCallback(() => {
     if (listening) stop();

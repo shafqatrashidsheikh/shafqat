@@ -2,34 +2,14 @@
 
 import { Cloud, CloudFog, CloudRain, CloudSnow, CloudSun, Sun, Wind } from "lucide-react";
 import { useEffect, useState } from "react";
+import {
+  CAMPUS_WEATHER_TZ,
+  campusPm25Label,
+  campusWeatherCondition,
+  fetchCampusWeather,
+  type CampusWeatherSnapshot,
+} from "@/lib/campus-weather";
 import { cn } from "@/lib/utils";
-
-/** Bemina campus — verified coordinates */
-const LAT = 34.078611;
-const LON = 74.763056;
-const TZ = "Asia/Kolkata";
-
-type WeatherSnapshot = {
-  tempC: number;
-  humidity: number;
-  windKmh: number;
-  code: number;
-  pm25: number | null;
-};
-
-function weatherLabel(code: number): string {
-  if (code === 0) return "Clear sky";
-  if (code === 1) return "Mainly clear";
-  if (code === 2) return "Partly cloudy";
-  if (code === 3) return "Overcast";
-  if (code === 45 || code === 48) return "Fog";
-  if (code >= 51 && code <= 67) return "Rain";
-  if (code >= 71 && code <= 77) return "Snow";
-  if (code >= 80 && code <= 82) return "Rain showers";
-  if (code >= 85 && code <= 86) return "Snow showers";
-  if (code >= 95) return "Thunderstorm";
-  return "Scattered clouds";
-}
 
 function WeatherIcon({ code, className }: { code: number; className?: string }) {
   const props = { className: cn("size-4 shrink-0", className), "aria-hidden": true as const };
@@ -44,7 +24,7 @@ function WeatherIcon({ code, className }: { code: number; className?: string }) 
 
 function formatDayPart(date: Date): string {
   return new Intl.DateTimeFormat("en-IN", {
-    timeZone: TZ,
+    timeZone: CAMPUS_WEATHER_TZ,
     weekday: "long",
     day: "numeric",
     month: "long",
@@ -54,7 +34,7 @@ function formatDayPart(date: Date): string {
 
 function formatTimePart(date: Date): string {
   return new Intl.DateTimeFormat("en-IN", {
-    timeZone: TZ,
+    timeZone: CAMPUS_WEATHER_TZ,
     hour: "numeric",
     minute: "2-digit",
     hour12: true,
@@ -63,62 +43,15 @@ function formatTimePart(date: Date): string {
     .replace(/\s+(am|pm)/i, "\u00A0$1");
 }
 
-/** CPCB-style PM2.5 categories for India */
 function pm25Tone(pm25: number): { label: string; className: string } {
-  if (pm25 <= 30) return { label: "Good", className: "text-emerald-300" };
-  if (pm25 <= 60) return { label: "Satisfactory", className: "text-lime-300" };
-  if (pm25 <= 90) return { label: "Moderate", className: "text-amber-300" };
-  if (pm25 <= 120) return { label: "Poor", className: "text-orange-300" };
-  if (pm25 <= 250) return { label: "Very Poor", className: "text-red-300" };
-  return { label: "Severe", className: "text-red-400" };
-}
-
-async function fetchJson(url: string): Promise<unknown | null> {
-  try {
-    const res = await fetch(url, { method: "GET", mode: "cors", credentials: "omit" });
-    if (!res.ok) return null;
-    return await res.json();
-  } catch {
-    return null;
-  }
-}
-
-async function fetchWeather(): Promise<WeatherSnapshot | null> {
-  const wxUrl = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&wind_speed_unit=kmh&timezone=${encodeURIComponent(TZ)}`;
-  const aqUrl = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${LAT}&longitude=${LON}&current=pm2_5&timezone=${encodeURIComponent(TZ)}`;
-
-  const [wxRaw, aqRaw] = await Promise.all([fetchJson(wxUrl), fetchJson(aqUrl)]);
-
-  const wx = wxRaw as {
-    current?: {
-      temperature_2m?: number;
-      relative_humidity_2m?: number;
-      weather_code?: number;
-      wind_speed_10m?: number;
-    };
-  } | null;
-
-  const c = wx?.current;
-  if (
-    typeof c?.temperature_2m !== "number" ||
-    typeof c.relative_humidity_2m !== "number" ||
-    typeof c.weather_code !== "number" ||
-    typeof c.wind_speed_10m !== "number"
-  ) {
-    return null;
-  }
-
-  let pm25: number | null = null;
-  const aq = aqRaw as { current?: { pm2_5?: number } } | null;
-  if (typeof aq?.current?.pm2_5 === "number") pm25 = aq.current.pm2_5;
-
-  return {
-    tempC: c.temperature_2m,
-    humidity: c.relative_humidity_2m,
-    windKmh: c.wind_speed_10m,
-    code: c.weather_code,
-    pm25,
-  };
+  const label = campusPm25Label(pm25);
+  /* Map-pin maroon/red on the navy footer — never lime/green. */
+  if (pm25 <= 30) return { label, className: "text-[#e85a5a]" };
+  if (pm25 <= 60) return { label, className: "text-[#e53935]" };
+  if (pm25 <= 90) return { label, className: "text-[#d32f2f]" };
+  if (pm25 <= 120) return { label, className: "text-[#c62828]" };
+  if (pm25 <= 250) return { label, className: "text-[#b71c1c]" };
+  return { label, className: "text-[#9b1b30]" };
 }
 
 type FooterWeatherWidgetProps = {
@@ -128,7 +61,7 @@ type FooterWeatherWidgetProps = {
 /** Live Srinagar clock + weather + air quality for the site footer */
 export function FooterWeatherWidget({ className }: FooterWeatherWidgetProps) {
   const [now, setNow] = useState(() => new Date());
-  const [weather, setWeather] = useState<WeatherSnapshot | null>(null);
+  const [weather, setWeather] = useState<CampusWeatherSnapshot | null>(null);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
@@ -138,7 +71,7 @@ export function FooterWeatherWidget({ className }: FooterWeatherWidgetProps) {
 
   useEffect(() => {
     let cancelled = false;
-    void fetchWeather().then((data) => {
+    void fetchCampusWeather().then((data) => {
       if (!cancelled) {
         setWeather(data);
         setLoaded(true);
@@ -157,7 +90,7 @@ export function FooterWeatherWidget({ className }: FooterWeatherWidgetProps) {
         <Cloud className="size-4 shrink-0 text-on-dark/80" aria-hidden="true" />
         Srinagar
       </p>
-      <p className="mt-1.5 text-[13px] leading-snug text-on-dark/75 sm:whitespace-nowrap">
+      <p className="mt-1.5 text-[13px] leading-snug text-pretty text-on-dark/75">
         {formatDayPart(now)} at {formatTimePart(now)}
       </p>
 
@@ -167,7 +100,7 @@ export function FooterWeatherWidget({ className }: FooterWeatherWidgetProps) {
         <div className="mt-3 space-y-2">
           <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[13px] text-on-dark/85">
             <WeatherIcon code={weather.code} className="text-on-dark/80" />
-            <span>{weatherLabel(weather.code)}</span>
+            <span>{campusWeatherCondition(weather.code)}</span>
             <span className="text-on-dark/40" aria-hidden="true">
               ·
             </span>
@@ -182,17 +115,14 @@ export function FooterWeatherWidget({ className }: FooterWeatherWidgetProps) {
           </p>
           {weather.pm25 != null && aq ? (
             <div className="mt-2 rounded-md border border-dashed border-on-dark/25 px-3 py-2">
-              <p className="text-xs text-on-dark/80">
-                Air Quality (PM2.5):{" "}
-                <span className={cn("font-semibold", aq.className)}>
-                  {weather.pm25.toFixed(1)} µg/m³ · {aq.label}
-                </span>
+              <p className="text-[11px] font-semibold tracking-wide text-on-dark/60 uppercase">
+                Air quality
               </p>
-              <p className="mt-1 text-[10px] text-on-dark/45">Source: Open-Meteo</p>
+              <p className={cn("mt-0.5 text-sm font-semibold", aq.className)}>
+                {weather.pm25.toFixed(1)} µg/m³ · {aq.label}
+              </p>
             </div>
-          ) : (
-            <p className="mt-2 text-xs text-on-dark/55">Air quality reading unavailable.</p>
-          )}
+          ) : null}
         </div>
       ) : (
         <p className="mt-3 text-xs text-on-dark/55">Weather unavailable right now.</p>

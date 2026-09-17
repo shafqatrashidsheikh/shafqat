@@ -15,6 +15,8 @@ export type AssistantPanelState = "closed" | "open" | "minimized";
 export type ChatSendOptions = {
   /** Speak the next assistant reply aloud (mic / live talk). */
   speakReply?: boolean;
+  /** Live talk: shorter history + faster turn-taking on the client. */
+  live?: boolean;
   /** Local preview URL for an attached image. */
   imagePreviewUrl?: string;
   /** Payload for vision API. */

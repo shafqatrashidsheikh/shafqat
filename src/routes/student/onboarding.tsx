@@ -44,14 +44,16 @@ function StudentOnboardingPage() {
           Sign out
         </button>
       </div>
-      <StudentOnboardingForm
-        accessToken={session.access_token}
-        profile={profile}
-        onSubmitted={async () => {
-          await refreshProfile();
-          navigate({ to: "/student/pending" });
-        }}
-      />
+      <div className="container-page">
+        <StudentOnboardingForm
+          accessToken={session.access_token}
+          profile={profile}
+          onSubmitted={async () => {
+            await refreshProfile();
+            navigate({ to: "/student/pending" });
+          }}
+        />
+      </div>
     </div>
   );
 }

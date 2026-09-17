@@ -35,16 +35,16 @@ export function Header({ institute: _institute = INSTITUTE, headerNav }: HeaderP
   }, []);
 
   return (
-    <header className="site-header sticky top-0 z-[60] w-full min-w-0 bg-background px-3 pt-2 sm:px-4 sm:pt-2.5 lg:px-5">
+    <header className="site-header sticky top-0 z-[60] w-full min-w-0 overflow-x-clip bg-background px-3 pt-2 sm:px-4 sm:pt-2.5 lg:px-5">
       <div
         className={cn(
-          "flex w-full min-w-0 items-center gap-2.5 overflow-visible rounded-2xl border border-border bg-surface-white px-2.5 shadow-soft transition-[box-shadow,padding] duration-300 sm:gap-4 sm:px-4 lg:gap-5 lg:px-5 xl:px-6",
+          "flex w-full min-w-0 items-center gap-2.5 overflow-x-clip rounded-2xl border border-border bg-surface-white px-2.5 shadow-soft transition-[box-shadow,padding] duration-300 sm:gap-4 sm:px-4 lg:gap-5 lg:px-5 xl:px-6",
           "py-2 sm:py-2.5 xl:py-3",
           scrolled && "shadow-raised",
         )}
       >
         {/* Official brand lockup — crest + name, left */}
-        <div className="flex min-w-0 flex-1 items-center gap-2.5 sm:gap-3.5 lg:gap-4">
+        <div className="flex min-w-0 flex-1 items-center gap-3 sm:gap-3.5 lg:gap-4">
           <Link
             to="/"
             aria-label="Government Polytechnic for Women, Srinagar — Home"
@@ -71,8 +71,8 @@ export function Header({ institute: _institute = INSTITUTE, headerNav }: HeaderP
             <span className="sr-only">{AFFILIATION_RING.trim()}</span>
           </Link>
 
-          <Link to="/" className="header-brand-copy min-w-0 flex-1 py-0.5">
-            <span className="font-brand block min-w-0 text-[clamp(0.95rem,2.8vw+0.55rem,1.45rem)] leading-[1.15] font-extrabold tracking-tight text-navy sm:text-[clamp(1.05rem,0.55vw+0.9rem,1.45rem)] lg:whitespace-nowrap xl:text-[1.35rem] 2xl:text-[1.5rem]">
+          <Link to="/" className="header-brand-copy min-w-0 py-0.5">
+            <span className="font-brand block min-w-0 text-[clamp(0.95rem,0.55vw+0.82rem,1.35rem)] leading-tight font-extrabold tracking-tight text-balance text-navy xl:whitespace-nowrap xl:text-[1.28rem] 2xl:text-[1.4rem]">
               Government Polytechnic for Women
             </span>
           </Link>
@@ -101,7 +101,7 @@ export function Header({ institute: _institute = INSTITUTE, headerNav }: HeaderP
             </SheetTrigger>
             <SheetContent
               side="right"
-              className="z-[70] w-[min(100vw-1rem,20rem)] overflow-y-auto border-border bg-surface-white p-0"
+              className="z-[70] w-[min(100%-1rem,20rem)] max-w-[20rem] overflow-y-auto border-border bg-surface-white p-0"
             >
               <SheetTitle className="border-b border-border px-5 py-4 font-display text-base font-bold text-navy">
                 Menu

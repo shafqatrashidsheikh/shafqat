@@ -192,7 +192,7 @@ export function AdminResourcePanel<T extends { id: string }>({
         {success && <p className="text-sm font-medium text-brand md:col-span-2">{success}</p>}
       </div>
 
-      <div className="card-premium overflow-hidden">
+      <div className="card-premium overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow>

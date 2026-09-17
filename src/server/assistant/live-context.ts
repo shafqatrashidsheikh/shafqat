@@ -46,7 +46,12 @@ export type AssistantLiveContext = {
   notes: string[];
 };
 
-export async function loadAssistantLiveContext(): Promise<AssistantLiveContext> {
+/** Short in-memory reuse so chip taps / follow-ups stay fast. */
+const LIVE_MEMORY_TTL_MS = 20_000;
+let liveMemory: { at: number; value: AssistantLiveContext } | null = null;
+let liveInflight: Promise<AssistantLiveContext> | null = null;
+
+async function fetchAssistantLiveContext(): Promise<AssistantLiveContext> {
   const notes: string[] = [];
   const fetchedAt = new Date().toISOString();
 
@@ -133,6 +138,95 @@ export async function loadAssistantLiveContext(): Promise<AssistantLiveContext> 
     ok: Boolean(notices?.ok || status?.ok || dates?.ok),
     notes,
   };
+}
+
+export async function loadAssistantLiveContext(): Promise<AssistantLiveContext> {
+  const now = Date.now();
+  if (liveMemory && now - liveMemory.at < LIVE_MEMORY_TTL_MS) {
+    return liveMemory.value;
+  }
+  if (liveInflight) return liveInflight;
+
+  liveInflight = fetchAssistantLiveContext()
+    .then((value) => {
+      liveMemory = { at: Date.now(), value };
+      return value;
+    })
+    .finally(() => {
+      liveInflight = null;
+    });
+
+  return liveInflight;
+}
+
+/**
+ * Notices-only fast path — skips portal/dates HTTP when the full live bundle
+ * is not already warm in memory.
+ */
+export async function loadAssistantNoticesQuick(): Promise<AssistantLiveContext> {
+  const now = Date.now();
+  if (liveMemory && now - liveMemory.at < LIVE_MEMORY_TTL_MS) {
+    return liveMemory.value;
+  }
+
+  const fetchedAt = new Date().toISOString();
+  try {
+    const notices = await getLiveJkboteNotices({ limit: 16 });
+    const allNotices = notices.notices ?? [];
+    const partial: AssistantLiveContext = {
+      fetchedAt,
+      admissionPortal: {
+        status: "unknown",
+        portalUrl: "https://admission.jkbote.ac.in/",
+        checkedAt: fetchedAt,
+        ok: false,
+      },
+      admissionDates: {
+        ok: false,
+        portalStatus: "unknown",
+        portalUrl: "https://admission.jkbote.ac.in/",
+        latestNotice: null,
+        rows: [],
+      },
+      recentNotices: allNotices.slice(0, 10).map((n) => ({
+        title: n.title,
+        date: n.date,
+        category: n.category,
+        url: n.url,
+        isNew: n.isNew,
+      })),
+      resultNotices: allNotices
+        .filter(
+          (n) =>
+            n.category === "Results" ||
+            /result|re-?evaluation|gazette/i.test(n.title) ||
+            /noticeResult/i.test(n.sourcePage),
+        )
+        .slice(0, 12)
+        .map((n) => ({
+          title: n.title,
+          date: n.date,
+          publishedAt: n.publishedAt,
+          category: n.category,
+          url: n.url,
+          sourcePage: n.sourcePage,
+        })),
+      allNoticesForMatching: allNotices,
+      noticeSources: notices.sourcePages ?? [
+        "https://jkbote.ac.in/notice.php",
+        "https://jkbote.ac.in/noticeExam.php",
+        "https://jkbote.ac.in/noticeResult.php",
+      ],
+      ok: Boolean(notices.ok),
+      notes: notices.ok ? [] : [notices.error ?? "Partial JKBOTE notice sync."],
+    };
+    /* Keep a short memory so follow-up notice asks stay instant. */
+    liveMemory = { at: Date.now(), value: partial };
+    return partial;
+  } catch (error) {
+    console.warn("[GPWS Assistant] Quick notices load failed:", error);
+    return loadAssistantLiveContext();
+  }
 }
 
 export function serializeLiveContextForPrompt(live: AssistantLiveContext): string {

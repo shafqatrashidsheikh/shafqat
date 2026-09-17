@@ -43,7 +43,10 @@ function TrailRow({ items, className }: { items: TrailItem[]; className?: string
               …
             </span>
           ) : (
-            <TrailLink item={item} className={index === items.length - 1 ? "max-w-[55%] shrink-0" : undefined} />
+            <TrailLink
+              item={item}
+              className={index === items.length - 1 ? "min-w-0 max-w-[min(55%,12rem)] shrink" : undefined}
+            />
           )}
         </li>
       ))}

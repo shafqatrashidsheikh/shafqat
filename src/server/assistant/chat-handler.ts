@@ -18,10 +18,7 @@ import {
   detectFacultyIntent,
   isComputerEngineeringFacultyAsk,
 } from "@/lib/assistant/faculty-intent";
-import {
-  buildTranslatedAnswerHint,
-  resolveAssistantLanguage,
-} from "@/lib/assistant/language-intent";
+import { resolveAssistantLanguage } from "@/lib/assistant/language-intent";
 import {
   buildResultDirectReply,
   buildResultSystemHint,
@@ -39,12 +36,23 @@ import {
   detectImageCreateIntent,
   matchCampusAssistantImage,
 } from "@/lib/assistant/image-intent";
+import {
+  capabilityNeedsLive,
+  detectCapabilityIntent,
+  needsLiveOfficialContext,
+  resolveCapabilityReply,
+} from "@/lib/assistant/capability-intent";
+import {
+  buildWeatherDirectReply,
+  detectWeatherIntent,
+  fetchCampusWeather,
+} from "@/lib/campus-weather";
 import { buildAssistantSystemPrompt } from "@/lib/assistant/system-prompt";
 import { serializeKnowledgeForPrompt } from "@/data/gpwKnowledge";
 import { getAssistantKnowledgeJson } from "@/server/assistant/build-knowledge";
 import { createAssistantClient } from "@/server/assistant/client";
 import { loadHostelAssistantAccess } from "@/server/assistant/hostel-context";
-import { loadAssistantLiveContext } from "@/server/assistant/live-context";
+import { loadAssistantLiveContext, loadAssistantNoticesQuick } from "@/server/assistant/live-context";
 import type OpenAI from "openai";
 
 const FALLBACK_MESSAGE =
@@ -211,6 +219,50 @@ export async function handleChatPost(request: Request): Promise<Response> {
     });
   }
 
+  /* Syllabus PDF + CSE faculty — instant (before generic faculty capability). */
+  if (!image && syllabusIntent) {
+    return Response.json({ content: buildSyllabusDirectReply(syllabusIntent) });
+  }
+  if (!image && cseFacultyAsk) {
+    return Response.json({ content: buildComputerEngineeringFacultyReply() });
+  }
+
+  /* Live campus weather — same Open-Meteo feed as the website footer. */
+  if (!image && detectWeatherIntent(lastUserMessage)) {
+    const weather = await fetchCampusWeather().catch((error) => {
+      console.warn("[GPWS Assistant] Campus weather unavailable:", error);
+      return null;
+    });
+    if (weather) {
+      return Response.json({
+        content: buildWeatherDirectReply(weather, englishReply ? "english" : "local"),
+      });
+    }
+  }
+
+  /* Instant FAQ chips / common asks — no LLM (fast path). */
+  const capability = !image ? detectCapabilityIntent(lastUserMessage) : null;
+  if (capability) {
+    if (capabilityNeedsLive(capability)) {
+      const liveForCap =
+        capability === "notices"
+          ? await loadAssistantNoticesQuick().catch((error) => {
+              console.warn("[GPWS Assistant] Live JKBOTE context unavailable:", error);
+              return null;
+            })
+          : await loadAssistantLiveContext().catch((error) => {
+              console.warn("[GPWS Assistant] Live JKBOTE context unavailable:", error);
+              return null;
+            });
+      return Response.json({
+        content: resolveCapabilityReply(capability, language, liveForCap),
+      });
+    }
+    return Response.json({
+      content: resolveCapabilityReply(capability, language),
+    });
+  }
+
   /* Result / datesheet — verified JKBOTE notices with clickable markdown chips. */
   let liveForResult: Awaited<ReturnType<typeof loadAssistantLiveContext>> | null = null;
   if (!image && resultIntent) {
@@ -228,27 +280,16 @@ export async function handleChatPost(request: Request): Promise<Response> {
     }
   }
 
-  if (!image && englishReply && syllabusIntent) {
-    return Response.json({ content: buildSyllabusDirectReply(syllabusIntent) });
-  }
-  if (!image && englishReply && cseFacultyAsk) {
-    return Response.json({ content: buildComputerEngineeringFacultyReply() });
-  }
-
   let hostelHint: string | null = null;
   if (!image && hostelIntent) {
     const hostelAccess = await loadHostelAssistantAccess(accessToken);
     if (hostelIntent === "rules" && hostelAccess.access !== "allowed") {
-      const rules = buildHostelRulesReply();
-      if (englishReply) return Response.json({ content: rules });
-      hostelHint = buildTranslatedAnswerHint(rules);
+      return Response.json({ content: buildHostelRulesReply() });
     } else if (hostelAccess.access === "allowed" && hostelIntent === "roster") {
-      const roster = buildHostelRosterReply(hostelAccess.rooms);
-      if (englishReply) return Response.json({ content: roster });
-      hostelHint = buildTranslatedAnswerHint(roster);
+      return Response.json({ content: buildHostelRosterReply(hostelAccess.rooms) });
     } else if (hostelAccess.access === "allowed") {
       hostelHint = buildHostelSystemHint(hostelAccess.rooms, "allowed");
-      if (hostelIntent === "rules" && englishReply) {
+      if (hostelIntent === "rules") {
         return Response.json({ content: buildHostelRulesReply() });
       }
     } else if (hostelIntent === "roster" || hostelIntent === "general") {
@@ -258,8 +299,7 @@ export async function handleChatPost(request: Request): Promise<Response> {
           : hostelAccess.access === "pending"
             ? buildHostelDeniedReply("pending")
             : buildHostelDeniedReply("anonymous");
-      if (englishReply) return Response.json({ content: denied });
-      hostelHint = buildTranslatedAnswerHint(denied);
+      return Response.json({ content: denied });
     } else {
       hostelHint = buildHostelSystemHint(null, hostelAccess.access);
     }
@@ -273,15 +313,11 @@ export async function handleChatPost(request: Request): Promise<Response> {
           liveForResult.allNoticesForMatching,
           liveForResult.fetchedAt,
         )
-      : syllabusIntent
-        ? buildTranslatedAnswerHint(buildSyllabusDirectReply(syllabusIntent))
-        : cseFacultyAsk
-          ? buildTranslatedAnswerHint(buildComputerEngineeringFacultyReply())
-          : hostelHint
-            ? hostelHint
-            : detectFacultyIntent(lastUserMessage)
-              ? buildFacultySystemHint(lastUserMessage)
-              : null;
+      : hostelHint
+        ? hostelHint
+        : detectFacultyIntent(lastUserMessage)
+          ? buildFacultySystemHint(lastUserMessage)
+          : null;
 
   const client = createAssistantClient();
 
@@ -289,25 +325,36 @@ export async function handleChatPost(request: Request): Promise<Response> {
   let live: Awaited<ReturnType<typeof loadAssistantLiveContext>> | null = null;
 
   if (!image) {
-    [knowledgeJson, live] = await Promise.all([
-      getAssistantKnowledgeJson().catch((error) => {
-        console.warn("[GPWS Assistant] Live website knowledge unavailable:", error);
-        return null;
-      }),
-      liveForResult
-        ? Promise.resolve(liveForResult)
-        : loadAssistantLiveContext().catch((error) => {
-            console.warn("[GPWS Assistant] Live JKBOTE context unavailable:", error);
-            return null;
-          }),
-    ]);
+    const wantLive =
+      Boolean(liveForResult) ||
+      needsLiveOfficialContext(lastUserMessage) ||
+      Boolean(resultIntent);
+
+    /* Prefer static knowledge for speed — skip CMS rebuild unless live context is needed. */
+    if (wantLive) {
+      [knowledgeJson, live] = await Promise.all([
+        getAssistantKnowledgeJson().catch((error) => {
+          console.warn("[GPWS Assistant] Live website knowledge unavailable:", error);
+          return null;
+        }),
+        liveForResult
+          ? Promise.resolve(liveForResult)
+          : loadAssistantLiveContext().catch((error) => {
+              console.warn("[GPWS Assistant] Live JKBOTE context unavailable:", error);
+              return null;
+            }),
+      ]);
+    } else {
+      knowledgeJson = null;
+      live = null;
+    }
   }
 
   try {
     const completion = await client.chat.completions.create({
       model: image ? aiEnv.visionModel : aiEnv.model,
       stream: false,
-      max_tokens: image ? Math.min(aiEnv.maxOutputTokens, 500) : aiEnv.maxOutputTokens,
+      max_tokens: image ? Math.min(aiEnv.maxOutputTokens, 360) : Math.min(aiEnv.maxOutputTokens, 420),
       temperature: 0.2,
       messages: [
         {
@@ -320,7 +367,7 @@ export async function handleChatPost(request: Request): Promise<Response> {
             visionMode: Boolean(image),
           }),
         },
-        ...toHistoryMessages(historyForModel, image),
+        ...toHistoryMessages(historyForModel.slice(-6), image),
       ],
     });
 

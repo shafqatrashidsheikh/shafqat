@@ -1,6 +1,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useAuth } from "@/hooks/useAuth";
+import {
+  capabilityNeedsLive,
+  detectCapabilityIntent,
+  resolveCapabilityReply,
+} from "@/lib/assistant/capability-intent";
 import { isSafeAssistantImageUrl } from "@/lib/assistant/image-intent";
 import { resolveAssistantLanguage } from "@/lib/assistant/language-intent";
 import {
@@ -44,6 +49,7 @@ export function useAssistantChat() {
   const [isStreaming, setIsStreaming] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const abortRef = useRef<AbortController | null>(null);
+  const isStreamingRef = useRef(false);
   /** Assistant message ids that must be spoken when they arrive (mic / live). */
   const speakIdsRef = useRef<Set<string>>(new Set());
 
@@ -71,6 +77,8 @@ export function useAssistantChat() {
 
   const clearChat = useCallback(() => {
     abortRef.current?.abort();
+    abortRef.current = null;
+    isStreamingRef.current = false;
     setMessages([]);
     setInput("");
     setError(null);
@@ -89,11 +97,19 @@ export function useAssistantChat() {
     return true;
   }, []);
 
+  const cancelInFlight = useCallback(() => {
+    abortRef.current?.abort();
+    abortRef.current = null;
+    isStreamingRef.current = false;
+    setIsStreaming(false);
+  }, []);
+
   const sendMessage = useCallback(
     async (rawText: string, options?: ChatSendOptions) => {
       const text = rawText.trim() || (options?.image ? "Please look at this image." : "");
-      if ((!text && !options?.image) || isStreaming) return;
+      if ((!text && !options?.image) || isStreamingRef.current) return;
 
+      isStreamingRef.current = true;
       setError(null);
       const userMessage: AssistantMessage = {
         id: createId(),
@@ -111,6 +127,29 @@ export function useAssistantChat() {
       const historyForApi = [...messages, userMessage];
       setMessages(historyForApi);
       setInput("");
+
+      /* Instant local FAQ — no network / no “typing…” wait. */
+      if (!options?.image) {
+        const capability = detectCapabilityIntent(text);
+        if (capability && !capabilityNeedsLive(capability)) {
+          const lang = resolveAssistantLanguage(
+            historyForApi.map((m) => ({ role: m.role, content: m.content })),
+          );
+          const content = resolveCapabilityReply(capability, lang);
+          isStreamingRef.current = false;
+          setMessages((prev) => [
+            ...prev,
+            {
+              id: assistantId,
+              role: "assistant",
+              content,
+              createdAt: Date.now(),
+            },
+          ]);
+          return;
+        }
+      }
+
       setIsStreaming(true);
 
       abortRef.current?.abort();
@@ -119,16 +158,18 @@ export function useAssistantChat() {
 
       try {
         const token = session?.access_token?.trim();
+        /* Live turns: shorter context = faster replies. */
+        const historyWindow = options?.live ? 6 : 12;
         const apiMessages = historyForApi
           .filter((m) => m.role === "user" || m.role === "assistant")
           .map((m) => ({
             role: m.role,
             content: String(m.content ?? "")
               .trim()
-              .slice(0, 2000),
+              .slice(0, options?.live ? 900 : 2000),
           }))
           .filter((m) => m.content.length > 0)
-          .slice(-12);
+          .slice(-historyWindow);
 
         if (!apiMessages.length) {
           speakIdsRef.current.delete(assistantId);
@@ -179,10 +220,15 @@ export function useAssistantChat() {
         if ((err as Error).name === "AbortError") return;
         setError(FALLBACK_ERROR);
       } finally {
-        setIsStreaming(false);
+        /* Don't clear a newer in-flight turn after barge-in cancel. */
+        if (abortRef.current === controller) {
+          abortRef.current = null;
+          isStreamingRef.current = false;
+          setIsStreaming(false);
+        }
       }
     },
-    [isStreaming, messages, session?.access_token],
+    [messages, session?.access_token],
   );
 
   return {
@@ -192,6 +238,7 @@ export function useAssistantChat() {
     isStreaming,
     error,
     sendMessage,
+    cancelInFlight,
     clearChat,
     goToContact,
     contextualActions,

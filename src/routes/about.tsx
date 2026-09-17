@@ -72,7 +72,7 @@ function About() {
             </h2>
           </div>
 
-          <ol className="relative mt-10 space-y-0 md:ml-1">
+          <ol className="relative mt-10 max-w-full min-w-0 space-y-0 overflow-x-clip md:ml-1">
             <span
               className="pointer-events-none absolute top-[11px] bottom-[11px] left-0 w-px bg-white"
               aria-hidden="true"

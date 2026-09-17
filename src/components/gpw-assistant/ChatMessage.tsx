@@ -12,8 +12,8 @@ export function ChatMessage({ message }: ChatMessageProps) {
 
   if (isUser) {
     return (
-      <div className="flex justify-end">
-        <div className="gpw-assistant-bubble gpw-assistant-bubble--user max-w-[88%]">
+      <div className="gpw-assistant-msg gpw-assistant-msg--user">
+        <div className="gpw-assistant-bubble gpw-assistant-bubble--user">
           {message.imageUrl ? (
             <img
               src={message.imageUrl}
@@ -30,8 +30,8 @@ export function ChatMessage({ message }: ChatMessageProps) {
   const segments = parseAssistantContent(message.content);
 
   return (
-    <div className="flex justify-start">
-      <div className="gpw-assistant-bubble gpw-assistant-bubble--assistant max-w-[92%]">
+    <div className="gpw-assistant-msg gpw-assistant-msg--assistant">
+      <div className="gpw-assistant-bubble gpw-assistant-bubble--assistant">
         {message.imageUrl ? (
           <img
             src={message.imageUrl}

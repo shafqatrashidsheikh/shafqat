@@ -14,7 +14,7 @@ import { cn } from "@/lib/utils";
 
 /** Shared pill style for all header navigation buttons (nav + auth). */
 export const HEADER_PILL =
-  "inline-flex h-9 min-h-9 shrink-0 cursor-pointer items-center justify-center gap-1 whitespace-nowrap rounded-full border border-border bg-surface-white px-3 text-[12.5px] font-semibold text-navy shadow-sm transition-[background-color,border-color,box-shadow] duration-200 ease-out hover:border-brand/40 hover:bg-light-blue hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 xl:h-10 xl:min-h-10 xl:px-4 xl:text-[13px] 2xl:h-11 2xl:min-h-11 2xl:px-5 2xl:text-sm";
+  "inline-flex h-9 min-h-9 shrink-0 cursor-pointer items-center justify-center gap-1 whitespace-nowrap rounded-full border border-border bg-surface-white px-2.5 text-[12px] font-semibold text-navy shadow-sm transition-[background-color,border-color,box-shadow] duration-200 ease-out hover:border-brand/40 hover:bg-light-blue hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 xl:h-10 xl:min-h-10 xl:px-3.5 xl:text-[13px] 2xl:h-11 2xl:min-h-11 2xl:px-5 2xl:text-sm";
 
 export const HEADER_PILL_OPEN =
   "border-brand/40 bg-light-blue shadow-md";
@@ -221,7 +221,7 @@ function HoverNavItem({
         aria-label={`${pill.label} menu`}
         aria-hidden={!open}
         className={cn(
-          "absolute top-[calc(100%-2px)] z-[100] w-[min(15rem,calc(100vw-2rem))] pt-2 transition-[opacity,transform,visibility] duration-200 ease-out motion-reduce:transition-none",
+          "absolute top-[calc(100%-2px)] z-[100] w-[min(15rem,calc(100%-2rem))] pt-2 transition-[opacity,transform,visibility] duration-200 ease-out motion-reduce:transition-none",
           alignEnd ? "right-0 left-auto" : "left-0",
           open
             ? "visible translate-y-0 opacity-100"

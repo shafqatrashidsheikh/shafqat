@@ -74,7 +74,7 @@ export function StudentOnboardingForm({
   };
 
   return (
-    <div className="card-premium mx-auto max-w-lg p-8">
+    <div className="card-premium mx-auto w-full max-w-lg min-w-0 p-5 sm:p-8">
       <h2 className="font-display text-2xl font-extrabold text-navy">Complete your student profile</h2>
       <p className="mt-2 text-sm text-muted-foreground">
         Select your diploma department and enter your roll number. Your department HOD or staff will review and approve

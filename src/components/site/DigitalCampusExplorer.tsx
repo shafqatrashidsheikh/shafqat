@@ -34,7 +34,7 @@ export function DigitalCampusExplorer() {
 
         <div className="mt-10 grid gap-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] lg:items-start lg:gap-12">
           <div
-            className="relative grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3"
+            className="relative grid grid-cols-1 gap-2 min-[400px]:grid-cols-2 sm:grid-cols-3 sm:gap-3"
             role="list"
             aria-label="Campus facilities map"
           >
