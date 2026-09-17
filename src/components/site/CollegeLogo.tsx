@@ -19,9 +19,9 @@ type CollegeLogoProps = {
 /** Square frame — identical circular emblem in header, footer, and loader. */
 const sizeClasses: Record<NonNullable<CollegeLogoProps["variant"]>, string> = {
   header:
-    "h-[4.25rem] w-[4.25rem] sm:h-[4.75rem] sm:w-[4.75rem] md:h-[5.25rem] md:w-[5.25rem] xl:h-[5.75rem] xl:w-[5.75rem] 2xl:h-24 2xl:w-24",
+    "h-[3.75rem] w-[3.75rem] min-[380px]:h-[4.25rem] min-[380px]:w-[4.25rem] sm:h-[4.75rem] sm:w-[4.75rem] md:h-[5.25rem] md:w-[5.25rem] xl:h-[5.75rem] xl:w-[5.75rem] 2xl:h-24 2xl:w-24",
   "header-compact":
-    "h-16 w-16 sm:h-[4.25rem] sm:w-[4.25rem] md:h-[4.75rem] md:w-[4.75rem] xl:h-[5.25rem] xl:w-[5.25rem] 2xl:h-[5.5rem] 2xl:w-[5.5rem]",
+    "h-14 w-14 min-[380px]:h-16 min-[380px]:w-16 sm:h-[4.25rem] sm:w-[4.25rem] md:h-[4.75rem] md:w-[4.75rem] xl:h-[5.25rem] xl:w-[5.25rem] 2xl:h-[5.5rem] 2xl:w-[5.5rem]",
   footer: "h-16 w-16 sm:h-[4.5rem] sm:w-[4.5rem]",
   loader: "h-[clamp(4.5rem,16vw,6rem)] w-[clamp(4.5rem,16vw,6rem)]",
 };

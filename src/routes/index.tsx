@@ -95,45 +95,45 @@ function Home() {
 
   return (
     <>
-      {/* HERO */}
+      {/* HERO — same 2-column lockup as laptop; sizes scale down */}
       <section className="hero-nav-gap section-misty">
-        <div className="container-page grid min-w-0 grid-cols-1 items-center gap-6 pb-6 sm:gap-8 sm:pb-8 lg:grid-cols-2 lg:gap-14 lg:pb-12">
-          <div className="min-w-0 order-1">
+        <div className="container-page grid min-w-0 grid-cols-1 items-center gap-5 pb-6 min-[720px]:grid-cols-2 min-[720px]:gap-8 min-[720px]:pb-8 lg:gap-14 lg:pb-12">
+          <div className="min-w-0">
             <span
-              className="reveal inline-flex w-fit items-center rounded-[11px] border border-border bg-surface-white px-4 py-1.5 text-xs font-semibold tracking-[0.16em] text-brand uppercase"
+              className="reveal inline-flex w-fit items-center rounded-[11px] border border-border bg-surface-white px-3 py-1.5 text-[0.6875rem] font-semibold tracking-[0.16em] text-brand uppercase sm:px-4 sm:text-xs"
               style={{ "--reveal-delay": "0ms" } as CSSProperties}
             >
               {hero?.eyebrow ?? `Established ${INSTITUTE.established}`}
             </span>
             <h1
-              className="reveal mt-5 max-w-xl text-balance font-brand text-[clamp(1.875rem,5vw+0.5rem,3rem)] font-extrabold text-navy"
+              className="reveal mt-4 max-w-xl text-balance font-brand text-[clamp(1.5rem,1.05rem+2.2vw,3rem)] font-extrabold text-navy sm:mt-5"
               style={{ "--reveal-delay": "90ms" } as CSSProperties}
               aria-label="Government Polytechnic for Women, Srinagar"
             >
               {hero?.title ?? "Government Polytechnic for Women, Srinagar"}
             </h1>
             <p
-              className="reveal mt-4 max-w-lg text-base leading-relaxed text-foreground sm:text-lg"
+              className="reveal mt-3 max-w-lg text-[0.9375rem] leading-relaxed text-foreground sm:mt-4 sm:text-base lg:text-lg"
               style={{ "--reveal-delay": "180ms" } as CSSProperties}
             >
               {hero?.body ?? INSTITUTE.tagline}
             </p>
             <div
-              className="reveal mt-6 flex w-full max-w-lg flex-col gap-3 sm:mt-8 sm:w-auto sm:flex-row sm:flex-wrap"
+              className="reveal mt-5 flex w-auto flex-row flex-wrap gap-2.5 sm:mt-8 sm:gap-3"
               style={{ "--reveal-delay": "270ms" } as CSSProperties}
             >
-              <ApplyOnlineButton className="btn-primary group w-full sm:w-auto">
+              <ApplyOnlineButton className="btn-primary group">
                 Apply Now
                 <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
               </ApplyOnlineButton>
-              <Link to="/academics" className="btn-secondary w-full sm:w-auto">
+              <Link to="/academics" className="btn-secondary">
                 Explore Programs
               </Link>
             </div>
           </div>
           <div
             ref={heroImageRef}
-            className="reveal-hero-image order-2 min-w-0 overflow-hidden rounded-3xl border border-border bg-light-blue/30 shadow-raised will-change-transform lg:order-2"
+            className="reveal-hero-image min-w-0 overflow-hidden rounded-2xl border border-border bg-light-blue/30 shadow-raised will-change-transform sm:rounded-3xl"
             style={{ "--reveal-delay": "360ms" } as CSSProperties}
           >
             <img
@@ -151,12 +151,12 @@ function Home() {
       <InstituteSpotlights items={homepage.spotlights} />
       <ImportantAnnouncements items={homepage.announcements} quickLinks={utilityQuickLinks} />
 
-      {/* ABOUT + PRINCIPAL'S CORNER */}
+      {/* ABOUT + PRINCIPAL'S CORNER — same side-by-side structure as laptop */}
       <section className="section-misty section-y !pt-0 !pb-8 md:!pb-10 lg:!pb-10">
-        <div className="container-page space-y-12 lg:space-y-14">
-          <div className="grid items-stretch gap-6 lg:grid-cols-2 lg:gap-8">
+        <div className="container-page space-y-10 min-[720px]:space-y-12 lg:space-y-14">
+          <div className="grid items-stretch gap-4 min-[720px]:grid-cols-2 min-[720px]:gap-6 lg:gap-8">
             <article
-              className="card-premium flex min-w-0 flex-col p-7 lg:p-8"
+              className="card-premium flex min-w-0 flex-col p-5 sm:p-6 lg:p-8"
               data-motion-from="left"
             >
               <p className="font-display text-xs font-semibold tracking-[0.2em] text-brand uppercase">
@@ -165,13 +165,13 @@ function Home() {
               <h2 className="heading-section mt-3 font-display font-extrabold text-navy">
                 {about?.title ?? "Empowering Women Through Technical Education"}
               </h2>
-              <p className="mt-4 flex-1 text-base leading-relaxed text-foreground">
+              <p className="mt-3 flex-1 text-sm leading-relaxed text-foreground sm:mt-4 sm:text-base">
                 {about?.body ??
                   "Established in 1986, Government Polytechnic for Women, Srinagar is a government technical institution dedicated to providing women with accessible, practical and career-oriented technical education."}
               </p>
               <Link
                 to={about?.cta_href ?? "/about"}
-                className="link-cta group mt-6 w-fit rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
+                className="link-cta group mt-5 w-fit rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 sm:mt-6"
               >
                 {about?.cta_label ?? "Learn More"}
                 <ArrowRight
@@ -186,14 +186,14 @@ function Home() {
 
           <div>
             <SectionHead eyebrow="At a Glance" title="Institutional overview" />
-            <div className="mt-8 grid grid-cols-1 gap-4 min-[480px]:grid-cols-2 lg:grid-cols-4">
+            <div className="mt-6 grid grid-cols-2 gap-3 sm:mt-8 sm:gap-4 lg:grid-cols-4">
               {stats.map((s) => (
-                <div key={s.label} className="card-premium p-5 sm:p-6">
-                  <p className="font-display text-2xl font-extrabold whitespace-nowrap text-brand sm:text-3xl">
+                <div key={s.label} className="card-premium p-4 sm:p-5 lg:p-6">
+                  <p className="font-display text-xl font-extrabold whitespace-nowrap text-brand sm:text-2xl lg:text-3xl">
                     {s.prefix}
                     <Counter value={s.value} suffix={s.suffix ?? ""} />
                   </p>
-                  <p className="mt-2 min-w-0 hyphens-none text-sm leading-snug text-muted-foreground">
+                  <p className="mt-1.5 min-w-0 hyphens-none text-xs leading-snug text-muted-foreground sm:mt-2 sm:text-sm">
                     {s.label}
                   </p>
                 </div>
@@ -228,7 +228,7 @@ function Home() {
       <section className="section-misty section-y !pt-0">
         <div className="container-page">
           <div
-            className="card-premium mx-auto max-w-3xl p-8 text-center lg:p-10"
+            className="card-premium mx-auto max-w-3xl p-5 text-center sm:p-8 lg:p-10"
             data-motion-from="up"
           >
             <SectionHead
@@ -236,18 +236,18 @@ function Home() {
               title={admissionsCta?.title ?? "Start Your Journey at GPW Srinagar"}
               centered
             />
-            <p className="mx-auto mt-4 max-w-xl text-pretty text-base leading-relaxed text-muted-foreground">
+            <p className="mx-auto mt-3 max-w-xl text-pretty text-sm leading-relaxed text-muted-foreground sm:mt-4 sm:text-base">
               {admissionsCta?.body ??
                 "Explore eligibility, the admission process and key dates. Detailed rules and documents are available on the admissions page."}
             </p>
-            <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:justify-center">
+            <div className="mt-5 flex flex-row flex-wrap items-center justify-center gap-2.5 sm:mt-6 sm:gap-3">
               <Link
                 to={admissionsCta?.cta_href ?? "/admissions"}
-                className="btn-primary w-full sm:w-auto"
+                className="btn-primary"
               >
                 {admissionsCta?.cta_label ?? "View Admissions"}
               </Link>
-              <Link to="/contact" className="btn-secondary w-full sm:w-auto">
+              <Link to="/contact" className="btn-secondary">
                 Contact Us
               </Link>
             </div>
@@ -255,9 +255,9 @@ function Home() {
         </div>
       </section>
 
-      {/* STUDENT LIFE + PLACEMENT */}
+      {/* STUDENT LIFE + PLACEMENT — same two-up structure as laptop */}
       <section className="section-misty section-y !pt-0">
-        <div className="container-page grid items-stretch gap-6 lg:grid-cols-2 lg:gap-8">
+        <div className="container-page grid items-stretch gap-4 min-[720px]:grid-cols-2 min-[720px]:gap-6 lg:gap-8">
           <PathwayCard
             icon={Users}
             eyebrow={studentLife?.eyebrow ?? "Student Life"}

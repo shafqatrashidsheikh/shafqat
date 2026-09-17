@@ -157,7 +157,7 @@ export function FooterWeatherWidget({ className }: FooterWeatherWidgetProps) {
         <Cloud className="size-4 shrink-0 text-on-dark/80" aria-hidden="true" />
         Srinagar
       </p>
-      <p className="mt-1.5 whitespace-nowrap text-[13px] leading-snug text-on-dark/75">
+      <p className="mt-1.5 text-[13px] leading-snug text-on-dark/75 sm:whitespace-nowrap">
         {formatDayPart(now)} at {formatTimePart(now)}
       </p>
 

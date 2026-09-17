@@ -48,7 +48,7 @@ export function PrincipalsCorner({
   },
 }: PrincipalsCornerProps) {
   return (
-    <article className="card-premium flex min-w-0 flex-col p-7 lg:p-8" data-motion-from="right">
+    <article className="card-premium flex min-w-0 flex-col p-5 sm:p-6 lg:p-8" data-motion-from="right">
       <p className="font-display text-xs font-semibold tracking-[0.2em] text-brand uppercase">
         Principal&apos;s Corner
       </p>
@@ -56,7 +56,7 @@ export function PrincipalsCorner({
         Message from the Principal
       </h2>
 
-      <div className="mt-5 flex min-w-0 flex-1 flex-col gap-5 sm:flex-row sm:items-start sm:gap-6">
+      <div className="mt-4 flex min-w-0 flex-1 flex-row items-start gap-3 sm:mt-5 sm:gap-5 lg:gap-6">
         <div className="min-w-0 flex-1">
           <p className="line-clamp-3 text-base leading-relaxed text-foreground">
             {principal.preview}

@@ -71,7 +71,7 @@ function DeveloperSpotlight() {
             {member.name}
           </p>
           <p className="mt-1 text-sm font-medium text-on-dark/70">{member.role}</p>
-          <p className="mt-2 whitespace-nowrap text-sm leading-relaxed text-on-dark/55">
+          <p className="mt-2 text-sm leading-relaxed text-on-dark/55 text-pretty">
             Designed and developed for {INSTITUTE.shortName} — official institute website.
           </p>
         </div>

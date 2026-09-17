@@ -10,5 +10,5 @@ export const GRAD_AT_MS = 1840;
 export const HOLD_AT_MS = 2920;
 
 export const REDUCED_FADE_MS = 420;
-/** Loader → website transition. */
-export const EXIT_MS = 560;
+/** Loader → website transition (fade only). */
+export const EXIT_MS = 420;

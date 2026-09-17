@@ -425,23 +425,19 @@
   width: 100%;
   max-width: min(80rem, 100%);
   margin-inline: auto;
-  padding-inline: clamp(1rem, 3.5vw, 1.25rem);
+  padding-inline-start: max(clamp(1rem, 3.5vw, 1.25rem), env(safe-area-inset-left, 0px));
+  padding-inline-end: max(clamp(1rem, 3.5vw, 1.25rem), env(safe-area-inset-right, 0px));
   box-sizing: border-box;
 }
 
 @utility section-y {
-  padding-block: clamp(2.5rem, 5vw, 3.5rem);
+  /* Fluid vertical rhythm — same structure at every width, only scale changes */
+  padding-block: clamp(2.25rem, 1.4rem + 3.2vw, 5.5rem);
   background-color: var(--background);
-  @media (min-width: 768px) {
-    padding-block: clamp(3rem, 5vw, 4.5rem);
-  }
-  @media (min-width: 1024px) {
-    padding-block: 5.5rem;
-  }
 }
 
 @utility heading-section {
-  font-size: clamp(1.375rem, 2.5vw + 0.75rem, 2.25rem);
+  font-size: clamp(1.25rem, 0.95rem + 1.35vw, 2.25rem);
   line-height: var(--leading-h2);
 }
 
@@ -616,44 +612,47 @@
   transform: scale(1.02);
 }
 
-/* Scroll-triggered motion — applied via ScrollReveal, design unchanged */
-html.js-motion main [data-motion="in"],
-html.js-motion footer [data-motion="in"] {
+/* Site-wide scroll + boot entrance — fade/slide only (never scale / zoom) */
+html.js-motion.site-boot-done main [data-motion="in"],
+html.js-motion.site-boot-done footer [data-motion="in"] {
   opacity: 0;
-  transform: translate3d(0, 12px, 0);
+  transform: translate3d(0, 18px, 0);
   transition:
-    opacity 480ms cubic-bezier(0.22, 0.61, 0.36, 1),
-    transform 480ms cubic-bezier(0.22, 0.61, 0.36, 1);
+    opacity 560ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    transform 560ms cubic-bezier(0.22, 0.61, 0.36, 1);
   transition-delay: var(--motion-delay, 0ms);
+  will-change: opacity, transform;
 }
 
-html.js-motion main [data-motion="in"][data-motion-dir="left"],
-html.js-motion footer [data-motion="in"][data-motion-dir="left"] {
-  transform: translate3d(-14px, 6px, 0);
+html.js-motion.site-boot-done main [data-motion="in"][data-motion-dir="left"],
+html.js-motion.site-boot-done footer [data-motion="in"][data-motion-dir="left"] {
+  transform: translate3d(-20px, 10px, 0);
 }
 
-html.js-motion main [data-motion="in"][data-motion-dir="right"],
-html.js-motion footer [data-motion="in"][data-motion-dir="right"] {
-  transform: translate3d(14px, 6px, 0);
+html.js-motion.site-boot-done main [data-motion="in"][data-motion-dir="right"],
+html.js-motion.site-boot-done footer [data-motion="in"][data-motion-dir="right"] {
+  transform: translate3d(20px, 10px, 0);
 }
 
-/* No scale — scale reads as browser zoom when changing pages */
-html.js-motion main [data-motion="in"][data-motion-dir="scale"],
-html.js-motion footer [data-motion="in"][data-motion-dir="scale"] {
-  transform: translate3d(0, 12px, 0);
+/* Legacy "scale" preset → calm upward fade (no zoom) */
+html.js-motion.site-boot-done main [data-motion="in"][data-motion-dir="scale"],
+html.js-motion.site-boot-done footer [data-motion="in"][data-motion-dir="scale"] {
+  transform: translate3d(0, 18px, 0);
 }
 
 @media (max-width: 767px) {
-  html.js-motion main [data-motion="in"][data-motion-dir="left"],
-  html.js-motion main [data-motion="in"][data-motion-dir="right"],
-  html.js-motion footer [data-motion="in"][data-motion-dir="left"],
-  html.js-motion footer [data-motion="in"][data-motion-dir="right"] {
-    transform: translate3d(0, 10px, 0);
+  html.js-motion.site-boot-done main [data-motion="in"],
+  html.js-motion.site-boot-done footer [data-motion="in"] {
+    transform: translate3d(0, 14px, 0);
   }
 
-  html.js-motion main [data-motion="in"][data-motion-dir="scale"],
-  html.js-motion footer [data-motion="in"][data-motion-dir="scale"] {
-    transform: translate3d(0, 10px, 0);
+  html.js-motion.site-boot-done main [data-motion="in"][data-motion-dir="left"],
+  html.js-motion.site-boot-done main [data-motion="in"][data-motion-dir="right"],
+  html.js-motion.site-boot-done footer [data-motion="in"][data-motion-dir="left"],
+  html.js-motion.site-boot-done footer [data-motion="in"][data-motion-dir="right"],
+  html.js-motion.site-boot-done main [data-motion="in"][data-motion-dir="scale"],
+  html.js-motion.site-boot-done footer [data-motion="in"][data-motion-dir="scale"] {
+    transform: translate3d(0, 12px, 0);
   }
 
   @keyframes reveal-up {
@@ -668,14 +667,15 @@ html.js-motion footer [data-motion="in"][data-motion-dir="scale"] {
   }
 }
 
-html.js-motion main .announcement-scroll > li[data-motion="in"] {
-  transform: translate3d(0, 10px, 0);
+html.js-motion.site-boot-done main .announcement-scroll > li[data-motion="in"] {
+  transform: translate3d(0, 12px, 0);
 }
 
-html.js-motion main [data-motion="in"].motion-visible,
-html.js-motion footer [data-motion="in"].motion-visible {
+html.js-motion.site-boot-done main [data-motion="in"].motion-visible,
+html.js-motion.site-boot-done footer [data-motion="in"].motion-visible {
   opacity: 1;
   transform: translate3d(0, 0, 0);
+  will-change: auto;
 }
 
 html.js-motion footer nav a {
@@ -1154,6 +1154,11 @@ html.js-motion footer nav a:hover {
 }
 
 /* ——— Institutional GPWS preloader ——— */
+html {
+  /* Mobile: auto. Desktop override lives in Responsive safeguards. */
+  scrollbar-gutter: auto;
+}
+
 html.story-loader-lock,
 html.story-loader-lock body,
 html:has(.story-loader),
@@ -1169,8 +1174,12 @@ html:has(.story-loader)::-webkit-scrollbar {
   display: none !important;
 }
 
-/* Page stays covered until the loader begins its exit fade */
-html:has(.story-loader:not(.story-loader--leaving)) .site-shell > :not(.story-loader) {
+/*
+ * Keep the real site covered until the loader unmounts, then briefly while
+ * ScrollReveal arms the first entrance wave (avoids blank opacity-0 flash).
+ */
+html:has(.story-loader) .site-shell > :not(.story-loader),
+html.site-arming .site-shell > :not(.story-loader) {
   visibility: hidden !important;
   pointer-events: none !important;
 }
@@ -1185,23 +1194,18 @@ html:has(.story-loader:not(.story-loader--leaving)) .site-shell > :not(.story-lo
   border: 0;
   box-shadow: none;
   outline: none;
-  transition:
-    opacity 560ms cubic-bezier(0.22, 1, 0.36, 1),
-    visibility 560ms step-end;
+  transition: opacity 420ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .story-loader--leaving {
   pointer-events: none;
   opacity: 0;
-  visibility: hidden;
 }
 
 .story-loader--leaving .story-loader-lockup {
-  transform: scale(0.985);
+  /* Fade only — no scale (reads as page zoom) */
   opacity: 0;
-  transition:
-    transform 560ms cubic-bezier(0.22, 1, 0.36, 1),
-    opacity 560ms cubic-bezier(0.22, 1, 0.36, 1);
+  transition: opacity 420ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .story-loader-backdrop {
@@ -2415,117 +2419,12 @@ html:has(.story-loader:not(.story-loader--leaving)) .site-shell > :not(.story-lo
   }
 }
 
-/* Header street address — seamless GPU scroll under the college name */
-.header-address-marquee {
-  position: relative;
-  min-width: 0;
-  max-width: 100%;
-  overflow: hidden;
-  -webkit-mask-image: linear-gradient(
-    to right,
-    transparent 0%,
-    #000 12%,
-    #000 88%,
-    transparent 100%
-  );
-  mask-image: linear-gradient(
-    to right,
-    transparent 0%,
-    #000 12%,
-    #000 88%,
-    transparent 100%
-  );
-}
-
-.header-address-marquee-track {
-  display: flex;
-  width: max-content;
-  align-items: center;
-  transform: translate3d(0, 0, 0);
-  backface-visibility: hidden;
-  animation: header-address-marquee-x 22s linear infinite;
-  will-change: transform;
-}
-
-.header-address-marquee:hover .header-address-marquee-track {
-  animation-play-state: paused;
-}
-
-.header-address-marquee-set {
-  display: flex;
-  flex: none;
-  align-items: center;
-  padding-right: 3rem;
-}
-
-.header-address-marquee-item {
-  flex: none;
-  white-space: nowrap;
-  font-size: 9px;
-  font-weight: 500;
-  letter-spacing: 0.03em;
-  line-height: 1.3;
-  color: var(--muted-foreground);
-}
-
-@keyframes header-address-marquee-x {
-  from {
-    transform: translate3d(0, 0, 0);
-  }
-  to {
-    transform: translate3d(-50%, 0, 0);
-  }
-}
-
-@media (min-width: 640px) {
-  .header-address-marquee-item {
-    font-size: 9.5px;
-  }
-}
-
-@media (min-width: 1024px) {
-  .header-address-marquee-item {
-    font-size: 10px;
-  }
-
-  .header-address-marquee-set {
-    padding-right: 3.25rem;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .header-address-marquee {
-    -webkit-mask-image: none;
-    mask-image: none;
-  }
-
-  .header-address-marquee-track {
-    animation: none;
-    width: 100%;
-    justify-content: center;
-    transform: none;
-    will-change: auto;
-  }
-
-  .header-address-marquee-set {
-    padding-right: 0;
-  }
-
-  .header-address-marquee-set + .header-address-marquee-set {
-    display: none;
-  }
-
-  .header-address-marquee-item {
-    white-space: normal;
-    text-align: center;
-  }
-}
-
 /* ——— Responsive safeguards ——— */
 #main,
 .site-shell,
 header.site-header,
-footer {
+footer,
+.container-page {
   min-width: 0;
   max-width: 100%;
 }
@@ -2537,6 +2436,107 @@ footer {
 
 header.site-header {
   overflow-x: clip;
+}
+
+/* Phone / tablet: avoid horizontal page scroll from long words & embeds */
+#main :where(p, li, td, th, a, figcaption, address) {
+  overflow-wrap: break-word;
+  word-break: normal;
+}
+
+#main :where(h1, h2, h3, h4, .heading-section, .font-brand) {
+  overflow-wrap: break-word;
+  hyphens: manual;
+}
+
+#main img,
+#main video,
+#main iframe,
+#main svg,
+#main embed,
+#main object {
+  max-width: 100%;
+  height: auto;
+}
+
+#main iframe {
+  width: 100%;
+}
+
+#main pre,
+#main code {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+#main .table-scroll,
+#main [data-table-scroll] {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Touch-friendly tap targets on coarse pointers */
+@media (pointer: coarse) {
+  .btn-primary,
+  .btn-secondary,
+  .link-cta,
+  header.site-header button,
+  header.site-header a[role="button"] {
+    min-height: 2.75rem;
+  }
+}
+
+/* Compact phones */
+@media (max-width: 379px) {
+  .container-page {
+    padding-inline-start: max(0.875rem, env(safe-area-inset-left, 0px));
+    padding-inline-end: max(0.875rem, env(safe-area-inset-right, 0px));
+  }
+
+  .header-brand-seal-orbit {
+    inset: -0.7rem;
+  }
+
+  .header-brand-seal-orbit-text {
+    font-size: 6.25px;
+    letter-spacing: 0.1em;
+  }
+}
+
+@media (max-width: 639px) {
+  .container-page {
+    padding-inline-start: max(1rem, env(safe-area-inset-left, 0px));
+    padding-inline-end: max(1rem, env(safe-area-inset-right, 0px));
+  }
+
+  header.site-header {
+    padding-left: max(0.75rem, env(safe-area-inset-left, 0px));
+    padding-right: max(0.75rem, env(safe-area-inset-right, 0px));
+  }
+
+  .card-premium {
+    border-radius: 1rem;
+  }
+
+  /* Marquee cards: readable width without forcing page overflow */
+  .explore-marquee-track {
+    gap: 1rem;
+  }
+}
+
+/* Prefer stable scrollbar only where it does not shrink phone layouts */
+@media (min-width: 768px) {
+  html {
+    scrollbar-gutter: stable;
+  }
+}
+
+@media (max-width: 767px) {
+  html {
+    scrollbar-gutter: auto;
+  }
 }
 
 /* ——— Back to Home (boxed, theme navy) ——— */
@@ -2894,7 +2894,8 @@ header.site-header {
 
 /* ——— Desktop-only hover micro-interactions ——— */
 @media (hover: hover) and (pointer: fine) {
-  .card-premium:hover {
+  .card-premium:hover,
+  html.js-motion.site-boot-done main [data-motion="in"].motion-visible.card-premium:hover {
     transform: translateY(-4px);
     box-shadow: var(--shadow-raised);
     border-color: color-mix(in srgb, var(--primary-blue) 28%, var(--border));
@@ -2926,10 +2927,13 @@ header.site-header {
 
 @media (prefers-reduced-motion: reduce) {
   html.js-motion main [data-motion="in"],
-  html.js-motion footer [data-motion="in"] {
+  html.js-motion footer [data-motion="in"],
+  html.js-motion.site-boot-done main [data-motion="in"],
+  html.js-motion.site-boot-done footer [data-motion="in"] {
     opacity: 1;
     transform: none;
     transition: none;
+    will-change: auto;
   }
 
   .reveal,

@@ -129,7 +129,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   head: () => ({
     meta: [
       { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
+      { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
       { title: "Government Polytechnic for Women, Srinagar" },
       {
         name: "description",
@@ -215,7 +215,7 @@ function RootShell({ children }: { children: ReactNode }) {
         <style
           dangerouslySetInnerHTML={{
             __html:
-              "html:has(.story-loader:not(.story-loader--leaving)) .site-shell>:not(.story-loader){visibility:hidden!important;pointer-events:none!important}html:has(.story-loader),html:has(.story-loader) body{overflow:hidden!important;background:var(--background,#eaf0fa)}",
+            "html:has(.story-loader) .site-shell>:not(.story-loader){visibility:hidden!important;pointer-events:none!important}html:has(.story-loader),html:has(.story-loader) body{overflow:hidden!important;background:var(--background,#eaf0fa)}",
           }}
         />
       </head>
