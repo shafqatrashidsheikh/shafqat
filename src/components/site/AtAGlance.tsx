@@ -19,9 +19,12 @@ export function AtAGlance({
   const wide = stats.length > 4;
 
   return (
-    <section aria-labelledby="at-a-glance-heading" className="bg-surface-white">
-      <div className="container-page py-12 sm:py-14 lg:py-16">
-        <div className="grid gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.4fr)] lg:items-end lg:gap-16">
+    <section aria-labelledby="at-a-glance-heading" className="bg-background">
+      <div className="container-page py-10 sm:py-12 lg:py-14">
+        <div
+          className="rounded-2xl border border-border bg-surface-white p-6 shadow-soft sm:p-8 lg:p-10"
+          data-motion-from="up"
+        >
           <div>
             <p className="font-display text-xs font-semibold tracking-[0.2em] text-brand uppercase">
               {eyebrow}
@@ -32,29 +35,21 @@ export function AtAGlance({
             >
               {title}
             </h2>
-            <p className="mt-3 max-w-sm text-pretty text-sm leading-relaxed text-muted-foreground sm:text-base">
+            <p className="mt-3 w-full min-w-0 text-pretty text-sm leading-relaxed text-muted-foreground sm:text-base">
               Verified institutional figures for Government Polytechnic for Women, Srinagar.
             </p>
           </div>
 
           <dl
             className={cn(
-              "grid grid-cols-2 gap-x-6 gap-y-8 sm:gap-x-10",
+              "mt-8 grid grid-cols-2 gap-x-6 gap-y-7 sm:mt-10 sm:gap-x-10 sm:gap-y-8",
               wide ? "lg:grid-cols-3" : "lg:grid-cols-4",
             )}
           >
-            {stats.map((stat, index) => {
+            {stats.map((stat) => {
               const isStringValue = typeof stat.value === "string";
               return (
-                <div
-                  key={stat.label}
-                  className={cn(
-                    "border-t border-border pt-4",
-                    index % 2 === 1 && "sm:border-l sm:border-t-0 sm:pl-6 sm:pt-0 lg:border-l lg:pl-6 lg:pt-4",
-                    !wide && index >= 2 && "lg:border-l lg:pl-6",
-                    wide && index % 3 !== 0 && "lg:border-l lg:pl-6",
-                  )}
-                >
+                <div key={stat.label} className="min-w-0">
                   <dt className="text-xs font-semibold tracking-[0.14em] text-muted-foreground uppercase">
                     {stat.label}
                   </dt>
@@ -68,7 +63,10 @@ export function AtAGlance({
                   >
                     {"prefix" in stat && stat.prefix ? stat.prefix : null}
                     {typeof stat.value === "number" ? (
-                      <Counter value={stat.value} suffix={"suffix" in stat ? (stat.suffix ?? "") : ""} />
+                      <Counter
+                        value={stat.value}
+                        suffix={"suffix" in stat ? (stat.suffix ?? "") : ""}
+                      />
                     ) : (
                       <>
                         {stat.value}

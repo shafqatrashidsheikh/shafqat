@@ -21,8 +21,8 @@ export const getRouter = () => {
      * Resolve pending immediately so we can swap to a dedicated pending UI
      * instead of leaving the previous route visible during loads.
      */
-    defaultPendingMs: 0,
-    defaultPendingMinMs: 120,
+    defaultPendingMs: 80,
+    defaultPendingMinMs: 0,
     defaultViewTransition: false,
   });
 

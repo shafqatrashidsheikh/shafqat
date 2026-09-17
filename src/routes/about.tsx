@@ -1,6 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight } from "lucide-react";
-import { AmpersandText } from "@/components/site/AmpersandText";
+import { AmpersandText, KeepTogether } from "@/components/site/AmpersandText";
 import { AtAGlance } from "@/components/site/AtAGlance";
 import { PageHeader } from "@/components/site/PageHeader";
 import {
@@ -13,6 +12,10 @@ import {
 } from "@/lib/about-data";
 import { INSTITUTE } from "@/lib/site-data";
 import { fetchInstituteSettings } from "@/server/cda/site-extended";
+
+/** About body copy — fill the line, then wrap; no forced early breaks. */
+const aboutBody =
+  "w-full min-w-0 text-pretty text-sm leading-relaxed text-muted-foreground sm:text-base";
 
 export const Route = createFileRoute("/about")({
   loader: async () => {
@@ -55,12 +58,9 @@ function About() {
       />
 
       {/* Our History — editorial timeline */}
-      <section
-        aria-labelledby="about-history-heading"
-        className="border-t border-border/70 bg-background"
-      >
+      <section aria-labelledby="about-history-heading" className="bg-background">
         <div className="container-page py-10 sm:py-12 lg:py-14">
-          <div className="max-w-2xl" data-motion-from="up">
+          <div data-motion-from="up">
             <p className="font-display text-xs font-semibold tracking-[0.2em] text-brand uppercase">
               Timeline
             </p>
@@ -73,9 +73,12 @@ function About() {
           </div>
 
           <ol className="relative mt-10 space-y-0 md:ml-1">
-            {/* Spine starts at first dot — no stub above the timeline */}
             <span
               className="pointer-events-none absolute top-[11px] bottom-[11px] left-0 w-px bg-white"
+              aria-hidden="true"
+            />
+            <span
+              className="pointer-events-none absolute bottom-[7px] -left-[5px] size-2.5 rounded-full bg-navy ring-4 ring-background"
               aria-hidden="true"
             />
             {ABOUT_HISTORY_TIMELINE.map((item, index) => (
@@ -95,9 +98,7 @@ function About() {
                 <h3 className="mt-2 font-display text-lg font-bold text-navy md:text-xl">
                   <AmpersandText>{item.title}</AmpersandText>
                 </h3>
-                <p className="mt-2 w-full max-w-3xl text-base leading-relaxed text-muted-foreground text-pretty">
-                  {item.body}
-                </p>
+                <p className={`mt-2 ${aboutBody}`}>{item.body}</p>
               </li>
             ))}
           </ol>
@@ -105,16 +106,13 @@ function About() {
       </section>
 
       {/* Institutional Achievements */}
-      <section
-        aria-labelledby="about-achievements-heading"
-        className="border-t border-border/70 bg-background"
-      >
+      <section aria-labelledby="about-achievements-heading" className="bg-background">
         <div className="container-page py-10 sm:py-12 lg:py-14">
           <div
             className="rounded-2xl border border-border bg-surface-white p-6 shadow-soft sm:p-8 lg:p-10"
             data-motion-from="up"
           >
-            <div className="max-w-2xl">
+            <div>
               <p className="font-display text-xs font-semibold tracking-[0.2em] text-brand uppercase">
                 Recognition
               </p>
@@ -124,37 +122,49 @@ function About() {
               >
                 <AmpersandText>Institutional Achievements</AmpersandText>
               </h2>
-              <p className="mt-3 max-w-xl text-pretty text-sm leading-relaxed text-muted-foreground sm:text-base">
-                Documented milestones from institutional profile material — historical awards and
-                one-time drive figures, not current rankings or placement rates.
+              <p className={`mt-3 ${aboutBody}`}>
+                Documented milestones from institutional profile material. Historical awards and
+                one-time drive figures — not current rankings or placement rates.
               </p>
             </div>
 
             <ul className="mt-8 space-y-7 sm:mt-10 sm:space-y-8">
               {ABOUT_ACHIEVEMENTS.map((item, index) => (
                 <li
-                  key={`${item.yearLabel}-${item.title}`}
-                  className="grid gap-2 sm:grid-cols-[7.5rem_minmax(0,1fr)] sm:gap-8"
+                  key={`${item.yearLabel || "record"}-${item.title}`}
+                  className="grid gap-2 sm:grid-cols-[8.5rem_minmax(0,1fr)] sm:gap-8"
                   data-motion-from="up"
                   style={{ ["--reveal-delay" as string]: `${index * 50}ms` }}
                 >
                   <div className="sm:pt-0.5">
-                    <p className="font-display text-sm font-bold tabular-nums text-navy">
-                      {item.yearLabel === "Historical record" ? "—" : item.yearLabel}
-                    </p>
+                    {item.yearLabel ? (
+                      <p className="font-display text-sm font-bold tabular-nums text-navy">
+                        {item.yearLabel}
+                      </p>
+                    ) : null}
                     {item.historical ? (
-                      <p className="mt-1 text-[10px] font-semibold tracking-[0.14em] text-muted-foreground uppercase">
+                      <p
+                        className={
+                          item.yearLabel
+                            ? "mt-1 text-[10px] font-semibold tracking-[0.14em] text-muted-foreground uppercase"
+                            : "text-[10px] font-semibold tracking-[0.14em] text-muted-foreground uppercase"
+                        }
+                      >
                         Historical record
                       </p>
                     ) : null}
                   </div>
                   <div className="min-w-0">
                     <h3 className="font-display text-base font-bold text-navy md:text-lg">
-                      <AmpersandText>{item.title}</AmpersandText>
+                      {item.title === "Outstanding polytechnic, North India" ? (
+                        <>
+                          Outstanding polytechnic, <KeepTogether>North India</KeepTogether>
+                        </>
+                      ) : (
+                        <AmpersandText>{item.title}</AmpersandText>
+                      )}
                     </h3>
-                    <p className="mt-2 w-full text-pretty text-sm leading-relaxed text-muted-foreground sm:text-base">
-                      {item.body}
-                    </p>
+                    <p className={`mt-2 ${aboutBody}`}>{item.body}</p>
                   </div>
                 </li>
               ))}
@@ -164,14 +174,11 @@ function About() {
       </section>
 
       {/* Beyond the Classroom */}
-      <section
-        aria-labelledby="about-engagement-heading"
-        className="border-t border-border/70 bg-background"
-      >
+      <section aria-labelledby="about-engagement-heading" className="bg-background">
         <div className="container-page py-10 sm:py-12 lg:py-14">
-          <div className="max-w-2xl" data-motion-from="up">
+          <div data-motion-from="up">
             <p className="font-display text-xs font-semibold tracking-[0.2em] text-brand uppercase">
-              Industry & community
+              <AmpersandText>Industry & community</AmpersandText>
             </p>
             <h2
               id="about-engagement-heading"
@@ -179,7 +186,7 @@ function About() {
             >
               Beyond the Classroom
             </h2>
-            <p className="mt-3 max-w-xl text-pretty text-sm leading-relaxed text-muted-foreground sm:text-base">
+            <p className={`mt-3 ${aboutBody}`}>
               Recent training programmes and industry partnerships that extend learning beyond
               campus instruction.
             </p>
@@ -200,9 +207,7 @@ function About() {
                   <h3 className="font-display text-base font-bold text-navy md:text-lg">
                     <AmpersandText>{item.title}</AmpersandText>
                   </h3>
-                  <p className="mt-2 w-full text-pretty text-sm leading-relaxed text-muted-foreground sm:text-base">
-                    {item.body}
-                  </p>
+                  <p className={`mt-2 ${aboutBody}`}>{item.body}</p>
                 </div>
               </li>
             ))}
@@ -210,7 +215,6 @@ function About() {
         </div>
       </section>
 
-      {/* Today at a Glance — existing AtAGlance pattern */}
       <AtAGlance
         title="Today at a Glance"
         eyebrow="Snapshot"
@@ -225,59 +229,43 @@ function About() {
       />
 
       {/* Our Purpose */}
-      <section
-        aria-labelledby="about-purpose-heading"
-        className="border-t border-border/70 bg-background"
-      >
+      <section aria-labelledby="about-purpose-heading" className="bg-background">
         <div className="container-page py-10 sm:py-12 lg:py-14">
-          <div
-            className="grid gap-8 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:items-start lg:gap-16"
-            data-motion-from="up"
-          >
-            <div>
-              <p className="font-display text-xs font-semibold tracking-[0.2em] text-brand uppercase">
-                Direction
-              </p>
-              <h2
-                id="about-purpose-heading"
-                className="heading-section mt-3 font-display font-extrabold text-navy"
-              >
-                Our Purpose
-              </h2>
-            </div>
-            <p className="w-full text-base leading-relaxed text-muted-foreground text-pretty sm:text-lg">
-              {ABOUT_PURPOSE}
+          <div data-motion-from="up">
+            <p className="font-display text-xs font-semibold tracking-[0.2em] text-brand uppercase">
+              Direction
             </p>
+            <h2
+              id="about-purpose-heading"
+              className="heading-section mt-3 font-display font-extrabold text-navy"
+            >
+              Our Purpose
+            </h2>
+            <p className={`mt-3 ${aboutBody}`}>{ABOUT_PURPOSE}</p>
           </div>
 
-          <div
-            className="mt-10 flex flex-col gap-3 border-t border-border pt-8 sm:flex-row sm:items-center sm:justify-between"
-            data-motion-from="up"
-          >
-            <p className="text-sm text-muted-foreground">
+          <div className="mt-8 flex flex-col gap-4 sm:mt-10" data-motion-from="up">
+            <p className={aboutBody}>
               {institute.name} · Bemina, Srinagar, Jammu &amp; Kashmir
             </p>
-            <div className="flex flex-wrap gap-x-5 gap-y-2 text-sm font-semibold">
-              <Link to="/principal-message" className="link-cta group inline-flex items-center gap-1.5">
+            <div className="flex flex-col items-center gap-2.5 sm:flex-row sm:flex-wrap sm:justify-center">
+              <Link
+                to="/principal-message"
+                className="inline-flex min-h-10 items-center justify-center rounded-[0.6875rem] bg-brand px-4 text-sm font-semibold text-white transition-colors hover:bg-navy focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
+              >
                 Principal&apos;s message
-                <ArrowRight
-                  className="size-3.5 transition-transform duration-200 group-hover:translate-x-0.5"
-                  aria-hidden="true"
-                />
               </Link>
-              <Link to="/academics" className="link-cta group inline-flex items-center gap-1.5">
+              <Link
+                to="/academics"
+                className="inline-flex min-h-10 items-center justify-center rounded-[0.6875rem] bg-brand px-4 text-sm font-semibold text-white transition-colors hover:bg-navy focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
+              >
                 Academic programmes
-                <ArrowRight
-                  className="size-3.5 transition-transform duration-200 group-hover:translate-x-0.5"
-                  aria-hidden="true"
-                />
               </Link>
-              <Link to="/contact" className="link-cta group inline-flex items-center gap-1.5">
+              <Link
+                to="/contact"
+                className="inline-flex min-h-10 items-center justify-center rounded-[0.6875rem] bg-brand px-4 text-sm font-semibold text-white transition-colors hover:bg-navy focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
+              >
                 Contact
-                <ArrowRight
-                  className="size-3.5 transition-transform duration-200 group-hover:translate-x-0.5"
-                  aria-hidden="true"
-                />
               </Link>
             </div>
           </div>

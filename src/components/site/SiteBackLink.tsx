@@ -1,7 +1,6 @@
 "use client";
 
 import { useNavigate, useRouterState } from "@tanstack/react-router";
-import { ArrowLeft } from "lucide-react";
 import { useEffect, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent } from "react";
 import { cn } from "@/lib/utils";
 
@@ -236,7 +235,6 @@ export function SiteBackLink({ className }: { className?: string }) {
       onPointerUp={endPointer}
       onPointerCancel={endPointer}
     >
-      <ArrowLeft className="size-3.5 shrink-0" aria-hidden="true" strokeWidth={2.25} />
       <span>Back to Home</span>
     </button>
   );

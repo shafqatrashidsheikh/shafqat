@@ -31,6 +31,10 @@ supabase/.temp
 
 # Temporary crest upload used by logo:generate
 public/_crest-source-upload.jpg
+public/_favicon-source.jpg
+public/_favicon-source.png
+public/_favicon-source.jpeg
+public/_favicon-source.webp
 
 # Editor directories and files
 .vscode/*

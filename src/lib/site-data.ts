@@ -5,7 +5,7 @@ export const INSTITUTE = {
   established: "1986",
   tagline:
     "Empowering women through quality technical education, practical learning and career-focused skills.",
-  address: "Government Polytechnic for Women, Bemina, Srinagar, Jammu & Kashmir",
+  address: "NH44 Bypass Road, Bemina, Srinagar, Jammu & Kashmir",
   phone: "0194-2491176",
   email: "wpolysgr@yahoo.co.in",
   /** Bemina campus — verified coordinates (34°4′43″N 74°45′47″E) */

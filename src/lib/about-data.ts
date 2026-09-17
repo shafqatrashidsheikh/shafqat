@@ -31,12 +31,12 @@ export const ABOUT_HISTORY_TIMELINE: AboutTimelineItem[] = [
   {
     label: "Today",
     title: "Eight diploma programmes",
-    body: "The institute offers 8 three-year diploma programmes across engineering, technology, healthcare, food, textiles, garments, office applications and travel & tourism.",
+    body: "The institute offers 8 three-year diploma programmes across engineering, technology, healthcare, food, textiles, garments, office applications and travel\u00A0&\u00A0tourism.",
   },
 ];
 
 export type AboutAchievementItem = {
-  /** Historical year or period label — show as “Historical record” where applicable */
+  /** Year when verified; empty when only “Historical record” is known */
   yearLabel: string;
   title: string;
   body: string;
@@ -47,37 +47,37 @@ export const ABOUT_ACHIEVEMENTS: AboutAchievementItem[] = [
   {
     yearLabel: "2005",
     title: "Best Polytechnic Award",
-    body: "Best Polytechnic Award recorded in institutional profile material.",
+    body: "Recorded in institutional profile material as Best Polytechnic Award.",
     historical: true,
   },
   {
     yearLabel: "2011",
     title: "Best Polytechnic Award",
-    body: "Best Polytechnic Award recorded in institutional profile material.",
+    body: "Recorded in institutional profile material as Best Polytechnic Award.",
     historical: true,
   },
   {
-    yearLabel: "Historical record",
-    title: "Outstanding polytechnic — North India",
-    body: "Recognised in institutional profile material as having been adjudged an outstanding polytechnic in North India by NITTTR Chandigarh.",
+    yearLabel: "",
+    title: "Outstanding polytechnic, North India",
+    body: "Institutional profile material records recognition by NITTTR\u00A0Chandigarh as an outstanding polytechnic in North\u00A0India.",
     historical: true,
   },
   {
-    yearLabel: "Historical record",
+    yearLabel: "",
     title: "Institutional Student Management System (i-SMS)",
-    body: "Launched as the first polytechnic in the Union Territory of J&K to establish this system.",
+    body: "Launched as the first polytechnic in the Union Territory of J&K to establish the Institutional Student Management System (i-SMS).",
     historical: true,
   },
   {
-    yearLabel: "Historical record",
+    yearLabel: "",
     title: "Garment Technology incubation centre",
-    body: "Established to support pass-out students and entrepreneurship.",
+    body: "Garment Technology incubation centre established to support pass-out students and entrepreneurship.",
     historical: true,
   },
   {
     yearLabel: "2022",
     title: "Mega Placement Drive",
-    body: "2,500 candidates registered, 932 shortlisted, around 50 on-the-spot offers, with 25 companies/industries participating in placement and counselling. These figures are from the 2022 drive and are not current placement statistics.",
+    body: "In the 2022 Mega Placement Drive, 2,500 candidates registered, 932 were shortlisted, and around 50 on-the-spot offers were made, with 25 companies and industries in placement and counselling. These are 2022 figures, not current placement statistics.",
     historical: true,
   },
 ];
@@ -92,7 +92,7 @@ export const ABOUT_ENGAGEMENT: AboutEngagementItem[] = [
   {
     yearLabel: "2025",
     title: "Mission YUVA technical training",
-    body: "Government Polytechnic for Women, Bemina hosted a three-day Mission YUVA technical training programme involving 230+ participants from across Kashmir Division.",
+    body: "Government Polytechnic for Women, Bemina hosted a three-day Mission\u00A0YUVA technical training programme involving 230+ participants from across Kashmir\u00A0Division.",
   },
   {
     yearLabel: "2026",
@@ -107,7 +107,7 @@ export const ABOUT_ENGAGEMENT: AboutEngagementItem[] = [
   {
     yearLabel: "2026",
     title: "MoU with J&K Hoteliers Club",
-    body: "Focused on practical training, internships, mentorship and industry exposure for Travel & Tourism students.",
+    body: "Focused on practical training, internships, mentorship and industry exposure for Travel\u00A0&\u00A0Tourism students.",
   },
 ];
 
