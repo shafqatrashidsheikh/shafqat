@@ -1,7 +1,8 @@
 import { createFileRoute, Link, Navigate, useNavigate } from "@tanstack/react-router";
-import { useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { PortalShell } from "@/components/portal/PortalShell";
 import { useAuth } from "@/hooks/useAuth";
+import { studentGetAcademicRecord } from "@/server/virtual-office/student-records";
 
 export const Route = createFileRoute("/student/")({
   head: () => ({ meta: [{ title: "Student Portal — GPW Srinagar" }] }),
@@ -10,11 +11,27 @@ export const Route = createFileRoute("/student/")({
 
 function StudentPortalPage() {
   const navigate = useNavigate();
-  const { profile, loading, signOut, configured } = useAuth();
+  const { session, profile, loading, signOut, configured } = useAuth();
   const handleSignOut = useCallback(async () => {
     await signOut();
     navigate({ to: "/" });
   }, [navigate, signOut]);
+
+  const [academic, setAcademic] = useState<Awaited<ReturnType<typeof studentGetAcademicRecord>> | null>(
+    null,
+  );
+  const [academicError, setAcademicError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!session?.access_token || profile?.approval_status !== "approved") return;
+    void studentGetAcademicRecord({ data: { accessToken: session.access_token } })
+      .then(setAcademic)
+      .catch((err) => {
+        // Tables may not be migrated yet — show quiet empty state
+        setAcademicError(err instanceof Error ? err.message : null);
+        setAcademic(null);
+      });
+  }, [session?.access_token, profile?.approval_status]);
 
   if (loading) {
     return (
@@ -59,10 +76,67 @@ function StudentPortalPage() {
             <dd className="font-semibold text-navy">{profile.department?.name ?? "—"}</dd>
           </div>
           <div>
+            <dt className="text-muted-foreground">Semester</dt>
+            <dd className="font-semibold text-navy">{profile.semester ?? "—"}</dd>
+          </div>
+          <div>
             <dt className="text-muted-foreground">Email</dt>
             <dd className="font-semibold text-navy">{profile.email}</dd>
           </div>
         </dl>
+      </div>
+
+      <div className="card-premium mb-6 p-6">
+        <h2 className="font-display text-lg font-bold text-navy">Your academic record</h2>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Attendance and marks uploaded by authorised staff. Requirement: {academic?.threshold ?? 75}% attendance.
+        </p>
+        {academicError && !academic && (
+          <p className="mt-3 text-sm text-muted-foreground">
+            Academic tables are not available yet. Ask the office to apply the Virtual College Office migration.
+          </p>
+        )}
+        {academic && (
+          <div className="mt-4 grid gap-6 lg:grid-cols-2">
+            <div>
+              <h3 className="text-sm font-semibold uppercase tracking-wide text-brand">Attendance</h3>
+              {academic.attendanceSummary.length === 0 ? (
+                <p className="mt-2 text-sm text-muted-foreground">No attendance uploaded yet.</p>
+              ) : (
+                <ul className="mt-2 space-y-2">
+                  {academic.attendanceSummary.map((s) => (
+                    <li key={s.subjectId} className="flex justify-between gap-3 border-b border-border/60 py-2 text-sm">
+                      <span className="text-navy">{s.name}</span>
+                      <span className={s.meetsRequirement ? "text-navy" : "font-semibold text-red"}>
+                        {s.percentage}% ({s.present}/{s.total})
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+            <div>
+              <h3 className="text-sm font-semibold uppercase tracking-wide text-brand">Marks</h3>
+              {academic.marks.length === 0 ? (
+                <p className="mt-2 text-sm text-muted-foreground">No marks uploaded yet.</p>
+              ) : (
+                <ul className="mt-2 space-y-2">
+                  {academic.marks.map((m, i) => (
+                    <li key={`${m.subject}-${m.examType}-${i}`} className="flex justify-between gap-3 border-b border-border/60 py-2 text-sm">
+                      <span className="text-navy">
+                        {m.subject} · {m.examType}
+                        {m.semester ? ` · Sem ${m.semester}` : ""}
+                      </span>
+                      <span className="font-semibold text-navy">
+                        {m.marks}/{m.maxMarks}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </div>
+        )}
       </div>
 
       <h2 className="mb-4 font-display text-lg font-bold text-navy">Institute resources</h2>

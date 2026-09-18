@@ -157,6 +157,9 @@ export function PortalDashboard({
             Departments ({departments.length})
           </Button>
         )}
+        <Button asChild variant="outline" size="sm">
+          <Link to="/virtual-office">Virtual College Office</Link>
+        </Button>
         {isPrincipal && (
           <Button asChild variant="outline" size="sm">
             <Link to="/admin">CMS Admin</Link>

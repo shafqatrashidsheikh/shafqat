@@ -84,11 +84,26 @@ export const portalSubmitStudentProfile = createServerFn({ method: "POST" })
       throw new Error("Profile has already been submitted");
     }
 
+    const roll = data.payload.roll_number.trim();
+    const { data: dup } = await ctx.admin
+      .from("profiles")
+      .select("id, email")
+      .eq("role", "student")
+      .in("approval_status", ["pending_review", "approved"])
+      .ilike("roll_number", roll)
+      .neq("id", ctx.userId)
+      .maybeSingle();
+    if (dup) {
+      throw new Error(
+        `Roll number ${roll} is already registered. Contact your department if this is an error.`,
+      );
+    }
+
     const { data: row, error } = await ctx.supabase
       .from("profiles")
       .update({
         full_name: data.payload.full_name,
-        roll_number: data.payload.roll_number,
+        roll_number: roll,
         department_id: data.payload.department_id,
         phone: data.payload.phone ?? null,
         approval_status: "pending_review",
@@ -141,7 +156,7 @@ export const portalApproveStudent = createServerFn({ method: "POST" })
 
     const { data: student, error: fetchError } = await ctx.supabase
       .from("profiles")
-      .select("id, department_id, approval_status, role")
+      .select("id, department_id, approval_status, role, email, full_name, roll_number")
       .eq("id", data.studentId)
       .single();
 
@@ -157,12 +172,29 @@ export const portalApproveStudent = createServerFn({ method: "POST" })
       throw new Error("You can only approve students in your department");
     }
 
+    if (student.roll_number) {
+      const { data: dup } = await ctx.admin
+        .from("profiles")
+        .select("id, email")
+        .eq("role", "student")
+        .eq("approval_status", "approved")
+        .ilike("roll_number", student.roll_number)
+        .neq("id", data.studentId)
+        .maybeSingle();
+      if (dup) {
+        throw new Error(
+          `Duplicate roll number: approved student already uses ${student.roll_number} (${dup.email}).`,
+        );
+      }
+    }
+
+    const reviewedAt = new Date().toISOString();
     const { data: row, error } = await ctx.supabase
       .from("profiles")
       .update({
         approval_status: "approved",
         reviewed_by: ctx.userId,
-        reviewed_at: new Date().toISOString(),
+        reviewed_at: reviewedAt,
         rejection_reason: null,
       })
       .eq("id", data.studentId)
@@ -170,6 +202,20 @@ export const portalApproveStudent = createServerFn({ method: "POST" })
       .single();
 
     if (error) throw error;
+
+    const { error: auditError } = await ctx.admin.from("vo_audit_log").insert({
+      officer: "student_approval",
+      action: "approve",
+      actor_id: ctx.userId,
+      entity_type: "profile",
+      entity_id: data.studentId,
+      summary: `Approved student via portal (${student.full_name ?? student.email ?? data.studentId})`,
+      payload: { reviewedAt, source: "portal" },
+    });
+    if (auditError) {
+      console.warn("[portalApproveStudent] audit log unavailable:", auditError.message);
+    }
+
     return row;
   });
 
@@ -180,7 +226,7 @@ export const portalRejectStudent = createServerFn({ method: "POST" })
 
     const { data: student, error: fetchError } = await ctx.supabase
       .from("profiles")
-      .select("id, department_id, approval_status, role")
+      .select("id, department_id, approval_status, role, email, full_name, roll_number")
       .eq("id", data.studentId)
       .single();
 
@@ -196,19 +242,35 @@ export const portalRejectStudent = createServerFn({ method: "POST" })
       throw new Error("You can only reject students in your department");
     }
 
+    const reviewedAt = new Date().toISOString();
+    const rejection_reason = data.rejection_reason ?? "Application not approved";
     const { data: row, error } = await ctx.supabase
       .from("profiles")
       .update({
         approval_status: "rejected",
-        rejection_reason: data.rejection_reason ?? "Application not approved",
+        rejection_reason,
         reviewed_by: ctx.userId,
-        reviewed_at: new Date().toISOString(),
+        reviewed_at: reviewedAt,
       })
       .eq("id", data.studentId)
       .select()
       .single();
 
     if (error) throw error;
+
+    const { error: auditError } = await ctx.admin.from("vo_audit_log").insert({
+      officer: "student_approval",
+      action: "reject",
+      actor_id: ctx.userId,
+      entity_type: "profile",
+      entity_id: data.studentId,
+      summary: `Rejected student via portal: ${rejection_reason}`,
+      payload: { reviewedAt, source: "portal", rejection_reason },
+    });
+    if (auditError) {
+      console.warn("[portalRejectStudent] audit log unavailable:", auditError.message);
+    }
+
     return row;
   });
 

@@ -6,6 +6,7 @@ export type DbProfile = {
   department_id: string | null;
   roll_number: string | null;
   phone: string | null;
+  semester?: number | null;
   approval_status: "n/a" | "pending_profile" | "pending_review" | "approved" | "rejected";
   rejection_reason: string | null;
   reviewed_by: string | null;

@@ -30,6 +30,7 @@ import { Route as PrivacyPolicyRouteImport } from './routes/privacy-policy'
 import { Route as RtiRouteImport } from './routes/rti'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as StudentWelfareRouteImport } from './routes/student-welfare'
+import { Route as VirtualOfficeRouteImport } from './routes/virtual-office'
 import { Route as WebsitePolicyRouteImport } from './routes/website-policy'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as AdminLoginRouteImport } from './routes/admin/login'
@@ -154,6 +155,11 @@ const StudentWelfareRoute = StudentWelfareRouteImport.update({
   path: '/student-welfare',
   getParentRoute: () => rootRouteImport,
 } as any)
+const VirtualOfficeRoute = VirtualOfficeRouteImport.update({
+  id: '/virtual-office',
+  path: '/virtual-office',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const WebsitePolicyRoute = WebsitePolicyRouteImport.update({
   id: '/website-policy',
   path: '/website-policy',
@@ -269,6 +275,7 @@ export interface FileRoutesByFullPath {
   '/rti': typeof RtiRoute
   '/signup': typeof SignupRoute
   '/student-welfare': typeof StudentWelfareRoute
+  '/virtual-office': typeof VirtualOfficeRoute
   '/website-policy': typeof WebsitePolicyRoute
   '/admin/login': typeof AdminLoginRoute
   '/api/chat': typeof ApiChatRoute
@@ -310,6 +317,7 @@ export interface FileRoutesByTo {
   '/rti': typeof RtiRoute
   '/signup': typeof SignupRoute
   '/student-welfare': typeof StudentWelfareRoute
+  '/virtual-office': typeof VirtualOfficeRoute
   '/website-policy': typeof WebsitePolicyRoute
   '/admin/login': typeof AdminLoginRoute
   '/api/chat': typeof ApiChatRoute
@@ -352,6 +360,7 @@ export interface FileRoutesById {
   '/rti': typeof RtiRoute
   '/signup': typeof SignupRoute
   '/student-welfare': typeof StudentWelfareRoute
+  '/virtual-office': typeof VirtualOfficeRoute
   '/website-policy': typeof WebsitePolicyRoute
   '/admin/login': typeof AdminLoginRoute
   '/api/chat': typeof ApiChatRoute
@@ -395,6 +404,7 @@ export interface FileRouteTypes {
     | '/rti'
     | '/signup'
     | '/student-welfare'
+    | '/virtual-office'
     | '/website-policy'
     | '/admin/login'
     | '/api/chat'
@@ -436,6 +446,7 @@ export interface FileRouteTypes {
     | '/rti'
     | '/signup'
     | '/student-welfare'
+    | '/virtual-office'
     | '/website-policy'
     | '/admin/login'
     | '/api/chat'
@@ -477,6 +488,7 @@ export interface FileRouteTypes {
     | '/rti'
     | '/signup'
     | '/student-welfare'
+    | '/virtual-office'
     | '/website-policy'
     | '/admin/login'
     | '/api/chat'
@@ -519,6 +531,7 @@ export interface RootRouteChildren {
   RtiRoute: typeof RtiRoute
   SignupRoute: typeof SignupRoute
   StudentWelfareRoute: typeof StudentWelfareRoute
+  VirtualOfficeRoute: typeof VirtualOfficeRoute
   WebsitePolicyRoute: typeof WebsitePolicyRoute
   AdminLoginRoute: typeof AdminLoginRoute
   ApiChatRoute: typeof ApiChatRoute
@@ -688,6 +701,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StudentWelfareRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/virtual-office': {
+      id: '/virtual-office'
+      path: '/virtual-office'
+      fullPath: '/virtual-office'
+      preLoaderRoute: typeof VirtualOfficeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/website-policy': {
       id: '/website-policy'
       path: '/website-policy'
@@ -839,6 +859,7 @@ const rootRouteChildren: RootRouteChildren = {
   RtiRoute: RtiRoute,
   SignupRoute: SignupRoute,
   StudentWelfareRoute: StudentWelfareRoute,
+  VirtualOfficeRoute: VirtualOfficeRoute,
   WebsitePolicyRoute: WebsitePolicyRoute,
   AdminLoginRoute: AdminLoginRoute,
   ApiChatRoute: ApiChatRoute,

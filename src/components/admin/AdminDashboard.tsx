@@ -223,6 +223,9 @@ export function AdminDashboard({ accessToken, onSignOut }: AdminDashboardProps) 
             <Button asChild variant="outline">
               <Link to="/">View site</Link>
             </Button>
+            <Button asChild variant="outline">
+              <Link to="/virtual-office">Virtual College Office</Link>
+            </Button>
             <Button type="button" variant="outline" onClick={() => void onSignOut().then(() => window.location.assign("/admin/login"))}>
               <LogOut className="size-4" />
               Sign out

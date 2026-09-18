@@ -151,33 +151,33 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "preload", href: LOADER_LOGO_SRC, as: "image" },
       { rel: "preload", href: BOOKS_ART_SRC, as: "image" },
       { rel: "preload", href: GRADUATION_ART_SRC, as: "image" },
-      /* Unique filenames — Chrome ignores query-string favicon cache busts. */
+      /* Browser-tab favicon — unique filenames for Chrome cache. TanStack Start head links. */
       {
         rel: "icon",
-        href: "/gpw-v17-32.png",
+        href: "/gpw-icon-v20-32.png",
         sizes: "32x32",
         type: "image/png",
       },
       {
         rel: "icon",
-        href: "/gpw-v17-16.png",
+        href: "/gpw-icon-v20-16.png",
         sizes: "16x16",
         type: "image/png",
       },
       {
         rel: "icon",
-        href: "/gpw-v17-48.png",
+        href: "/gpw-icon-v20-48.png",
         sizes: "48x48",
         type: "image/png",
       },
-      { rel: "shortcut icon", href: "/gpw-v17.ico" },
-      { rel: "icon", href: "/gpw-v17.ico", sizes: "any" },
+      { rel: "shortcut icon", href: "/gpw-icon-v20.ico" },
+      { rel: "icon", href: "/gpw-icon-v20.ico", sizes: "any" },
       {
         rel: "apple-touch-icon",
-        href: "/gpw-v17-180.png",
+        href: "/gpw-icon-v20-180.png",
         sizes: "180x180",
       },
-      { rel: "manifest", href: "/site.webmanifest?v=17" },
+      { rel: "manifest", href: "/site.webmanifest?v=20" },
     ],
     scripts: [
       {

@@ -30,6 +30,7 @@ export type UserProfile = {
   department_id: string | null;
   roll_number: string | null;
   phone: string | null;
+  semester?: number | null;
   approval_status: ApprovalStatus;
   rejection_reason: string | null;
   reviewed_by: string | null;
@@ -38,6 +39,23 @@ export type UserProfile = {
   updated_at: string;
   department?: UserDepartment | null;
 };
+
+/** Roles that may open the Virtual College Office */
+export const VIRTUAL_OFFICE_ROLES = ["admin", "principal", "hod", "staff", "editor"] as const;
+
+export function canAccessVirtualOffice(role: UserRole) {
+  return (VIRTUAL_OFFICE_ROLES as readonly string[]).includes(role);
+}
+
+/** Website Management Officer — CMS write roles only */
+export function canManageWebsiteContent(role: UserRole) {
+  return role === "admin" || role === "principal" || role === "editor";
+}
+
+/** Academic Data / Notification officers */
+export function canManageAcademicData(role: UserRole) {
+  return role === "admin" || role === "principal" || role === "hod" || role === "staff";
+}
 
 export function isCmsRole(role: UserRole) {
   return (CMS_ROLES as readonly string[]).includes(role);
