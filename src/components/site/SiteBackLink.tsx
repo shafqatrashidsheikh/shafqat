@@ -4,7 +4,7 @@ import { useNavigate, useRouterState } from "@tanstack/react-router";
 import { useEffect, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent } from "react";
 import { cn } from "@/lib/utils";
 
-const STORAGE_KEY = "gpw-back-home-pos";
+const STORAGE_KEY = "gpw-back-btn-pos";
 const DRAG_THRESHOLD_PX = 5;
 const EDGE_PAD = 12;
 
@@ -49,7 +49,7 @@ function defaultPos(width: number, height: number): Pos {
 }
 
 /**
- * Floating “Back to Home” — drag to move, tap to go home.
+ * Floating “Back” — drag to move, tap to go one page back in history.
  * Position is remembered in localStorage.
  */
 export function SiteBackLink({ className }: { className?: string }) {
@@ -69,7 +69,7 @@ export function SiteBackLink({ className }: { className?: string }) {
 
   useEffect(() => {
     setReady(true);
-    const approxW = 148;
+    const approxW = 72;
     const approxH = 40;
     const stored = readStoredPos();
     const next = stored ? clampPos(stored.x, stored.y, approxW, approxH) : defaultPos(approxW, approxH);
@@ -97,7 +97,7 @@ export function SiteBackLink({ className }: { className?: string }) {
       setPos((prev) => {
         if (!prev) return prev;
         const el = btnRef.current;
-        const w = el?.offsetWidth ?? 140;
+        const w = el?.offsetWidth ?? 72;
         const h = el?.offsetHeight ?? 40;
         const next = clampPos(prev.x, prev.y, w, h);
         posRef.current = next;
@@ -122,6 +122,14 @@ export function SiteBackLink({ className }: { className?: string }) {
     if (!el) return;
     el.style.left = `${next.x}px`;
     el.style.top = `${next.y}px`;
+  };
+
+  const goBackOnePage = () => {
+    if (typeof window !== "undefined" && window.history.length > 1) {
+      window.history.back();
+      return;
+    }
+    void navigate({ to: "/" });
   };
 
   const onPointerDown = (e: ReactPointerEvent<HTMLButtonElement>) => {
@@ -164,7 +172,7 @@ export function SiteBackLink({ className }: { className?: string }) {
     e.preventDefault();
 
     const el = btnRef.current;
-    const w = el?.offsetWidth ?? 140;
+    const w = el?.offsetWidth ?? 72;
     const h = el?.offsetHeight ?? 40;
     const next = clampPos(origin.current.left + dx, origin.current.top + dy, w, h);
     posRef.current = next;
@@ -205,9 +213,9 @@ export function SiteBackLink({ className }: { className?: string }) {
       /* ignore */
     }
 
-    // Tap without drag → go home
+    // Tap without drag → one page back
     if (!moved) {
-      void navigate({ to: "/" });
+      goBackOnePage();
     }
   };
 
@@ -222,8 +230,8 @@ export function SiteBackLink({ className }: { className?: string }) {
     <button
       ref={btnRef}
       type="button"
-      aria-label="Back to Home. Drag to move."
-      title="Drag to move · Tap to go home"
+      aria-label="Back. Drag to move."
+      title="Drag to move · Tap to go back"
       className={cn(
         "site-back-btn site-back-btn--float",
         dragging && "site-back-btn--dragging",
@@ -235,7 +243,7 @@ export function SiteBackLink({ className }: { className?: string }) {
       onPointerUp={endPointer}
       onPointerCancel={endPointer}
     >
-      <span>Back to Home</span>
+      <span>Back</span>
     </button>
   );
 }

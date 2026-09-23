@@ -34,14 +34,23 @@ export function StudentOnboardingForm({
 
   useEffect(() => {
     setDepartmentsLoading(true);
+    setError(null);
     portalListDepartments({ data: { accessToken } })
       .then((rows) => {
-        setDepartments(rows as Department[]);
-        if (!departmentId && rows.length === 1) {
-          setDepartmentId(rows[0].id);
+        const list = (rows ?? []) as Department[];
+        setDepartments(list);
+        if (!departmentId && list.length === 1) {
+          setDepartmentId(list[0].id);
         }
       })
-      .catch((err) => setError(err instanceof Error ? err.message : "Failed to load departments"))
+      .catch((err) => {
+        setDepartments([]);
+        setError(
+          err instanceof Error
+            ? err.message
+            : "Could not load departments. Sign out and sign in again, then retry.",
+        );
+      })
       .finally(() => setDepartmentsLoading(false));
   }, [accessToken]);
 
@@ -74,8 +83,9 @@ export function StudentOnboardingForm({
   };
 
   return (
-    <div className="card-premium mx-auto w-full max-w-lg min-w-0 p-5 sm:p-8">
-      <h2 className="font-display text-2xl font-extrabold text-navy">Complete your student profile</h2>
+    <div className="mx-auto w-full max-w-lg min-w-0">
+      <div className="card-premium p-5 sm:p-8">
+      <h2 className="font-display text-xl font-extrabold text-navy sm:text-2xl">Student details</h2>
       <p className="mt-2 text-sm text-muted-foreground">
         Select your diploma department and enter your roll number. Your department HOD or staff will review and approve
         your account.
@@ -111,10 +121,15 @@ export function StudentOnboardingForm({
           <Label htmlFor="department">Department / Diploma programme</Label>
           {departmentsLoading ? (
             <p className="mt-2 text-sm text-muted-foreground">Loading departments…</p>
+          ) : error && departments.length === 0 ? (
+            <p className="mt-2 rounded-lg border border-red/30 bg-red/5 p-3 text-sm text-red">
+              {error}
+            </p>
           ) : departments.length === 0 ? (
             <p className="mt-2 rounded-lg border border-border bg-light-blue p-3 text-sm text-navy">
-              No departments are configured yet. Please contact the institute office — the principal needs to sync
-              department data in Supabase.
+              No official diploma departments are available yet. Ask the principal or CMS admin to sync
+              departments (Admin → Overview → Import CMS, or re-open this page after the server can reach
+              Supabase).
             </p>
           ) : (
             <Select value={departmentId} onValueChange={setDepartmentId}>
@@ -141,11 +156,12 @@ export function StudentOnboardingForm({
             onChange={(e) => setPhone(e.target.value)}
           />
         </div>
-        {error && <p className="text-sm text-red">{error}</p>}
+        {error && departments.length > 0 ? <p className="text-sm text-red">{error}</p> : null}
         <Button type="submit" className="w-full" disabled={busy || departmentsLoading || departments.length === 0}>
           Submit for department approval
         </Button>
       </form>
+      </div>
     </div>
   );
 }

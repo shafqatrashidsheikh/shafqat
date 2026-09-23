@@ -204,7 +204,7 @@ export const fetchAdmissionsData = createServerFn({ method: "GET" }).handler(
 );
 
 /** CDA — read all notices (public or admin with token) */
-export const fetchNotices = createServerFn({ method: "GET" })
+export const fetchNotices = createServerFn({ method: "POST" })
   .validator(z.object({ accessToken: z.string().optional() }).optional())
   .handler(async ({ data }) => {
     if (!isSupabaseConfigured()) return [];
@@ -218,7 +218,7 @@ export const fetchNotices = createServerFn({ method: "GET" })
   });
 
 /** CDA — read departments */
-export const fetchDepartments = createServerFn({ method: "GET" })
+export const fetchDepartments = createServerFn({ method: "POST" })
   .validator(z.object({ accessToken: z.string().optional() }).optional())
   .handler(async ({ data }) => {
     if (!isSupabaseConfigured()) return [];
@@ -232,7 +232,7 @@ export const fetchDepartments = createServerFn({ method: "GET" })
   });
 
 /** CDA — read programs */
-export const fetchPrograms = createServerFn({ method: "GET" })
+export const fetchPrograms = createServerFn({ method: "POST" })
   .validator(z.object({ accessToken: z.string().optional() }).optional())
   .handler(async ({ data }) => {
     if (!isSupabaseConfigured()) return [];
@@ -246,7 +246,7 @@ export const fetchPrograms = createServerFn({ method: "GET" })
   });
 
 /** CDA — read events */
-export const fetchEvents = createServerFn({ method: "GET" })
+export const fetchEvents = createServerFn({ method: "POST" })
   .validator(z.object({ accessToken: z.string().optional() }).optional())
   .handler(async ({ data }) => {
     if (!isSupabaseConfigured()) return [];
@@ -260,7 +260,7 @@ export const fetchEvents = createServerFn({ method: "GET" })
   });
 
 /** CDA — read homepage CMS blocks (admin token required for full list) */
-export const fetchHomepageBlocks = createServerFn({ method: "GET" })
+export const fetchHomepageBlocks = createServerFn({ method: "POST" })
   .validator(z.object({ accessToken: z.string().optional() }).optional())
   .handler(async ({ data }) => {
     if (!isSupabaseConfigured()) return null;
@@ -319,7 +319,7 @@ export const fetchPublicNotices = createServerFn({ method: "GET" }).handler(asyn
 });
 
 /** CDA — page sections (public or admin) */
-export const fetchPageSections = createServerFn({ method: "GET" })
+export const fetchPageSections = createServerFn({ method: "POST" })
   .validator(z.object({ accessToken: z.string().optional() }).optional())
   .handler(async ({ data }) => {
     if (!isSupabaseConfigured()) return [];
@@ -336,7 +336,7 @@ export const fetchPageSections = createServerFn({ method: "GET" })
   });
 
 /** CDA — explore carousel cards */
-export const fetchExploreCards = createServerFn({ method: "GET" })
+export const fetchExploreCards = createServerFn({ method: "POST" })
   .validator(z.object({ accessToken: z.string().optional() }).optional())
   .handler(async ({ data }) => {
     if (!isSupabaseConfigured()) return [];
@@ -353,7 +353,7 @@ export const fetchExploreCards = createServerFn({ method: "GET" })
   });
 
 /** CDA — media library (images, videos, PDFs) */
-export const fetchMediaAssets = createServerFn({ method: "GET" })
+export const fetchMediaAssets = createServerFn({ method: "POST" })
   .validator(z.object({ accessToken: z.string().optional() }).optional())
   .handler(async ({ data }) => {
     if (!isSupabaseConfigured()) return [];
@@ -398,7 +398,7 @@ export async function loadMediaUrlMap(): Promise<Record<string, string>> {
 }
 
 /** CDA — read admissions admin data */
-export const fetchAdmissionsAdmin = createServerFn({ method: "GET" })
+export const fetchAdmissionsAdmin = createServerFn({ method: "POST" })
   .validator(z.object({ accessToken: z.string() }))
   .handler(async ({ data }) => {
     if (!isSupabaseConfigured()) return getStaticAdmissionsData();

@@ -19,7 +19,7 @@ export type AdminOverviewCounts = {
 };
 
 /** Admin dashboard — live content counts from Supabase */
-export const fetchAdminOverview = createServerFn({ method: "GET" })
+export const fetchAdminOverview = createServerFn({ method: "POST" })
   .validator(z.object({ accessToken: z.string() }))
   .handler(async ({ data }): Promise<AdminOverviewCounts> => {
     if (!isSupabaseConfigured()) {
@@ -98,7 +98,7 @@ export const fetchAdminOverview = createServerFn({ method: "GET" })
   });
 
 /** Check whether Supabase tables are reachable (admin diagnostics) */
-export const fetchAdminHealth = createServerFn({ method: "GET" })
+export const fetchAdminHealth = createServerFn({ method: "POST" })
   .validator(z.object({ accessToken: z.string() }))
   .handler(async ({ data }) => {
     if (!isSupabaseConfigured()) {

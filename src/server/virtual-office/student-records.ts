@@ -5,13 +5,63 @@ import { requirePortalUser } from "@/server/portal/auth";
 
 const tokenSchema = z.object({ accessToken: z.string().min(1) });
 
-/** Approved students only — own attendance and marks */
+export type StudentAcademicRecord = {
+  threshold: number;
+  subjects: {
+    id: string;
+    name: string;
+    code: string | null;
+    semester: number;
+  }[];
+  attendanceSummary: {
+    subjectId: string;
+    name: string;
+    present: number;
+    total: number;
+    percentage: number;
+    meetsRequirement: boolean;
+  }[];
+  marks: {
+    subjectId: string;
+    subject: string;
+    semester: number | null;
+    examType: string;
+    marks: number;
+    maxMarks: number;
+  }[];
+};
+
+/** Approved students only — own attendance, marks, and semester subjects */
 export const studentGetAcademicRecord = createServerFn({ method: "GET" })
   .validator(tokenSchema)
-  .handler(async ({ data }) => {
+  .handler(async ({ data }): Promise<StudentAcademicRecord> => {
     const ctx = await requirePortalUser(data.accessToken, ["student"]);
     if (ctx.profile.approval_status !== "approved") {
       throw new Error("Student account is not approved yet");
+    }
+
+    const departmentId = ctx.profile.department_id;
+    const semester = ctx.profile.semester ?? null;
+
+    let subjects: StudentAcademicRecord["subjects"] = [];
+    if (departmentId) {
+      let subjectQuery = ctx.supabase
+        .from("academic_subjects")
+        .select("id, name, code, semester")
+        .eq("department_id", departmentId)
+        .eq("is_active", true)
+        .order("name", { ascending: true });
+      if (semester != null) {
+        subjectQuery = subjectQuery.eq("semester", semester);
+      }
+      const { data: subjectRows, error: sErr } = await subjectQuery;
+      if (sErr) throw sErr;
+      subjects = (subjectRows ?? []).map((s) => ({
+        id: s.id as string,
+        name: s.name as string,
+        code: (s.code as string | null) ?? null,
+        semester: Number(s.semester),
+      }));
     }
 
     const { data: attendance, error: aErr } = await ctx.supabase
@@ -64,6 +114,7 @@ export const studentGetAcademicRecord = createServerFn({ method: "GET" })
 
     return {
       threshold: ATTENDANCE_THRESHOLD_PCT,
+      subjects,
       attendanceSummary,
       marks: (marks ?? []).map((m) => {
         const subRaw = m.academic_subjects as
@@ -72,9 +123,10 @@ export const studentGetAcademicRecord = createServerFn({ method: "GET" })
           | null;
         const sub = Array.isArray(subRaw) ? subRaw[0] : subRaw;
         return {
+          subjectId: m.subject_id as string,
           subject: sub?.name ?? "Subject",
           semester: sub?.semester ?? null,
-          examType: m.exam_type,
+          examType: m.exam_type as string,
           marks: Number(m.marks),
           maxMarks: Number(m.max_marks),
         };

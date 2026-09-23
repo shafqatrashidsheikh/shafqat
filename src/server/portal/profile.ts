@@ -1,6 +1,6 @@
 import type { UserRole } from "@/lib/auth/roles";
 import { env } from "@/lib/env";
-import { getSupabaseAdmin, getSupabaseAsUser } from "@/lib/supabase/server";
+import { getSupabaseAdmin } from "@/lib/supabase/server";
 
 const VALID_ROLES = ["admin", "editor", "principal", "hod", "staff", "student"] as const;
 
@@ -30,8 +30,9 @@ function resolveFullName(meta: Record<string, unknown>): string {
 }
 
 async function getAuthUser(accessToken: string) {
-  const supabase = getSupabaseAsUser(accessToken);
-  const { data, error } = await supabase.auth.getUser(accessToken);
+  // Prefer admin Auth API — user clients configured with accessToken cannot use auth.getUser
+  const admin = getSupabaseAdmin();
+  const { data, error } = await admin.auth.getUser(accessToken);
   if (error || !data.user) throw new Error("Invalid session");
   return data.user;
 }

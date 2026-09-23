@@ -64,7 +64,7 @@ export function UserManagementPanel({
     setLoading(true);
     try {
       const deptRows = (await portalListDepartments({ data: { accessToken } })) as Department[];
-      setDepartments(deptRows);
+      setDepartments(deptRows ?? []);
 
       if (canCreateHod) {
         const hodRows = await portalListHods({ data: { accessToken } });
@@ -81,7 +81,8 @@ export function UserManagementPanel({
         }
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load users");
+      setDepartments([]);
+      setError(err instanceof Error ? err.message : "Failed to load portal users / departments");
     } finally {
       setLoading(false);
     }
@@ -282,21 +283,29 @@ export function UserManagementPanel({
               {!isScopedToDepartment && (
                 <div>
                   <Label htmlFor="um_dept">Department</Label>
-                  <Select value={inviteDept} onValueChange={setInviteDept}>
-                    <SelectTrigger id="um_dept" className="mt-1.5 w-full">
-                      <SelectValue placeholder="Select department" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {departments.map((d) => (
-                        <SelectItem key={d.id} value={d.id}>
-                          {d.name}
-                          {inviteRole === "hod" && hods.some((h) => h.department_id === d.id)
-                            ? " (HOD assigned)"
-                            : ""}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  {departments.length === 0 ? (
+                    <p className="mt-2 rounded-lg border border-border bg-light-blue p-3 text-sm text-navy">
+                      {error
+                        ? error
+                        : "No official departments loaded. Refresh the page or check Supabase connection."}
+                    </p>
+                  ) : (
+                    <Select value={inviteDept} onValueChange={setInviteDept}>
+                      <SelectTrigger id="um_dept" className="mt-1.5 w-full">
+                        <SelectValue placeholder="Select department" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {departments.map((d) => (
+                          <SelectItem key={d.id} value={d.id}>
+                            {d.name}
+                            {inviteRole === "hod" && hods.some((h) => h.department_id === d.id)
+                              ? " (HOD assigned)"
+                              : ""}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
                 </div>
               )}
 

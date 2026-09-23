@@ -274,7 +274,7 @@ export const fetchCampusContent = createServerFn({ method: "GET" })
   });
 
 /** CDA — admin fetch extended site content */
-export const fetchSiteExtendedAdmin = createServerFn({ method: "GET" })
+export const fetchSiteExtendedAdmin = createServerFn({ method: "POST" })
   .validator(z.object({ accessToken: z.string() }))
   .handler(async ({ data }) => {
     const { supabase } = await requireAdmin(data.accessToken);

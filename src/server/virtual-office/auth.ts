@@ -21,24 +21,25 @@ export type VoContext = {
 export async function requireVirtualOfficeUser(accessToken: string): Promise<VoContext> {
   if (!accessToken) throw new AuthError("Not authenticated");
 
-  const supabase = getSupabaseAsUser(accessToken);
-  const { data: userData, error: userError } = await supabase.auth.getUser(accessToken);
+  const admin = getSupabaseAdmin();
+  const { data: userData, error: userError } = await admin.auth.getUser(accessToken);
   if (userError || !userData.user) throw new AuthError("Invalid session");
 
-  const { data: profile, error: profileError } = await supabase
+  const { data: profile, error: profileError } = await admin
     .from("profiles")
     .select("id, email, full_name, role, department_id, approval_status")
     .eq("id", userData.user.id)
     .maybeSingle();
 
-  if (profileError || !profile) throw new AuthError("Profile not found");
+  if (profileError) throw new AuthError(`Profile lookup failed: ${profileError.message}`);
+  if (!profile) throw new AuthError("Profile not found");
   if (!canAccessVirtualOffice(profile.role as UserRole)) {
     throw new AuthError("Virtual College Office access requires staff, HOD, principal, or admin");
   }
 
   return {
-    supabase,
-    admin: getSupabaseAdmin(),
+    supabase: getSupabaseAsUser(accessToken),
+    admin,
     userId: userData.user.id,
     profile: profile as VoContext["profile"],
   };
@@ -80,7 +81,6 @@ export async function writeVoAudit(
     payload: input.payload ?? {},
   });
   if (error) {
-    // Audit must not silently vanish — surface for operators
     console.error("[vo_audit_log]", error.message);
     throw new Error(`Failed to write audit log: ${error.message}`);
   }

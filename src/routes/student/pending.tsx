@@ -37,11 +37,12 @@ function StudentPendingPage() {
   return (
     <PortalShell
       profile={profile}
+      eyebrow="Student Portal"
       title="Application under review"
       subtitle="Your department HOD or staff will verify your details"
       onSignOut={signOut}
     >
-      <div className="card-premium mx-auto max-w-lg p-8 text-center">
+      <div className="card-premium mx-auto max-w-lg p-6 text-center sm:p-8">
         <p className="font-display text-lg font-bold text-navy">Thank you, {profile.full_name}</p>
         <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
           Your registration has been submitted to{" "}

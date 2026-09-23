@@ -229,6 +229,9 @@ export function AdminResourcePanel<T extends { id: string }>({
   );
 }
 
+const CMS_TAB =
+  "rounded-md border border-border bg-surface-white shadow-none data-[state=active]:border-transparent data-[state=active]:bg-brand data-[state=active]:text-white data-[state=active]:shadow-none";
+
 export function AdminTabsShell({
   children,
   defaultTab = "homepage",
@@ -238,22 +241,52 @@ export function AdminTabsShell({
 }) {
   return (
     <Tabs defaultValue={defaultTab} className="space-y-6">
-      <TabsList className="flex h-auto flex-wrap gap-1 bg-light-blue p-1">
-        <TabsTrigger value="overview">Overview</TabsTrigger>
-        <TabsTrigger value="homepage">Homepage</TabsTrigger>
-        <TabsTrigger value="site">Site pages</TabsTrigger>
-        <TabsTrigger value="about">About</TabsTrigger>
-        <TabsTrigger value="principal">Principal</TabsTrigger>
-        <TabsTrigger value="contact">Contact</TabsTrigger>
-        <TabsTrigger value="campus">Campus</TabsTrigger>
-        <TabsTrigger value="navigation">Navigation</TabsTrigger>
-        <TabsTrigger value="media">Media</TabsTrigger>
-        <TabsTrigger value="notices">Notices</TabsTrigger>
-        <TabsTrigger value="events">Events</TabsTrigger>
-        <TabsTrigger value="departments">Departments</TabsTrigger>
-        <TabsTrigger value="programs">Programs</TabsTrigger>
-        <TabsTrigger value="admissions">Admissions</TabsTrigger>
-        <TabsTrigger value="users">Users</TabsTrigger>
+      <TabsList className="flex h-auto flex-wrap gap-1.5 bg-transparent p-0">
+        <TabsTrigger value="overview" className={CMS_TAB}>
+          Overview
+        </TabsTrigger>
+        <TabsTrigger value="homepage" className={CMS_TAB}>
+          Homepage
+        </TabsTrigger>
+        <TabsTrigger value="site" className={CMS_TAB}>
+          Site pages
+        </TabsTrigger>
+        <TabsTrigger value="about" className={CMS_TAB}>
+          About
+        </TabsTrigger>
+        <TabsTrigger value="principal" className={CMS_TAB}>
+          Principal
+        </TabsTrigger>
+        <TabsTrigger value="contact" className={CMS_TAB}>
+          Contact
+        </TabsTrigger>
+        <TabsTrigger value="campus" className={CMS_TAB}>
+          Campus
+        </TabsTrigger>
+        <TabsTrigger value="navigation" className={CMS_TAB}>
+          Navigation
+        </TabsTrigger>
+        <TabsTrigger value="media" className={CMS_TAB}>
+          Media
+        </TabsTrigger>
+        <TabsTrigger value="notices" className={CMS_TAB}>
+          Notices
+        </TabsTrigger>
+        <TabsTrigger value="events" className={CMS_TAB}>
+          Events
+        </TabsTrigger>
+        <TabsTrigger value="departments" className={CMS_TAB}>
+          Departments
+        </TabsTrigger>
+        <TabsTrigger value="programs" className={CMS_TAB}>
+          Programs
+        </TabsTrigger>
+        <TabsTrigger value="admissions" className={CMS_TAB}>
+          Admissions
+        </TabsTrigger>
+        <TabsTrigger value="users" className={CMS_TAB}>
+          Users
+        </TabsTrigger>
       </TabsList>
       {children}
     </Tabs>

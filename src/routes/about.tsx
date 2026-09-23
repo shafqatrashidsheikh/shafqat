@@ -72,24 +72,24 @@ function About() {
             </h2>
           </div>
 
-          <ol className="relative mt-10 max-w-full min-w-0 space-y-0 overflow-x-clip md:ml-1">
+          <ol className="relative mt-10 max-w-full min-w-0 space-y-0 pl-1">
             <span
-              className="pointer-events-none absolute top-[11px] bottom-[11px] left-0 w-px bg-white"
+              className="pointer-events-none absolute top-[11px] bottom-[11px] left-[9px] w-px bg-border"
               aria-hidden="true"
             />
             <span
-              className="pointer-events-none absolute bottom-[7px] -left-[5px] size-2.5 rounded-full bg-navy ring-4 ring-background"
+              className="pointer-events-none absolute bottom-[7px] left-1 size-2.5 rounded-full bg-navy ring-4 ring-background"
               aria-hidden="true"
             />
             {ABOUT_HISTORY_TIMELINE.map((item, index) => (
               <li
                 key={item.label}
-                className="relative pl-8 pb-10 last:pb-0 md:pl-10"
+                className="relative pl-9 pb-10 last:pb-0 md:pl-11"
                 data-motion-from="up"
                 style={{ ["--reveal-delay" as string]: `${index * 60}ms` }}
               >
                 <span
-                  className="absolute top-1.5 -left-[5px] size-2.5 rounded-full bg-navy ring-4 ring-background"
+                  className="absolute top-1.5 left-1 size-2.5 rounded-full bg-navy ring-4 ring-background"
                   aria-hidden="true"
                 />
                 <p className="text-[11px] font-bold tracking-[0.16em] text-brand uppercase">

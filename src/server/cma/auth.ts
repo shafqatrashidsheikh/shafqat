@@ -1,4 +1,4 @@
-import { getSupabaseAsUser } from "@/lib/supabase/server";
+import { getSupabaseAdmin } from "@/lib/supabase/server";
 import { invalidateAssistantKnowledgeCache } from "@/server/assistant/knowledge-cache";
 
 export class AuthError extends Error {
@@ -8,15 +8,18 @@ export class AuthError extends Error {
   }
 }
 
-/** Verify admin session from access token (used by CMA mutations) */
+/**
+ * Verify CMS session, then return the service-role client for reads/writes.
+ * Role is checked against profiles first; RLS is not relied on for CMA (JWT-as-user was unreliable).
+ */
 export async function requireAdmin(accessToken: string) {
   if (!accessToken) throw new AuthError("Not authenticated");
 
-  const supabase = getSupabaseAsUser(accessToken);
-  const { data: userData, error: userError } = await supabase.auth.getUser(accessToken);
+  const admin = getSupabaseAdmin();
+  const { data: userData, error: userError } = await admin.auth.getUser(accessToken);
   if (userError || !userData.user) throw new AuthError("Invalid session");
 
-  const { data: profile, error: profileError } = await supabase
+  const { data: profile, error: profileError } = await admin
     .from("profiles")
     .select("role, email")
     .eq("id", userData.user.id)
@@ -26,7 +29,7 @@ export async function requireAdmin(accessToken: string) {
     throw new AuthError("Admin access required");
   }
 
-  return { supabase, user: userData.user, profile };
+  return { supabase: admin, user: userData.user, profile };
 }
 
 /**

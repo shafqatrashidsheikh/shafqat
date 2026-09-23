@@ -2645,7 +2645,7 @@ header.site-header,
   }
 }
 
-/* ——— Back to Home (boxed, theme navy) ——— */
+/* ——— Back button (boxed, theme navy) ——— */
 .site-back-btn {
   display: inline-flex;
   align-items: center;

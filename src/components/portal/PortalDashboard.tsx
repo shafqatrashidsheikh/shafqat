@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
-import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { PortalShell } from "@/components/portal/PortalShell";
+import { PortalActionTabs, PortalSection, PortalStatCard } from "@/components/portal/portal-ui";
 import { UserManagementPanel } from "@/components/portal/UserManagementPanel";
 import type { UserProfile } from "@/lib/auth/roles";
 import { canManageUsers } from "@/lib/auth/roles";
@@ -15,6 +14,17 @@ import {
   portalListPendingStudents,
   portalRejectStudent,
 } from "@/server/portal/mutations";
+
+function portalErrorMessage(err: unknown): string {
+  if (err instanceof Error && err.message) return err.message;
+  if (typeof err === "string" && err.trim()) return err;
+  if (err && typeof err === "object") {
+    const o = err as { message?: unknown; data?: unknown };
+    if (typeof o.message === "string" && o.message.trim()) return o.message;
+    if (typeof o.data === "string" && o.data.trim()) return o.data;
+  }
+  return "Failed to load portal data";
+}
 
 type Department = { id: string; name: string; slug: string };
 
@@ -62,8 +72,9 @@ export function PortalDashboard({
     profile.role === "principal" || profile.role === "admin" || profile.role === "hod" || profile.role === "staff";
   const canManage = canManageUsers(profile.role);
   const isPrincipal = profile.role === "principal";
-  const missingDepartment =
-    (profile.role === "hod" || profile.role === "staff") && !profile.department_id;
+  const isHod = profile.role === "hod";
+  const isStaff = profile.role === "staff";
+  const missingDepartment = (isHod || isStaff) && !profile.department_id;
 
   const loadData = async () => {
     setError(null);
@@ -82,7 +93,7 @@ export function PortalDashboard({
         setHods(hodRows as PortalUser[]);
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load portal data");
+      setError(portalErrorMessage(err));
     } finally {
       setLoading(false);
     }
@@ -101,7 +112,7 @@ export function PortalDashboard({
       setMessage("Student approved — they can now access the student portal.");
       await loadData();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Approval failed");
+      setError(portalErrorMessage(err));
     } finally {
       setBusy(false);
     }
@@ -120,74 +131,99 @@ export function PortalDashboard({
       setRejectReason("");
       await loadData();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Rejection failed");
+      setError(portalErrorMessage(err));
     } finally {
       setBusy(false);
     }
   };
 
-  const departmentLabel = profile.department?.name ?? departments.find((d) => d.id === profile.department_id)?.name;
+  const departmentLabel =
+    profile.department?.name ?? departments.find((d) => d.id === profile.department_id)?.name;
+
+  const title = isPrincipal
+    ? "Institutional Portal"
+    : isHod
+      ? "Department Portal"
+      : "Staff Portal";
+
+  const subtitle = isPrincipal
+    ? "Manage departments, HODs, staff, and student approvals"
+    : isHod
+      ? `Review students and staff${departmentLabel ? ` · ${departmentLabel}` : ""}`
+      : `Approve department students${departmentLabel ? ` · ${departmentLabel}` : ""}`;
+
+  const tabItems = [
+    ...(canApprove
+      ? [
+          {
+            key: "approvals",
+            label: `Student approvals (${pending.length})`,
+            active: tab === "approvals",
+            onClick: () => setTab("approvals"),
+          },
+        ]
+      : []),
+    ...(canManage
+      ? [
+          {
+            key: "users",
+            label: isHod ? "Department staff" : "Manage users",
+            active: tab === "users",
+            onClick: () => setTab("users"),
+          },
+        ]
+      : []),
+    ...(isPrincipal
+      ? [
+          {
+            key: "departments",
+            label: `Departments (${departments.length})`,
+            active: tab === "departments",
+            onClick: () => setTab("departments"),
+          },
+        ]
+      : []),
+    { key: "vo", label: "Virtual College Office", href: "/virtual-office" },
+    ...(isPrincipal || profile.role === "admin" || profile.role === "editor"
+      ? [{ key: "cms", label: "CMS Admin", href: "/admin" }]
+      : []),
+  ];
 
   return (
     <PortalShell
       profile={profile}
-      title="Institutional Portal"
-      subtitle={
-        isPrincipal
-          ? "Manage departments, HODs, staff, and student approvals"
-          : profile.role === "hod"
-            ? `Department portal${departmentLabel ? ` · ${departmentLabel}` : ""}`
-            : `Staff portal${departmentLabel ? ` · ${departmentLabel}` : ""}`
-      }
+      title={title}
+      subtitle={subtitle}
       onSignOut={onSignOut}
     >
-      <div className="mb-6 flex flex-wrap gap-2">
-        {canApprove && (
-          <Button variant={tab === "approvals" ? "default" : "outline"} size="sm" onClick={() => setTab("approvals")}>
-            Student approvals ({pending.length})
-          </Button>
-        )}
-        {canManage && (
-          <Button variant={tab === "users" ? "default" : "outline"} size="sm" onClick={() => setTab("users")}>
-            {profile.role === "hod" ? "Department staff" : "Manage users"}
-          </Button>
-        )}
-        {isPrincipal && (
-          <Button variant={tab === "departments" ? "default" : "outline"} size="sm" onClick={() => setTab("departments")}>
-            Departments ({departments.length})
-          </Button>
-        )}
-        <Button asChild variant="outline" size="sm">
-          <Link to="/virtual-office">Virtual College Office</Link>
-        </Button>
-        {isPrincipal && (
-          <Button asChild variant="outline" size="sm">
-            <Link to="/admin">CMS Admin</Link>
-          </Button>
-        )}
-      </div>
+      <PortalActionTabs items={tabItems} />
 
-      {isPrincipal && (
+      {(isPrincipal || isHod || isStaff) && (
         <div className="mb-6 grid gap-3 sm:grid-cols-3">
-          <div className="card-premium p-4">
-            <p className="text-xs font-semibold uppercase tracking-wide text-brand">Departments</p>
-            <p className="mt-1 font-display text-2xl font-extrabold text-navy">{departments.length}</p>
-          </div>
-          <div className="card-premium p-4">
-            <p className="text-xs font-semibold uppercase tracking-wide text-brand">HODs assigned</p>
-            <p className="mt-1 font-display text-2xl font-extrabold text-navy">{hods.length}</p>
-          </div>
-          <div className="card-premium p-4">
-            <p className="text-xs font-semibold uppercase tracking-wide text-brand">Pending students</p>
-            <p className="mt-1 font-display text-2xl font-extrabold text-navy">{pending.length}</p>
-          </div>
+          {isPrincipal ? (
+            <>
+              <PortalStatCard label="Departments" value={loading ? "—" : departments.length} />
+              <PortalStatCard label="HODs assigned" value={loading ? "—" : hods.length} />
+              <PortalStatCard label="Pending students" value={loading ? "—" : pending.length} />
+            </>
+          ) : (
+            <>
+              <PortalStatCard
+                label="Your department"
+                value={departmentLabel ?? "Unassigned"}
+                hint={missingDepartment ? "Ask the principal to assign a department" : undefined}
+              />
+              <PortalStatCard label="Pending approvals" value={loading ? "—" : pending.length} />
+              <PortalStatCard label="Your role" value={profile.role.toUpperCase()} />
+            </>
+          )}
         </div>
       )}
 
       {missingDepartment && (
         <div className="mb-6 rounded-lg border border-amber-300/60 bg-amber-50 p-4 text-sm text-amber-950">
-          Your account is not linked to a department yet. Ask the principal to assign your department in Supabase, or
-          recreate your account with the correct department selected.
+          Your account is not linked to a department yet. Ask the principal to assign your department, then refresh
+          this page.
         </div>
       )}
 
@@ -199,79 +235,101 @@ export function PortalDashboard({
       ) : (
         <>
           {tab === "approvals" && canApprove && (
-            <div className="space-y-4">
-              <h2 className="font-display text-lg font-bold text-navy">Pending student registrations</h2>
+            <PortalSection
+              title="Pending student registrations"
+              description={
+                isPrincipal
+                  ? "Institute-wide applications awaiting HOD or staff review."
+                  : "Students in your department waiting for approval."
+              }
+            >
               {missingDepartment ? (
                 <p className="text-sm text-muted-foreground">Assign a department to your account to review students.</p>
               ) : pending.length === 0 ? (
-                <p className="text-sm text-muted-foreground">No students awaiting approval in your scope.</p>
+                <div className="card-premium p-6">
+                  <p className="text-sm text-muted-foreground">No students awaiting approval in your scope.</p>
+                </div>
               ) : (
-                pending.map((student) => (
-                  <div
-                    key={student.id}
-                    className="card-premium flex flex-col gap-4 p-5 sm:flex-row sm:items-start sm:justify-between"
-                  >
-                    <div>
-                      <p className="font-display font-bold text-navy">{student.full_name ?? "Unnamed student"}</p>
-                      <p className="mt-1 text-sm text-muted-foreground">{student.email}</p>
-                      <dl className="mt-3 grid gap-1 text-sm sm:grid-cols-2">
-                        <div>
-                          <dt className="text-muted-foreground">Roll number</dt>
-                          <dd className="font-medium text-navy">{student.roll_number ?? "—"}</dd>
-                        </div>
-                        <div>
-                          <dt className="text-muted-foreground">Department</dt>
-                          <dd className="font-medium text-navy">{student.departments?.name ?? "—"}</dd>
-                        </div>
-                        {student.phone && (
+                <div className="space-y-4">
+                  {pending.map((student) => (
+                    <div
+                      key={student.id}
+                      className="card-premium flex flex-col gap-4 p-5 sm:flex-row sm:items-start sm:justify-between"
+                    >
+                      <div>
+                        <p className="font-display font-bold text-navy">
+                          {student.full_name ?? "Unnamed student"}
+                        </p>
+                        <p className="mt-1 text-sm text-muted-foreground">{student.email}</p>
+                        <dl className="mt-3 grid gap-1 text-sm sm:grid-cols-2">
                           <div>
-                            <dt className="text-muted-foreground">Phone</dt>
-                            <dd className="font-medium text-navy">{student.phone}</dd>
+                            <dt className="text-muted-foreground">Roll number</dt>
+                            <dd className="font-medium text-navy">{student.roll_number ?? "—"}</dd>
                           </div>
-                        )}
-                      </dl>
-                    </div>
-                    <div className="flex w-full flex-col gap-2 sm:w-auto sm:min-w-[220px]">
-                      {rejectingId === student.id ? (
-                        <>
-                          <Label htmlFor={`reject-${student.id}`}>Rejection reason (optional)</Label>
-                          <Textarea
-                            id={`reject-${student.id}`}
-                            value={rejectReason}
-                            onChange={(e) => setRejectReason(e.target.value)}
-                            rows={3}
-                          />
-                          <div className="flex gap-2">
-                            <Button size="sm" variant="outline" disabled={busy} onClick={() => handleReject(student.id)}>
-                              Confirm reject
+                          <div>
+                            <dt className="text-muted-foreground">Department</dt>
+                            <dd className="font-medium text-navy">{student.departments?.name ?? "—"}</dd>
+                          </div>
+                          {student.phone ? (
+                            <div>
+                              <dt className="text-muted-foreground">Phone</dt>
+                              <dd className="font-medium text-navy">{student.phone}</dd>
+                            </div>
+                          ) : null}
+                        </dl>
+                      </div>
+                      <div className="flex w-full flex-col gap-2 sm:w-auto sm:min-w-[220px]">
+                        {rejectingId === student.id ? (
+                          <>
+                            <Label htmlFor={`reject-${student.id}`}>Rejection reason (optional)</Label>
+                            <Textarea
+                              id={`reject-${student.id}`}
+                              value={rejectReason}
+                              onChange={(e) => setRejectReason(e.target.value)}
+                              rows={3}
+                            />
+                            <div className="flex gap-2">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                disabled={busy}
+                                onClick={() => handleReject(student.id)}
+                              >
+                                Confirm reject
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => {
+                                  setRejectingId(null);
+                                  setRejectReason("");
+                                }}
+                              >
+                                Cancel
+                              </Button>
+                            </div>
+                          </>
+                        ) : (
+                          <div className="flex flex-wrap gap-2">
+                            <Button size="sm" disabled={busy} onClick={() => handleApprove(student.id)}>
+                              Approve
                             </Button>
                             <Button
                               size="sm"
-                              variant="ghost"
-                              onClick={() => {
-                                setRejectingId(null);
-                                setRejectReason("");
-                              }}
+                              variant="outline"
+                              disabled={busy}
+                              onClick={() => setRejectingId(student.id)}
                             >
-                              Cancel
+                              Reject
                             </Button>
                           </div>
-                        </>
-                      ) : (
-                        <div className="flex flex-wrap gap-2">
-                          <Button size="sm" disabled={busy} onClick={() => handleApprove(student.id)}>
-                            Approve
-                          </Button>
-                          <Button size="sm" variant="outline" disabled={busy} onClick={() => setRejectingId(student.id)}>
-                            Reject
-                          </Button>
-                        </div>
-                      )}
+                        )}
+                      </div>
                     </div>
-                  </div>
-                ))
+                  ))}
+                </div>
               )}
-            </div>
+            </PortalSection>
           )}
 
           {tab === "users" && canManage && (
@@ -283,12 +341,10 @@ export function PortalDashboard({
           )}
 
           {tab === "departments" && isPrincipal && (
-            <div className="space-y-4">
-              <h2 className="font-display text-lg font-bold text-navy">GPW diploma departments</h2>
-              <p className="text-sm text-muted-foreground">
-                These departments are linked to student onboarding and HOD assignments. Assign one HOD per department
-                from the Manage users tab.
-              </p>
+            <PortalSection
+              title="GPW diploma departments"
+              description="Linked to student onboarding and HOD assignments. Assign one HOD per department from Manage users."
+            >
               <div className="grid gap-3 sm:grid-cols-2">
                 {departments.map((department) => {
                   const hod = hods.find((user) => user.department_id === department.id);
@@ -302,7 +358,7 @@ export function PortalDashboard({
                   );
                 })}
               </div>
-            </div>
+            </PortalSection>
           )}
         </>
       )}

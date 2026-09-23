@@ -1,5 +1,5 @@
 import { createFileRoute, Navigate, useNavigate } from "@tanstack/react-router";
-import { PageNavigation } from "@/components/site/PageNavigation";
+import { PortalShell } from "@/components/portal/PortalShell";
 import { StudentOnboardingForm } from "@/components/portal/StudentOnboardingForm";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -37,14 +37,14 @@ function StudentOnboardingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background py-10">
-      <div className="container-page mb-6 flex items-center justify-between gap-3">
-        <PageNavigation />
-        <button type="button" onClick={signOut} className="text-sm font-medium text-brand hover:text-navy">
-          Sign out
-        </button>
-      </div>
-      <div className="container-page">
+    <PortalShell
+      profile={profile}
+      eyebrow="Student Portal"
+      title="Complete your profile"
+      subtitle="Select your diploma department and roll number for HOD / staff approval"
+      onSignOut={signOut}
+    >
+      <div className="mx-auto max-w-lg">
         <StudentOnboardingForm
           accessToken={session.access_token}
           profile={profile}
@@ -54,6 +54,6 @@ function StudentOnboardingPage() {
           }}
         />
       </div>
-    </div>
+    </PortalShell>
   );
 }

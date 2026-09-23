@@ -1,6 +1,5 @@
-import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { PageNavigation } from "@/components/site/PageNavigation";
 import { Button } from "@/components/ui/button";
 import { useVoiceInput } from "@/components/gpw-assistant/useVoiceInput";
 import { IllustratedOfficer } from "@/components/virtual-office/IllustratedOfficer";
@@ -335,16 +334,10 @@ export function VirtualOfficeDashboard({
     voice.start({ live: false, dictate: false });
   };
 
-  const now = new Date();
-  const clockLabel = now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-  const hourRot = ((now.getHours() % 12) + now.getMinutes() / 60) * 30;
-  const minRot = now.getMinutes() * 6;
-
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-border bg-surface-white">
         <div className="container-page py-3 sm:py-4">
-          <PageNavigation pageLabel="Virtual Office" className="mb-2" />
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
               <p className="text-xs font-semibold tracking-[0.16em] text-brand uppercase">GPW Srinagar</p>
@@ -372,7 +365,7 @@ export function VirtualOfficeDashboard({
 
       <main className="container-page py-4 sm:py-6">
         {loading ? (
-          <p className="text-sm text-muted-foreground">Opening the office…</p>
+          <p className="text-sm text-muted-foreground">Loading officers…</p>
         ) : (
           <>
             {loadError ? (
@@ -391,42 +384,17 @@ export function VirtualOfficeDashboard({
               </p>
             ) : null}
 
-            <div className="vo-room" aria-label="Virtual college office room">
-              <div className="vo-room__scene" aria-hidden>
-                <div className="vo-room__bg" />
-                <div className="vo-room__wall-left" />
-                <div className="vo-room__wall-right" />
-                <div className="vo-room__ceiling" />
-                <div className="vo-room__floor" />
-                <div className="vo-room__ambient" />
-              </div>
-              <div className="vo-room__plaque">Digital Officers · GPW</div>
-              <div
-                className="vo-room__clock"
-                title="Office time"
-                aria-label={`Office time ${clockLabel}`}
-                style={
-                  {
-                    "--vo-hour-rot": `${hourRot}deg`,
-                    "--vo-min-rot": `${minRot}deg`,
-                  } as CSSProperties
-                }
-              >
-                <span className="vo-room__clock-face" aria-hidden />
-                <span className="vo-room__clock-time">{clockLabel}</span>
-              </div>
-
-              <div className="vo-room__stage">
-                <div className="vo-room__grid">
-                  {OFFICER_ORDER.map((id, index) => {
-                    const rt = runtimes[id];
-                    const card = overview?.officers.find((o) => o.id === id);
-                    const isOpen = selected === id;
-                    return (
-                      <div
-                        key={id}
-                        className={`vo-station vo-station--${index + 1}${isOpen ? " vo-station--open" : ""}`}
-                      >
+            <div className="vo-room" aria-label="Virtual college office">
+              <div className="vo-room__grid">
+                {OFFICER_ORDER.map((id) => {
+                  const rt = runtimes[id];
+                  const card = overview?.officers.find((o) => o.id === id);
+                  const isOpen = selected === id;
+                  return (
+                    <div
+                      key={id}
+                      className={`vo-station${isOpen ? " vo-station--open" : ""}`}
+                    >
                       <IllustratedOfficer
                         id={id}
                         phase={rt.phase}
@@ -465,7 +433,6 @@ export function VirtualOfficeDashboard({
                     </div>
                   );
                 })}
-                </div>
               </div>
             </div>
 
@@ -497,7 +464,7 @@ export function VirtualOfficeDashboard({
 
             {!selected && !busy ? (
               <p className="mt-4 text-center text-sm text-muted-foreground">
-                Desk mic dabao → boliye → officer sunega. Kaam ke baad officer jawab bolega.
+                Mic dabao → boliye → officer sunega. Kaam ke baad officer jawab bolega.
               </p>
             ) : null}
           </>

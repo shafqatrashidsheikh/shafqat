@@ -9,7 +9,6 @@ import { AdminMediaPanel } from "@/components/admin/AdminMediaPanel";
 import { AdminPrincipalPanel } from "@/components/admin/AdminPrincipalPanel";
 import { AdminResourcePanel, AdminTabsShell, TabsContent } from "@/components/admin/AdminResourcePanel";
 import { AdminUsersPanel } from "@/components/admin/AdminUsersPanel";
-import { PageNavigation } from "@/components/site/PageNavigation";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent as SubTabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { fetchAdmissionsAdmin, fetchDepartments, fetchEvents, fetchExploreCards, fetchHomepageBlocks, fetchMediaAssets, fetchNotices, fetchPageSections, fetchPrograms } from "@/server/cda/content";
@@ -112,10 +111,12 @@ import type {
 
 type AdminDashboardProps = {
   accessToken: string;
+  profileName?: string | null;
+  profileRole?: string;
   onSignOut: () => Promise<void>;
 };
 
-export function AdminDashboard({ accessToken, onSignOut }: AdminDashboardProps) {
+export function AdminDashboard({ accessToken, profileName, profileRole, onSignOut }: AdminDashboardProps) {
   const token = { accessToken };
 
   const [notices, setNotices] = useState<DbNotice[]>([]);
@@ -210,32 +211,45 @@ export function AdminDashboard({ accessToken, onSignOut }: AdminDashboardProps) 
     <div className="min-h-screen bg-background pb-16">
       <header className="border-b border-border bg-surface-white">
         <div className="container-page py-4">
-          <PageNavigation pageLabel="Content Management" className="mb-3" />
-          <div className="flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <p className="text-xs font-semibold tracking-[0.16em] text-brand uppercase">CMA Admin</p>
-            <h1 className="font-display text-2xl font-extrabold text-navy">Content Management</h1>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Manage homepage, media library, site pages, notices, events, departments, programs and admissions.
-            </p>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <Button asChild variant="outline">
-              <Link to="/">View site</Link>
-            </Button>
-            <Button asChild variant="outline">
-              <Link to="/virtual-office">Virtual College Office</Link>
-            </Button>
-            <Button type="button" variant="outline" onClick={() => void onSignOut().then(() => window.location.assign("/admin/login"))}>
-              <LogOut className="size-4" />
-              Sign out
-            </Button>
-          </div>
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div className="min-w-0 max-w-2xl">
+              <p className="text-xs font-semibold tracking-[0.16em] text-brand uppercase">Content Management</p>
+              <h1 className="font-display text-xl font-extrabold text-navy sm:text-2xl">CMS Admin</h1>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Manage homepage, media, notices, events, departments, programmes, and admissions.
+              </p>
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              {(profileName || profileRole) && (
+                <span className="rounded-full bg-light-blue px-3 py-1 text-xs font-medium text-navy">
+                  {profileName || "CMS user"}
+                  {profileRole ? ` · ${profileRole.toUpperCase()}` : ""}
+                </span>
+              )}
+              <Button asChild variant="outline" size="sm">
+                <Link to="/">View site</Link>
+              </Button>
+              <Button asChild variant="outline" size="sm">
+                <Link to="/portal">Portal</Link>
+              </Button>
+              <Button asChild variant="outline" size="sm">
+                <Link to="/virtual-office">Virtual Office</Link>
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => void onSignOut().then(() => window.location.assign("/admin/login"))}
+              >
+                <LogOut className="size-4" />
+                Sign out
+              </Button>
+            </div>
           </div>
         </div>
       </header>
 
-      <div className="container-page py-8">
+      <div className="container-page py-6 sm:py-8">
         {loading && (
           <p className="mb-4 text-sm text-muted-foreground">Loading CMS data…</p>
         )}

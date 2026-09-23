@@ -22,24 +22,26 @@ export async function requirePortalUser(
 ): Promise<PortalContext> {
   if (!accessToken) throw new AuthError("Not authenticated");
 
-  const supabase = getSupabaseAsUser(accessToken);
-  const { data: userData, error: userError } = await supabase.auth.getUser(accessToken);
+  const admin = getSupabaseAdmin();
+  // Verify JWT via admin Auth API (user client with accessToken option cannot use auth.getUser)
+  const { data: userData, error: userError } = await admin.auth.getUser(accessToken);
   if (userError || !userData.user) throw new AuthError("Invalid session");
 
-  const { data: profile, error: profileError } = await supabase
+  const { data: profile, error: profileError } = await admin
     .from("profiles")
     .select("id, email, full_name, role, department_id, approval_status")
     .eq("id", userData.user.id)
     .maybeSingle();
 
-  if (profileError || !profile) throw new AuthError("Profile not found");
+  if (profileError) throw new AuthError(`Profile lookup failed: ${profileError.message}`);
+  if (!profile) throw new AuthError("Profile not found");
   if (!allowedRoles.includes(profile.role as UserRole)) {
     throw new AuthError("You do not have permission for this action");
   }
 
   return {
-    supabase,
-    admin: getSupabaseAdmin(),
+    supabase: getSupabaseAsUser(accessToken),
+    admin,
     userId: userData.user.id,
     profile: profile as PortalContext["profile"],
   };

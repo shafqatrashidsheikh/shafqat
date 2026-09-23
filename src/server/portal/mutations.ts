@@ -1,8 +1,10 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { canInviteRole, type UserRole } from "@/lib/auth/roles";
-import { getSupabaseAdmin, getSupabaseAsUser } from "@/lib/supabase/server";
-import { ensurePortalDepartmentsSeeded } from "@/server/portal/departments";
+import {
+  ensurePortalDepartmentsSeeded,
+  listOfficialPortalDepartments,
+} from "@/server/portal/departments";
 import { ensureUserProfile, fetchAuthenticatedProfile } from "@/server/portal/profile";
 import { requirePortalUser } from "@/server/portal/auth";
 
@@ -21,7 +23,7 @@ export const portalFetchProfile = createServerFn({ method: "POST" })
 // ---------------------------------------------------------------------------
 // Profile
 // ---------------------------------------------------------------------------
-export const portalGetProfile = createServerFn({ method: "GET" })
+export const portalGetProfile = createServerFn({ method: "POST" })
   .validator(tokenSchema)
   .handler(async ({ data }) => {
     const ctx = await requirePortalUser(data.accessToken, [
@@ -41,7 +43,8 @@ export const portalGetProfile = createServerFn({ method: "GET" })
     return profile;
   });
 
-export const portalListDepartments = createServerFn({ method: "GET" })
+/** Official GPW departments for onboarding / invite dropdowns (POST keeps accessToken reliable). */
+export const portalListDepartments = createServerFn({ method: "POST" })
   .validator(tokenSchema)
   .handler(async ({ data }) => {
     await requirePortalUser(data.accessToken, [
@@ -52,16 +55,13 @@ export const portalListDepartments = createServerFn({ method: "GET" })
       "staff",
       "student",
     ]);
-    await ensurePortalDepartmentsSeeded();
 
-    const admin = getSupabaseAdmin();
-    const { data: rows, error } = await admin
-      .from("departments")
-      .select("id, name, slug")
-      .eq("is_active", true)
-      .order("sort_order");
-    if (error) throw error;
-    return rows;
+    try {
+      return await listOfficialPortalDepartments();
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Department sync failed";
+      throw new Error(`Could not load departments: ${message}`);
+    }
   });
 
 // ---------------------------------------------------------------------------
@@ -99,7 +99,7 @@ export const portalSubmitStudentProfile = createServerFn({ method: "POST" })
       );
     }
 
-    const { data: row, error } = await ctx.supabase
+    const { data: row, error } = await ctx.admin
       .from("profiles")
       .update({
         full_name: data.payload.full_name,
@@ -115,19 +115,19 @@ export const portalSubmitStudentProfile = createServerFn({ method: "POST" })
       .select()
       .single();
 
-    if (error) throw error;
+    if (error) throw new Error(error.message);
     return row;
   });
 
 // ---------------------------------------------------------------------------
 // Pending student approvals
 // ---------------------------------------------------------------------------
-export const portalListPendingStudents = createServerFn({ method: "GET" })
+export const portalListPendingStudents = createServerFn({ method: "POST" })
   .validator(tokenSchema)
   .handler(async ({ data }) => {
     const ctx = await requirePortalUser(data.accessToken, ["principal", "admin", "hod", "staff"]);
 
-    let query = ctx.supabase
+    let query = ctx.admin
       .from("profiles")
       .select("id, email, full_name, roll_number, phone, approval_status, created_at, department_id, departments:department_id(name)")
       .eq("role", "student")
@@ -140,8 +140,8 @@ export const portalListPendingStudents = createServerFn({ method: "GET" })
     }
 
     const { data: rows, error } = await query;
-    if (error) throw error;
-    return rows;
+    if (error) throw new Error(error.message);
+    return rows ?? [];
   });
 
 const reviewSchema = tokenSchema.extend({
@@ -154,7 +154,7 @@ export const portalApproveStudent = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const ctx = await requirePortalUser(data.accessToken, ["principal", "admin", "hod", "staff"]);
 
-    const { data: student, error: fetchError } = await ctx.supabase
+    const { data: student, error: fetchError } = await ctx.admin
       .from("profiles")
       .select("id, department_id, approval_status, role, email, full_name, roll_number")
       .eq("id", data.studentId)
@@ -189,7 +189,7 @@ export const portalApproveStudent = createServerFn({ method: "POST" })
     }
 
     const reviewedAt = new Date().toISOString();
-    const { data: row, error } = await ctx.supabase
+    const { data: row, error } = await ctx.admin
       .from("profiles")
       .update({
         approval_status: "approved",
@@ -201,7 +201,7 @@ export const portalApproveStudent = createServerFn({ method: "POST" })
       .select()
       .single();
 
-    if (error) throw error;
+    if (error) throw new Error(error.message);
 
     const { error: auditError } = await ctx.admin.from("vo_audit_log").insert({
       officer: "student_approval",
@@ -224,7 +224,7 @@ export const portalRejectStudent = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const ctx = await requirePortalUser(data.accessToken, ["principal", "admin", "hod", "staff"]);
 
-    const { data: student, error: fetchError } = await ctx.supabase
+    const { data: student, error: fetchError } = await ctx.admin
       .from("profiles")
       .select("id, department_id, approval_status, role, email, full_name, roll_number")
       .eq("id", data.studentId)
@@ -244,7 +244,7 @@ export const portalRejectStudent = createServerFn({ method: "POST" })
 
     const reviewedAt = new Date().toISOString();
     const rejection_reason = data.rejection_reason ?? "Application not approved";
-    const { data: row, error } = await ctx.supabase
+    const { data: row, error } = await ctx.admin
       .from("profiles")
       .update({
         approval_status: "rejected",
@@ -256,7 +256,7 @@ export const portalRejectStudent = createServerFn({ method: "POST" })
       .select()
       .single();
 
-    if (error) throw error;
+    if (error) throw new Error(error.message);
 
     const { error: auditError } = await ctx.admin.from("vo_audit_log").insert({
       officer: "student_approval",
@@ -387,12 +387,12 @@ export const portalInviteUser = createServerFn({ method: "POST" })
     return { ok: true, userId: created.user.id, method: "password" as const };
   });
 
-export const portalListDepartmentUsers = createServerFn({ method: "GET" })
+export const portalListDepartmentUsers = createServerFn({ method: "POST" })
   .validator(tokenSchema)
   .handler(async ({ data }) => {
     const ctx = await requirePortalUser(data.accessToken, ["principal", "admin", "hod"]);
 
-    let query = ctx.supabase
+    let query = ctx.admin
       .from("profiles")
       .select("id, email, full_name, role, department_id, created_at, departments:department_id(name)")
       .in("role", ["hod", "staff"])
@@ -404,21 +404,21 @@ export const portalListDepartmentUsers = createServerFn({ method: "GET" })
     }
 
     const { data: rows, error } = await query;
-    if (error) throw error;
-    return rows;
+    if (error) throw new Error(error.message);
+    return rows ?? [];
   });
 
-export const portalListHods = createServerFn({ method: "GET" })
+export const portalListHods = createServerFn({ method: "POST" })
   .validator(tokenSchema)
   .handler(async ({ data }) => {
     const ctx = await requirePortalUser(data.accessToken, ["principal", "admin"]);
 
-    const { data: rows, error } = await ctx.supabase
+    const { data: rows, error } = await ctx.admin
       .from("profiles")
       .select("id, email, full_name, role, department_id, created_at, departments:department_id(name)")
       .eq("role", "hod")
       .order("created_at", { ascending: false });
 
-    if (error) throw error;
-    return rows;
+    if (error) throw new Error(error.message);
+    return rows ?? [];
   });

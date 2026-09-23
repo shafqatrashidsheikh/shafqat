@@ -28,5 +28,5 @@ function AdminPage() {
     return <Navigate to={getPostAuthPath(profile.role, profile.approval_status)} />;
   }
 
-  return <AdminDashboard accessToken={session.access_token} onSignOut={signOut} />;
+  return <AdminDashboard accessToken={session.access_token} profileName={profile.full_name || profile.email} profileRole={profile.role} onSignOut={signOut} />;
 }

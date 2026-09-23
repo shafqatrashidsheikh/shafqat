@@ -1,4 +1,5 @@
 import type { AdminOverviewCounts } from "@/server/cda/overview";
+import { PortalStatCard } from "@/components/portal/portal-ui";
 import { Button } from "@/components/ui/button";
 
 type AdminOverviewPanelProps = {
@@ -13,7 +14,7 @@ type AdminOverviewPanelProps = {
 
 const STAT_ITEMS: { key: keyof AdminOverviewCounts; label: string }[] = [
   { key: "departments", label: "Departments" },
-  { key: "programs", label: "Programs / Courses" },
+  { key: "programs", label: "Programs" },
   { key: "notices", label: "Notices" },
   { key: "events", label: "Events" },
   { key: "announcements", label: "Pinned announcements" },
@@ -39,18 +40,18 @@ export function AdminOverviewPanel({
   return (
     <div className="space-y-6">
       {healthError && (
-        <div className="rounded-xl border border-destructive/40 bg-destructive/5 px-4 py-3 text-sm text-destructive">
+        <div className="rounded-xl border border-red/30 bg-red/5 px-4 py-3 text-sm text-red">
           <p className="font-semibold">Could not load CMS data</p>
           <p className="mt-1">{healthError}</p>
         </div>
       )}
 
       {isEmpty && !healthError && (
-        <div className="rounded-xl border border-amber-500/40 bg-amber-50 px-4 py-4 text-sm text-amber-950 dark:bg-amber-950/20 dark:text-amber-100">
+        <div className="card-premium border-amber-300/50 bg-amber-50 p-5 text-sm text-amber-950">
           <p className="font-semibold">No website content in the database yet</p>
           <p className="mt-1 text-pretty">
-            The public site may still show content from built-in fallbacks. Import the actual GPW Srinagar
-            content into Supabase so edits here update the live website.
+            The public site may still show built-in fallbacks. Import GPW Srinagar content into Supabase so edits here
+            update the live website.
           </p>
           <div className="mt-3 flex flex-wrap gap-2">
             <Button type="button" onClick={onBootstrap} disabled={bootstrapBusy}>
@@ -64,35 +65,31 @@ export function AdminOverviewPanel({
       )}
 
       {bootstrapMessage && (
-        <div className="rounded-xl border border-emerald-500/40 bg-emerald-50 px-4 py-3 text-sm text-emerald-950 dark:bg-emerald-950/20 dark:text-emerald-100">
+        <div className="rounded-xl border border-emerald-500/40 bg-emerald-50 px-4 py-3 text-sm text-emerald-950">
           {bootstrapMessage}
         </div>
       )}
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <div>
+        <h2 className="font-display text-lg font-bold text-navy">Content overview</h2>
+        <p className="mt-1 text-sm text-muted-foreground">Live counts from Supabase CMS tables.</p>
+      </div>
+
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {STAT_ITEMS.map(({ key, label }) => (
-          <div
+          <PortalStatCard
             key={key}
-            className="rounded-2xl border border-border bg-card p-5 shadow-soft"
-          >
-            <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">{label}</p>
-            <p className="mt-2 font-display text-3xl font-extrabold text-navy">
-              {loading || !counts ? "—" : counts[key]}
-            </p>
-          </div>
+            label={label}
+            value={loading || !counts ? "—" : counts[key]}
+          />
         ))}
       </div>
 
-      {!isEmpty && (
-        <div className="flex flex-wrap gap-2">
-          <Button type="button" variant="outline" onClick={onRefresh}>
-            Refresh counts
-          </Button>
-          <Button type="button" variant="outline" onClick={onBootstrap} disabled={bootstrapBusy}>
-            {bootstrapBusy ? "Importing…" : "Re-import missing content"}
-          </Button>
-        </div>
-      )}
+      <div className="flex flex-wrap gap-2">
+        <Button type="button" variant="outline" size="sm" onClick={onRefresh} disabled={loading}>
+          Refresh counts
+        </Button>
+      </div>
     </div>
   );
 }
