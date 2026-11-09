@@ -188,16 +188,16 @@ function FacultyPage() {
             {/* Department Faculty Rosters */}
             <div className="space-y-12 pt-4">
               {visibleDepartments.map((deptData) => (
-                <article
+                <div
                   key={deptData.departmentSlug}
-                  className="rounded-2xl border border-border/80 bg-surface/50 p-5 sm:p-7 shadow-xs"
+                  className="space-y-6 pb-12 border-b border-border/70 last:border-b-0 last:pb-0"
                 >
                   <DepartmentFacultyStaffSection
                     data={deptData}
                     idPrefix={`dept-${deptData.departmentSlug}`}
                     showProgrammeLink
                   />
-                </article>
+                </div>
               ))}
             </div>
 

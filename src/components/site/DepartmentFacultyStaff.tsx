@@ -1,13 +1,17 @@
+import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import {
   ArrowRight,
+  Award,
   BookOpen,
   Download,
   ExternalLink,
   FileText,
+  LayoutGrid,
   Mail,
   Phone,
   Quote,
+  Table2,
   UserCheck,
   Users,
   Wrench,
@@ -15,6 +19,7 @@ import {
 import type {
   DepartmentFacultyMember,
   DepartmentFacultyStaff,
+  NonTeachingStaffMember,
   TableSchemaType,
 } from "@/lib/department-faculty-data";
 import { departmentDetailPath } from "@/lib/departments-data";
@@ -23,6 +28,7 @@ interface Props {
   data: DepartmentFacultyStaff;
   idPrefix?: string;
   showProgrammeLink?: boolean;
+  defaultView?: "profiles" | "table";
 }
 
 function getInitials(name: string): string {
@@ -439,17 +445,149 @@ function renderMobileCard(member: DepartmentFacultyMember, schema: TableSchemaTy
 }
 
 /**
- * Main Faculty & Staff Section with HOD, Faculty Table and Non-Teaching Staff
+ * Faculty Profile Card - Clean, modern, accessible profile presentation
+ */
+function FacultyProfileCard({
+  member,
+  departmentName,
+  tableSchema,
+}: {
+  member: DepartmentFacultyMember;
+  departmentName: string;
+  tableSchema: TableSchemaType;
+}) {
+  const initials = getInitials(member.name);
+
+  return (
+    <article className="group flex flex-col justify-between rounded-xl border border-border/80 bg-surface p-5 transition-[border-color,box-shadow] duration-200 hover:border-brand/40 hover:shadow-xs">
+      <div>
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex items-center gap-3 min-w-0">
+            {member.profileImage ? (
+              <img
+                src={member.profileImage}
+                alt={member.name}
+                width={48}
+                height={48}
+                className="size-12 shrink-0 rounded-xl object-cover border border-border"
+                loading="lazy"
+              />
+            ) : (
+              <div
+                className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-light-blue text-brand font-display font-bold text-sm border border-brand/20 shadow-xs"
+                aria-hidden="true"
+              >
+                {initials}
+              </div>
+            )}
+            <div className="min-w-0">
+              <h4 className="font-display text-base font-bold text-navy leading-snug">
+                {member.name}
+              </h4>
+              <p className="text-xs sm:text-sm font-semibold text-brand truncate">
+                {member.designation}
+              </p>
+              <p className="text-[11px] font-medium text-muted-foreground truncate">
+                {departmentName}
+              </p>
+            </div>
+          </div>
+
+          <span className="shrink-0 inline-flex items-center gap-1 rounded-md bg-muted/70 px-2 py-0.5 text-xs font-medium text-navy/90">
+            <Award className="size-3 text-brand" aria-hidden="true" />
+            <span>{member.experience}</span>
+          </span>
+        </div>
+
+        <div className="mt-4 space-y-2 border-t border-border/60 pt-3 text-xs">
+          {member.qualification ? (
+            <div>
+              <span className="font-semibold text-navy">Qualification: </span>
+              <span className="text-muted-foreground">{member.qualification}</span>
+            </div>
+          ) : null}
+          {member.specialization ? (
+            <div>
+              <span className="font-semibold text-navy">
+                {tableSchema === "omca" ? "Specialisation: " : "Specialization: "}
+              </span>
+              <span className="leading-relaxed text-muted-foreground">
+                {member.specialization}
+              </span>
+            </div>
+          ) : null}
+        </div>
+      </div>
+    </article>
+  );
+}
+
+/**
+ * Non-Teaching Staff Profile Card
+ */
+function NonTeachingStaffCard({
+  staff,
+  departmentName,
+}: {
+  staff: NonTeachingStaffMember;
+  departmentName: string;
+}) {
+  const initials = getInitials(staff.name);
+
+  return (
+    <article className="flex items-center justify-between gap-3 rounded-xl border border-border/80 bg-surface p-4 transition-colors hover:border-brand/35">
+      <div className="flex items-center gap-3 min-w-0">
+        {staff.profileImage ? (
+          <img
+            src={staff.profileImage}
+            alt={staff.name}
+            width={44}
+            height={44}
+            className="size-11 shrink-0 rounded-xl object-cover border border-border"
+            loading="lazy"
+          />
+        ) : (
+          <div
+            className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-light-blue text-brand font-display font-bold text-xs border border-brand/20 shadow-xs"
+            aria-hidden="true"
+          >
+            {initials}
+          </div>
+        )}
+        <div className="min-w-0">
+          <h4 className="font-display text-sm font-bold text-navy truncate">
+            {staff.name}
+          </h4>
+          <p className="text-xs font-semibold text-brand truncate">
+            {staff.designation}
+          </p>
+          <p className="text-[11px] text-muted-foreground truncate">
+            {departmentName}
+          </p>
+        </div>
+      </div>
+      <span className="shrink-0 inline-flex items-center gap-1 rounded-md bg-muted/70 px-2 py-0.5 text-xs font-medium text-navy/90">
+        <Award className="size-3 text-brand" aria-hidden="true" />
+        <span>{staff.experience}</span>
+      </span>
+    </article>
+  );
+}
+
+/**
+ * Main Faculty & Staff Section with HOD, Faculty Profiles and Non-Teaching Staff
  */
 export function DepartmentFacultyStaffSection({
   data,
   idPrefix,
   showProgrammeLink = false,
+  defaultView = "profiles",
 }: Props) {
   const { hod, faculty, nonTeachingStaff, departmentName, tableSchema, departmentSlug } = data;
   const initials = getInitials(hod.name);
   const sectionId = idPrefix ? `${idPrefix}-faculty-information` : "faculty-information";
   const headingId = idPrefix ? `${idPrefix}-heading` : "faculty-information-heading";
+  const [viewMode, setViewMode] = useState<"profiles" | "table">(defaultView);
 
   return (
     <section
@@ -492,22 +630,33 @@ export function DepartmentFacultyStaffSection({
         <div className="flex items-center gap-2">
           <UserCheck className="size-4 text-brand" aria-hidden="true" />
           <h3 className="font-display text-base font-bold text-navy sm:text-lg">
-            HOD Information
+            Head of Department
           </h3>
         </div>
 
-        <div className="rounded-2xl border border-brand/25 bg-surface p-5 shadow-soft sm:p-6 transition-all duration-200 hover:border-brand/40 hover:shadow-md">
+        <div className="rounded-xl border border-brand/25 bg-surface p-5 sm:p-6 transition-all duration-200 hover:border-brand/40">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-start gap-4">
-              <div className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-brand/10 text-brand font-display font-extrabold text-lg">
-                {initials}
-              </div>
+              {hod.profileImage ? (
+                <img
+                  src={hod.profileImage}
+                  alt={hod.name}
+                  width={56}
+                  height={56}
+                  className="size-14 shrink-0 rounded-xl object-cover border border-brand/30 shadow-xs"
+                  loading="lazy"
+                />
+              ) : (
+                <div className="flex size-14 shrink-0 items-center justify-center rounded-xl bg-brand/10 text-brand font-display font-extrabold text-xl">
+                  {initials}
+                </div>
+              )}
               <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-2">
                   <h4 className="font-display text-lg font-bold text-navy sm:text-xl">
                     {hod.name}
                   </h4>
-                  <span className="inline-flex items-center rounded-full bg-brand/10 px-2.5 py-0.5 text-xs font-semibold text-brand">
+                  <span className="inline-flex items-center rounded-md bg-brand/10 px-2.5 py-0.5 text-xs font-semibold text-brand">
                     {hod.designation}
                   </span>
                 </div>
@@ -542,122 +691,179 @@ export function DepartmentFacultyStaffSection({
       </div>
 
       {/* 2. Department Faculty Information Section */}
-      <div className="space-y-3 pt-2">
-        <div className="flex items-center justify-between">
+      <div className="space-y-4 pt-2">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-2">
             <Users className="size-4 text-brand" aria-hidden="true" />
             <h3 className="font-display text-base font-bold text-navy sm:text-lg">
-              Faculty Information
+              Faculty Members
             </h3>
+            <span className="text-xs font-medium text-muted-foreground">
+              ({faculty.length} {faculty.length === 1 ? "Member" : "Members"})
+            </span>
           </div>
-          <span className="text-xs font-medium text-muted-foreground">
-            {faculty.length} Faculty Members
-          </span>
+
+          {/* Clean View Mode Toggle */}
+          <div className="flex items-center gap-1 rounded-lg border border-border bg-surface p-1 self-start sm:self-auto">
+            <button
+              type="button"
+              onClick={() => setViewMode("profiles")}
+              className={`inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-semibold transition-colors ${
+                viewMode === "profiles"
+                  ? "bg-brand text-primary-foreground shadow-xs"
+                  : "text-muted-foreground hover:text-navy"
+              }`}
+              title="Profile Cards Layout"
+            >
+              <LayoutGrid className="size-3.5" aria-hidden="true" />
+              <span>Profiles</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewMode("table")}
+              className={`inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-semibold transition-colors ${
+                viewMode === "table"
+                  ? "bg-brand text-primary-foreground shadow-xs"
+                  : "text-muted-foreground hover:text-navy"
+              }`}
+              title="Table Layout"
+            >
+              <Table2 className="size-3.5" aria-hidden="true" />
+              <span>Table</span>
+            </button>
+          </div>
         </div>
 
-        {/* Desktop and Tablet Table */}
-        <div className="hidden md:block overflow-hidden rounded-xl border border-border bg-surface shadow-soft">
-          <div className="overflow-x-auto">
-            <table className="w-full border-collapse text-left text-sm">
-              <thead>
-                {renderTableHeader(tableSchema)}
-              </thead>
-              <tbody className="divide-y divide-border/70">
-                {faculty.map((member) => renderTableRow(member, tableSchema))}
-              </tbody>
-            </table>
+        {viewMode === "profiles" ? (
+          /* Profile Cards Layout */
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+            {faculty.map((member) => (
+              <FacultyProfileCard
+                key={member.sNo}
+                member={member}
+                departmentName={departmentName}
+                tableSchema={tableSchema}
+              />
+            ))}
           </div>
-        </div>
+        ) : (
+          /* Table Layout */
+          <>
+            <div className="hidden md:block overflow-hidden rounded-xl border border-border bg-surface shadow-soft">
+              <div className="overflow-x-auto">
+                <table className="w-full border-collapse text-left text-sm">
+                  <thead>
+                    {renderTableHeader(tableSchema)}
+                  </thead>
+                  <tbody className="divide-y divide-border/70">
+                    {faculty.map((member) => renderTableRow(member, tableSchema))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
 
-        {/* Mobile View: Responsive Cards to prevent awkward horizontal squeeze on mobile */}
-        <div className="grid gap-3 md:hidden">
-          {faculty.map((member) => renderMobileCard(member, tableSchema))}
-        </div>
+            <div className="grid gap-3 md:hidden">
+              {faculty.map((member) => renderMobileCard(member, tableSchema))}
+            </div>
+          </>
+        )}
       </div>
 
-      {/* 3. Non-Teaching Staff Section (Rendered only when nonTeachingStaff exists) */}
+      {/* 3. Non-Teaching Staff Section */}
       {nonTeachingStaff && nonTeachingStaff.length > 0 ? (
-        <div className="space-y-3 pt-2">
+        <div className="space-y-4 pt-2">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Wrench className="size-4 text-brand" aria-hidden="true" />
               <h3 className="font-display text-base font-bold text-navy sm:text-lg">
                 Non-Teaching Staff
               </h3>
-            </div>
-            <span className="text-xs font-medium text-muted-foreground">
-              {nonTeachingStaff.length} Staff Member
-            </span>
-          </div>
-
-          {/* Desktop and Tablet Table */}
-          <div className="hidden md:block overflow-hidden rounded-xl border border-border bg-surface shadow-soft">
-            <div className="overflow-x-auto">
-              <table className="w-full border-collapse text-left text-sm">
-                <thead>
-                  <tr className="border-b border-border bg-muted/35 text-xs font-bold uppercase tracking-wider text-navy">
-                    <th scope="col" className="w-16 px-4 py-3.5 text-center">
-                      S.No.
-                    </th>
-                    <th scope="col" className="px-4 py-3.5 min-w-[200px]">
-                      Name
-                    </th>
-                    <th scope="col" className="px-4 py-3.5 min-w-[130px]">
-                      Experience
-                    </th>
-                    <th scope="col" className="px-4 py-3.5 min-w-[180px]">
-                      Designation
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border/70">
-                  {nonTeachingStaff.map((staff) => (
-                    <tr
-                      key={staff.sNo}
-                      className="transition-colors hover:bg-light-blue/40"
-                    >
-                      <td className="px-4 py-3.5 text-center font-medium text-muted-foreground">
-                        {staff.sNo}
-                      </td>
-                      <td className="px-4 py-3.5 font-bold text-navy">
-                        {staff.name}
-                      </td>
-                      <td className="px-4 py-3.5 font-semibold text-brand">
-                        {staff.experience}
-                      </td>
-                      <td className="px-4 py-3.5 text-navy font-medium">
-                        {staff.designation}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+              <span className="text-xs font-medium text-muted-foreground">
+                ({nonTeachingStaff.length} {nonTeachingStaff.length === 1 ? "Member" : "Members"})
+              </span>
             </div>
           </div>
 
-          {/* Mobile View */}
-          <div className="grid gap-3 md:hidden">
-            {nonTeachingStaff.map((staff) => (
-              <div
-                key={staff.sNo}
-                className="rounded-xl border border-border bg-surface p-4 shadow-soft transition-colors hover:bg-light-blue/20"
-              >
-                <div className="flex items-center justify-between">
-                  <div>
-                    <span className="text-[11px] font-semibold text-brand uppercase tracking-wider">
-                      #{staff.sNo} · {staff.designation}
-                    </span>
-                    <h4 className="font-display text-base font-bold text-navy">
-                      {staff.name}
-                    </h4>
-                  </div>
-                  <span className="shrink-0 rounded-md bg-brand/10 px-2 py-0.5 text-xs font-semibold text-brand">
-                    {staff.experience}
-                  </span>
+          {viewMode === "profiles" ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+              {nonTeachingStaff.map((staff) => (
+                <NonTeachingStaffCard
+                  key={staff.sNo}
+                  staff={staff}
+                  departmentName={departmentName}
+                />
+              ))}
+            </div>
+          ) : (
+            <>
+              <div className="hidden md:block overflow-hidden rounded-xl border border-border bg-surface shadow-soft">
+                <div className="overflow-x-auto">
+                  <table className="w-full border-collapse text-left text-sm">
+                    <thead>
+                      <tr className="border-b border-border bg-muted/35 text-xs font-bold uppercase tracking-wider text-navy">
+                        <th scope="col" className="w-16 px-4 py-3.5 text-center">
+                          S.No.
+                        </th>
+                        <th scope="col" className="px-4 py-3.5 min-w-[200px]">
+                          Name
+                        </th>
+                        <th scope="col" className="px-4 py-3.5 min-w-[130px]">
+                          Experience
+                        </th>
+                        <th scope="col" className="px-4 py-3.5 min-w-[180px]">
+                          Designation
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-border/70">
+                      {nonTeachingStaff.map((staff) => (
+                        <tr
+                          key={staff.sNo}
+                          className="transition-colors hover:bg-light-blue/40"
+                        >
+                          <td className="px-4 py-3.5 text-center font-medium text-muted-foreground">
+                            {staff.sNo}
+                          </td>
+                          <td className="px-4 py-3.5 font-bold text-navy">
+                            {staff.name}
+                          </td>
+                          <td className="px-4 py-3.5 font-semibold text-brand">
+                            {staff.experience}
+                          </td>
+                          <td className="px-4 py-3.5 text-navy font-medium">
+                            {staff.designation}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
               </div>
-            ))}
-          </div>
+
+              <div className="grid gap-3 md:hidden">
+                {nonTeachingStaff.map((staff) => (
+                  <div
+                    key={staff.sNo}
+                    className="rounded-xl border border-border bg-surface p-4 shadow-soft transition-colors hover:bg-light-blue/20"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <span className="text-[11px] font-semibold text-brand uppercase tracking-wider">
+                          #{staff.sNo} · {staff.designation}
+                        </span>
+                        <h4 className="font-display text-base font-bold text-navy">
+                          {staff.name}
+                        </h4>
+                      </div>
+                      <span className="shrink-0 rounded-md bg-brand/10 px-2 py-0.5 text-xs font-semibold text-brand">
+                        {staff.experience}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
         </div>
       ) : null}
     </section>
