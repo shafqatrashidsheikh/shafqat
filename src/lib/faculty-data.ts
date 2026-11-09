@@ -6,6 +6,7 @@
 
 import { PRINCIPAL } from "@/lib/principal-data";
 import { GPW_DEPARTMENTS } from "@/lib/departments-data";
+import { getDepartmentFacultyStaff } from "@/lib/department-faculty-data";
 
 export type FacultyPerson = {
   name: string;
@@ -53,15 +54,35 @@ export const FACULTY_ROLE_GROUPS = [
   },
 ] as const;
 
-/** Programme units that carry teaching faculty — names published only when verified */
-export const FACULTY_DEPARTMENT_UNITS = GPW_DEPARTMENTS.map((d) => ({
-  slug: d.slug,
-  name: d.name,
-  stream: d.stream,
-  verifiedPeople: FACULTY_VERIFIED.filter(
-    (p) => p.department.toLowerCase() === d.name.toLowerCase(),
-  ),
-}));
+/** Programme units that carry teaching faculty — names published from official department directories */
+export const FACULTY_DEPARTMENT_UNITS = GPW_DEPARTMENTS.map((d) => {
+  const deptStaff = getDepartmentFacultyStaff(d.slug);
+  if (deptStaff) {
+    return {
+      slug: d.slug,
+      name: d.name,
+      stream: d.stream,
+      verifiedPeople: [
+        {
+          name: deptStaff.hod.name,
+          designation: deptStaff.hod.designation,
+          department: d.name,
+          phone: deptStaff.hod.contact,
+          source: "Official Department Directory",
+        },
+      ],
+      facultyCount: deptStaff.faculty.length,
+    };
+  }
+
+  return {
+    slug: d.slug,
+    name: d.name,
+    stream: d.stream,
+    verifiedPeople: [],
+    facultyCount: 0,
+  };
+});
 
 export const FACULTY_DIRECTORY_NOTE =
   "Only names confirmed on official institute or JKBOTE public pages are listed here. Additional faculty names will be added after official institute confirmation so the directory stays accurate.";

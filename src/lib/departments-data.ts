@@ -464,7 +464,13 @@ export const WORKSHOPS_SECTION = {
 } as const;
 
 export function getDepartmentBySlug(slug: string): GpwDepartment | undefined {
-  return GPW_DEPARTMENTS.find((d) => d.slug === slug);
+  const normalized = slug.toLowerCase().trim();
+  return GPW_DEPARTMENTS.find(
+    (d) =>
+      d.slug === normalized ||
+      (normalized === "omca" && d.slug === "office-management-computer-applications") ||
+      (normalized === "travel-and-tourism" && d.slug === "travel-tourism"),
+  );
 }
 
 export function resolveEligibility(slug: string, eligibility?: string | null): string {

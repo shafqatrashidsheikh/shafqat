@@ -15,6 +15,13 @@ import {
   PROGRAMME_ADMISSION_NOTE,
   PROGRAMME_CAREER_DISCLAIMER,
 } from "@/lib/departments-data";
+import { getDepartmentFacultyStaff } from "@/lib/department-faculty-data";
+import {
+  DepartmentFacultyStaffSection,
+  DepartmentHodMessageSection,
+  DepartmentNavTabs,
+  DepartmentSyllabusSection,
+} from "@/components/site/DepartmentFacultyStaff";
 
 /** Matches campus facility / admissions info cards already used site-wide */
 const FACT_CARD =
@@ -24,6 +31,7 @@ const FACT_CARD =
 const CONTENT_CARD = "card-premium p-4 sm:p-5";
 
 export function DepartmentDetailContent({ department }: { department: GpwDepartment }) {
+  const facultyStaff = getDepartmentFacultyStaff(department.slug);
   const learningAreas =
     department.learningAreas?.length > 0 ? department.learningAreas : department.careerAreas;
   const careerPathways =
@@ -86,69 +94,86 @@ export function DepartmentDetailContent({ department }: { department: GpwDepartm
               View All Programmes
             </Link>
           </div>
+
+          {facultyStaff ? (
+            <DepartmentNavTabs
+              hasHodMessage={Boolean(facultyStaff.hod.message)}
+              hasFaculty={Boolean(facultyStaff.faculty.length > 0)}
+            />
+          ) : null}
         </div>
       </section>
 
       <section className="bg-background">
         <div className="container-page min-w-0 space-y-7 pt-3 pb-8 md:space-y-8 md:pt-4 md:pb-10">
-          <section aria-labelledby="programme-overview-heading">
-            <SectionHeading id="programme-overview-heading">Programme Overview</SectionHeading>
-            <p className="mt-3 w-full text-sm leading-[1.7] text-muted-foreground sm:text-[0.95rem]">
-              {department.overview}
-            </p>
-          </section>
+          <div id="about-department" className="scroll-mt-24 space-y-7 md:space-y-8">
+            <section aria-labelledby="programme-overview-heading">
+              <SectionHeading id="programme-overview-heading">Programme Overview</SectionHeading>
+              <p className="mt-3 w-full text-sm leading-[1.7] text-muted-foreground sm:text-[0.95rem]">
+                {department.overview}
+              </p>
+            </section>
 
-          <section aria-labelledby="learning-areas-heading">
-            <SectionHeading id="learning-areas-heading">What Students Learn</SectionHeading>
-            <p className="mt-2 text-sm text-muted-foreground">
-              Core learning areas covered in this diploma programme:
-            </p>
-            <ul className="mt-4 grid gap-3">
-              {learningAreas.map((area) => (
-                <li key={area} className={CONTENT_CARD}>
-                  <div className="flex gap-2.5 text-sm leading-snug text-navy">
-                    <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-brand" aria-hidden="true" />
-                    <span className="font-medium">{area}</span>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </section>
+            <section aria-labelledby="learning-areas-heading">
+              <SectionHeading id="learning-areas-heading">What Students Learn</SectionHeading>
+              <p className="mt-2 text-sm text-muted-foreground">
+                Core learning areas covered in this diploma programme:
+              </p>
+              <ul className="mt-4 grid gap-3">
+                {learningAreas.map((area) => (
+                  <li key={area} className={CONTENT_CARD}>
+                    <div className="flex gap-2.5 text-sm leading-snug text-navy">
+                      <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-brand" aria-hidden="true" />
+                      <span className="font-medium">{area}</span>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </section>
 
-          <section aria-labelledby="practical-learning-heading">
-            <SectionHeading id="practical-learning-heading">Practical Learning</SectionHeading>
-            <div className={`mt-4 ${CONTENT_CARD}`}>
-              <div className="flex items-start gap-3">
-                <FlaskConical className="mt-0.5 size-5 shrink-0 text-brand" aria-hidden="true" />
-                <ul className="min-w-0 space-y-2.5 text-sm leading-relaxed text-muted-foreground">
-                  {practicalPoints.map((point) => (
-                    <li key={point} className="flex gap-2">
-                      <span className="mt-2 size-1.5 shrink-0 rounded-full bg-brand" aria-hidden="true" />
-                      <span>{point}</span>
-                    </li>
-                  ))}
-                </ul>
+            <section aria-labelledby="practical-learning-heading">
+              <SectionHeading id="practical-learning-heading">Practical Learning</SectionHeading>
+              <div className={`mt-4 ${CONTENT_CARD}`}>
+                <div className="flex items-start gap-3">
+                  <FlaskConical className="mt-0.5 size-5 shrink-0 text-brand" aria-hidden="true" />
+                  <ul className="min-w-0 space-y-2.5 text-sm leading-relaxed text-muted-foreground">
+                    {practicalPoints.map((point) => (
+                      <li key={point} className="flex gap-2">
+                        <span className="mt-2 size-1.5 shrink-0 rounded-full bg-brand" aria-hidden="true" />
+                        <span>{point}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </div>
-            </div>
-          </section>
+            </section>
 
-          <section aria-labelledby="career-pathways-heading">
-            <SectionHeading id="career-pathways-heading">Career Pathways</SectionHeading>
-            <p className="mt-2 text-sm text-muted-foreground">Career pathways may include:</p>
-            <ul className="mt-4 grid gap-3">
-              {careerPathways.map((path) => (
-                <li key={path} className={CONTENT_CARD}>
-                  <div className="flex gap-2.5 text-sm leading-snug text-navy">
-                    <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-brand" aria-hidden="true" />
-                    <span className="font-medium">{path}</span>
-                  </div>
-                </li>
-              ))}
-            </ul>
-            <p className="mt-4 text-xs leading-relaxed text-muted-foreground">
-              {PROGRAMME_CAREER_DISCLAIMER}
-            </p>
-          </section>
+            <section aria-labelledby="career-pathways-heading">
+              <SectionHeading id="career-pathways-heading">Career Pathways</SectionHeading>
+              <p className="mt-2 text-sm text-muted-foreground">Career pathways may include:</p>
+              <ul className="mt-4 grid gap-3">
+                {careerPathways.map((path) => (
+                  <li key={path} className={CONTENT_CARD}>
+                    <div className="flex gap-2.5 text-sm leading-snug text-navy">
+                      <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-brand" aria-hidden="true" />
+                      <span className="font-medium">{path}</span>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+              <p className="mt-4 text-xs leading-relaxed text-muted-foreground">
+                {PROGRAMME_CAREER_DISCLAIMER}
+              </p>
+            </section>
+          </div>
+
+          {facultyStaff?.hod?.message ? (
+            <DepartmentHodMessageSection data={facultyStaff} />
+          ) : null}
+
+          {facultyStaff ? <DepartmentFacultyStaffSection data={facultyStaff} /> : null}
+
+          {facultyStaff ? <DepartmentSyllabusSection departmentName={department.name} /> : null}
 
           <section aria-labelledby="programme-facts-heading">
             <SectionHeading id="programme-facts-heading">Programme Facts</SectionHeading>

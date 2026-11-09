@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, ExternalLink, Mail, Phone } from "lucide-react";
+import { ArrowRight, Mail, Phone } from "lucide-react";
 import { AmpersandText, NaturalWrap } from "@/components/site/AmpersandText";
 import { PageHeader } from "@/components/site/PageHeader";
 import { departmentDetailPath } from "@/lib/departments-data";
@@ -8,7 +8,6 @@ import {
   FACULTY_DIRECTORY_NOTE,
   FACULTY_LEADERSHIP,
   FACULTY_ROLE_GROUPS,
-  FACULTY_VERIFIED,
 } from "@/lib/faculty-data";
 import { INSTITUTE } from "@/lib/site-data";
 
@@ -91,71 +90,6 @@ function FacultyPage() {
                 </Link>
               </div>
             </article>
-          </section>
-
-          {/* Verified contacts */}
-          <section aria-labelledby="faculty-verified" data-motion-from="up">
-            <h2
-              id="faculty-verified"
-              className="font-display text-[1.25rem] font-extrabold text-navy md:text-[1.375rem]"
-            >
-              Verified faculty contacts
-            </h2>
-            <p className="mt-2 w-full text-sm text-muted-foreground">
-              Published on the official JKBOTE admission intake list for Govt. Women Polytechnic,
-              Bemina Srinagar.
-            </p>
-            <ul className="mt-5 grid gap-4">
-              {FACULTY_VERIFIED.map((person) => (
-                <li key={person.name} className="card-premium p-5 sm:p-6">
-                  <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                    <div className="min-w-0">
-                      <p className="text-[11px] font-semibold tracking-[0.14em] text-brand uppercase">
-                        {person.department}
-                      </p>
-                      <h3 className="mt-1 font-display text-lg font-bold text-navy">{person.name}</h3>
-                      <p className="mt-1 text-sm text-muted-foreground">{person.designation}</p>
-                      {person.phone ? (
-                        <a
-                          href={`tel:${person.phone.replace(/\s/g, "")}`}
-                          className="mt-3 inline-flex items-center gap-2 text-sm font-medium text-brand hover:text-navy"
-                        >
-                          <Phone className="size-4" aria-hidden="true" />
-                          {person.phone}
-                        </a>
-                      ) : null}
-                      <p className="mt-3 text-xs text-muted-foreground">
-                        Source: {person.source}
-                        {person.sourceUrl ? (
-                          <>
-                            {" · "}
-                            <a
-                              href={person.sourceUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center gap-1 font-medium text-brand hover:text-navy"
-                            >
-                              View JKBOTE list
-                              <ExternalLink className="size-3" aria-hidden="true" />
-                            </a>
-                          </>
-                        ) : null}
-                      </p>
-                    </div>
-                    <Link
-                      to={departmentDetailPath(
-                        FACULTY_DEPARTMENT_UNITS.find((u) => u.name === person.department)?.slug ??
-                          "computer-engineering",
-                      )}
-                      className="btn-secondary inline-flex w-full shrink-0 sm:w-auto"
-                    >
-                      Programme page
-                      <ArrowRight className="size-4" />
-                    </Link>
-                  </div>
-                </li>
-              ))}
-            </ul>
           </section>
 
           {/* Role groups */}
