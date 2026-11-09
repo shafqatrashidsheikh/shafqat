@@ -39,7 +39,7 @@ const CAMPUS_MATCHES: CampusMatch[] = [
   },
   {
     re: /\b(electrical|ee\b)\b/i,
-    url: CAMPUS_IMAGES.electricalLab,
+    url: CAMPUS_IMAGES.electronicsLabStudents,
     alt: "Electrical laboratory at GPW Srinagar",
   },
   {

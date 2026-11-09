@@ -1,5 +1,15 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { ChevronDown } from "lucide-react";
+import {
+  Bell,
+  BookOpen,
+  Building2,
+  ChevronRight,
+  Download,
+  GraduationCap,
+  Home,
+  Phone,
+  Sparkles,
+} from "lucide-react";
 import {
   useCallback,
   useEffect,
@@ -13,15 +23,28 @@ import { splitHref } from "@/lib/contextual-return";
 import { HEADER_CTA_PILLS, type HeaderCtaPill, type HeaderCtaPillItem } from "@/lib/site-data";
 import { cn } from "@/lib/utils";
 
-/** Shared pill style for all header navigation buttons (nav + auth). */
+/** Solid downward filled triangle caret as shown in reference */
+function SolidCaretDown({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 8 5"
+      aria-hidden="true"
+      className={cn("h-1.5 w-2 shrink-0 fill-current transition-transform duration-200 ease-out", className)}
+    >
+      <path d="M0 0h8L4 5z" />
+    </svg>
+  );
+}
+
+/** Shared style for header navigation buttons (nav + auth) — underline hover without background box containers */
 export const HEADER_PILL =
-  "inline-flex h-9 min-h-9 shrink-0 cursor-pointer items-center justify-center gap-1 whitespace-nowrap rounded-full border border-border bg-surface-white px-2.5 text-[12px] font-semibold text-navy shadow-sm transition-[background-color,border-color,box-shadow] duration-200 ease-out hover:border-brand/40 hover:bg-light-blue hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 xl:h-10 xl:min-h-10 xl:px-3.5 xl:text-[13px] 2xl:h-11 2xl:min-h-11 2xl:px-5 2xl:text-sm";
+  "nav-link-underline inline-flex h-9 min-h-9 shrink-0 cursor-pointer items-center justify-center gap-1.5 whitespace-nowrap bg-transparent px-3 text-[13px] font-semibold text-navy transition-colors duration-150 ease-out hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 xl:h-9.5 xl:min-h-9.5 xl:px-3.5 xl:text-[14px] 2xl:h-10 2xl:min-h-10 2xl:px-4 2xl:text-[15px]";
 
 export const HEADER_PILL_OPEN =
-  "border-brand/40 bg-light-blue shadow-md";
+  "text-brand";
 
 export const HEADER_PILL_ACTIVE =
-  "border-brand/35 bg-light-blue/70 shadow-[inset_0_-2px_0_0_#2457A6]";
+  "text-brand font-bold";
 
 const CLOSE_DELAY_MS = 150;
 
@@ -68,7 +91,7 @@ function DropdownItem({
   onClose: () => void;
 }) {
   const menuClass = cn(
-    "block w-full cursor-pointer rounded-xl px-3.5 py-2.5 text-left text-sm whitespace-nowrap transition-[background-color,color] duration-150 ease-out",
+    "flex w-full cursor-pointer items-center justify-center rounded-xl px-3.5 py-2.5 text-center text-sm whitespace-nowrap transition-[background-color,color] duration-150 ease-out",
     "text-navy hover:bg-light-blue hover:text-brand focus-visible:bg-light-blue focus-visible:text-brand focus-visible:outline-none",
     item.primary && "font-semibold text-brand",
   );
@@ -76,7 +99,7 @@ function DropdownItem({
   if (item.comingSoon || (!item.to && item.action !== "apply-online")) {
     return (
       <span
-        className="block cursor-default rounded-xl px-3.5 py-2.5 text-sm whitespace-nowrap text-muted-foreground"
+        className="block w-full cursor-default rounded-xl px-3.5 py-2.5 text-center text-sm whitespace-nowrap text-muted-foreground"
         aria-disabled="true"
       >
         {item.label}
@@ -169,7 +192,7 @@ function HoverNavItem({
 
   return (
     <div
-      className={cn("relative", open && "z-[100]")}
+      className={cn("relative inline-flex flex-col items-center", open && "z-[100]")}
       onMouseEnter={() => {
         onCancelClose();
         if (fineHover) onOpen();
@@ -189,6 +212,8 @@ function HoverNavItem({
     >
       <Link
         to={pill.to}
+        data-open={open ? "true" : undefined}
+        data-active={active ? "true" : undefined}
         className={cn(
           HEADER_PILL,
           open && HEADER_PILL_OPEN,
@@ -209,29 +234,22 @@ function HoverNavItem({
           }
         }}
       >
-        {pill.label}
-        <ChevronDown
+        <span>{pill.label}</span>
+        <SolidCaretDown
           className={cn(
-            "size-4 shrink-0 opacity-70 transition-transform duration-200 ease-out xl:size-[1.125rem]",
-            open && "rotate-180",
+            "ml-0.5 opacity-65 transition-transform duration-200 ease-out",
+            open && "rotate-180 opacity-100",
           )}
-          aria-hidden="true"
         />
       </Link>
 
       <div
         id={menuId}
         role="menu"
+        data-state={open ? "open" : "closed"}
         aria-label={`${pill.label} menu`}
         aria-hidden={!open}
-        className={cn(
-          /* Width must NOT use parent % — pill wrapper is only ~button-wide. */
-          "absolute top-[calc(100%+0.2rem)] z-[100] min-w-[14.5rem] w-max max-w-[min(20rem,calc(100vw-1.5rem))] pt-1.5 transition-[opacity,transform,visibility] duration-200 ease-out motion-reduce:transition-none",
-          alignEnd ? "right-0 left-auto" : "left-0",
-          open
-            ? "visible translate-y-0 opacity-100"
-            : "pointer-events-none invisible -translate-y-1 opacity-0",
-        )}
+        className="nav-dropdown-center z-[100] min-w-[14.5rem] w-max max-w-[min(20rem,calc(100vw-1.5rem))] pt-1 motion-reduce:transition-none"
         onMouseEnter={() => {
           onCancelClose();
           if (fineHover) onOpen();
@@ -241,7 +259,7 @@ function HoverNavItem({
         }}
         onKeyDown={onMenuKeyDown}
       >
-        <div className="rounded-xl border border-border bg-surface-white p-2 shadow-[0_10px_32px_rgba(23,54,93,0.1)]">
+        <div className="rounded-2xl border border-border bg-surface-white p-2 shadow-[0_12px_36px_rgba(23,54,93,0.12)]">
           <ul className="m-0 list-none space-y-0.5 p-0">
             {pill.items.map((item, index) => (
               <li key={item.label} role="none">
@@ -320,7 +338,7 @@ export function HeaderCtaPills({ className, pills = HEADER_CTA_PILLS }: HeaderCt
   return (
     <div
       data-nav-pills
-      className={cn("flex shrink-0 flex-nowrap items-center gap-2 2xl:gap-2.5", className)}
+      className={cn("flex shrink-0 flex-nowrap items-center gap-2.5 xl:gap-4 2xl:gap-5", className)}
     >
       {pills.map((pill, index) => (
         <HoverNavItem
@@ -339,92 +357,215 @@ export function HeaderCtaPills({ className, pills = HEADER_CTA_PILLS }: HeaderCt
   );
 }
 
+const SECTION_ICONS: Record<string, React.ReactNode> = {
+  Admissions: <GraduationCap className="size-4.5 text-brand shrink-0" aria-hidden="true" />,
+  Academics: <BookOpen className="size-4.5 text-brand shrink-0" aria-hidden="true" />,
+  Campus: <Building2 className="size-4.5 text-brand shrink-0" aria-hidden="true" />,
+  Updates: <Bell className="size-4.5 text-brand shrink-0" aria-hidden="true" />,
+};
+
 /** Mobile menu grouped CTA links with expandable sections */
 export function HeaderCtaMobileGroups({
   onNavigate,
   pills = HEADER_CTA_PILLS,
 }: {
-  onNavigate?: () => void;
-  pills?: HeaderCtaPill[];
+  onNavigate?: (() => void) | undefined;
+  pills?: HeaderCtaPill[] | undefined;
 }) {
-  const [expanded, setExpanded] = useState<string | null>(null);
+  const routerState = useRouterState();
+  const currentPath = routerState?.location?.pathname ?? "/";
+  const [expanded, setExpanded] = useState<string | null>(() => {
+    // Auto-expand section if currently on that route
+    const match = pills.find((p) => p.to !== "/" && currentPath.startsWith(p.to));
+    return match ? match.label : null;
+  });
 
   return (
-    <div className="space-y-2 border-t border-border px-3 py-4">
-      {pills.map((pill) => {
-        const isOpen = expanded === pill.label;
-        return (
-          <div key={pill.label} className="rounded-xl border border-border/80 bg-surface-white">
-            <button
-              type="button"
-              className="flex min-h-11 w-full items-center justify-between px-3 py-2.5 text-left text-sm font-semibold text-navy"
-              aria-expanded={isOpen}
-              onClick={() => setExpanded(isOpen ? null : pill.label)}
-            >
-              {pill.label}
-              <ChevronDown
-                className={cn("size-4 shrink-0 text-brand transition-transform duration-200", isOpen && "rotate-180")}
-                aria-hidden="true"
-              />
-            </button>
-            {isOpen && (
-              <ul className="space-y-0.5 border-t border-border px-1 pb-2 pt-1">
-                <li>
-                  <Link
-                    to={pill.to}
-                    onClick={onNavigate}
-                    className="block min-h-11 rounded-lg px-3 py-2.5 text-sm font-semibold text-brand hover:bg-light-blue"
-                  >
-                    View {pill.label}
-                  </Link>
-                </li>
-                {pill.items.map((item) => {
-                  if (item.comingSoon || (!item.to && item.action !== "apply-online")) {
-                    return (
-                      <li key={item.label}>
-                        <span className="block min-h-11 rounded-lg px-3 py-2.5 text-sm text-muted-foreground">
-                          {item.label}
-                        </span>
-                      </li>
-                    );
-                  }
-                  if (item.action === "apply-online") {
-                    return (
-                      <li key={item.label}>
-                        <ApplyOnlineButton
-                          label={item.label}
-                          prefetch={false}
-                          {...(onNavigate ? { onBeforeApply: onNavigate } : {})}
-                          className={cn(
-                            "block min-h-11 w-full cursor-pointer rounded-lg px-3 py-2.5 text-left text-sm transition-[background-color,color] duration-150 ease-out hover:bg-light-blue hover:text-brand",
-                            item.primary ? "font-semibold text-brand" : "font-medium text-navy",
-                          )}
-                        />
-                      </li>
-                    );
-                  }
-                  const { to, hash } = splitHref(item.to!);
-                  return (
-                    <li key={item.label}>
-                      <Link
-                        to={to as "/"}
-                        {...(hash ? { hash } : {})}
-                        onClick={onNavigate}
-                        className={cn(
-                          "block min-h-11 cursor-pointer rounded-lg px-3 py-2.5 text-sm transition-[background-color,color] duration-150 ease-out hover:bg-light-blue hover:text-brand",
-                          item.primary ? "font-semibold text-brand" : "font-medium text-navy",
-                        )}
-                      >
-                        {item.label}
-                      </Link>
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
+    <div className="space-y-3 px-3 py-3">
+      {/* 1. Home Link — Always Accessible */}
+      <Link
+        to="/"
+        onClick={onNavigate}
+        className={cn(
+          "flex min-h-11 w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-bold transition-all active:scale-[0.99]",
+          currentPath === "/"
+            ? "bg-brand text-white shadow-xs"
+            : "text-navy hover:bg-light-blue/70 border border-border/80 bg-surface-white",
+        )}
+      >
+        <Home className={cn("size-4.5 shrink-0", currentPath === "/" ? "text-white" : "text-brand")} />
+        <span className="flex-1 text-left">Home</span>
+        {currentPath === "/" && (
+          <span className="rounded-full bg-white/20 px-2 py-0.5 text-[10px] font-bold text-white">Active</span>
+        )}
+      </Link>
+
+      {/* 2. Direct Apply Online CTA Card */}
+      <div className="rounded-xl border border-brand/25 bg-gradient-to-r from-light-blue/80 via-surface-white to-light-blue/50 p-3 shadow-xs">
+        <div className="flex items-center justify-between gap-2.5">
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-1.5">
+              <span className="inline-block size-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="text-[10.5px] font-extrabold tracking-wider text-brand uppercase">
+                Admissions 2026
+              </span>
+            </div>
+            <p className="font-display text-xs font-bold text-navy truncate mt-0.5">
+              Diploma Applications
+            </p>
           </div>
-        );
-      })}
+          <ApplyOnlineButton
+            label="Apply Now →"
+            prefetch={false}
+            {...(onNavigate ? { onBeforeApply: onNavigate } : {})}
+            className="inline-flex min-h-9 shrink-0 cursor-pointer items-center justify-center rounded-lg bg-brand px-3 py-1.5 text-xs font-bold text-white shadow-xs transition-colors hover:bg-brand-deep active:scale-95"
+          />
+        </div>
+      </div>
+
+      {/* 3. Primary Structured Navigation Accordions */}
+      <div className="space-y-2">
+        <p className="px-1 text-[11px] font-extrabold tracking-wider text-muted-foreground uppercase">
+          Explore Institute
+        </p>
+        {pills.map((pill) => {
+          const isOpen = expanded === pill.label;
+          const isSectionActive = pill.to !== "/" && currentPath.startsWith(pill.to);
+          const icon = SECTION_ICONS[pill.label] ?? (
+            <Sparkles className="size-4.5 text-brand shrink-0" aria-hidden="true" />
+          );
+
+          return (
+            <div
+              key={pill.label}
+              className={cn(
+                "rounded-xl border transition-colors overflow-hidden bg-surface-white",
+                isSectionActive
+                  ? "border-brand/40 shadow-xs"
+                  : "border-border/80",
+              )}
+            >
+              <button
+                type="button"
+                className={cn(
+                  "flex min-h-11 w-full items-center justify-between gap-2.5 px-3.5 py-2.5 text-left text-sm font-bold transition-colors cursor-pointer",
+                  isOpen
+                    ? "bg-light-blue/40 text-brand"
+                    : "text-navy hover:bg-light-blue/30",
+                )}
+                aria-expanded={isOpen}
+                onClick={() => setExpanded(isOpen ? null : pill.label)}
+              >
+                <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                  {icon}
+                  <span className="truncate">{pill.label}</span>
+                  {isSectionActive && (
+                    <span className="size-1.5 rounded-full bg-brand shrink-0" title="Current Section" />
+                  )}
+                </div>
+                <SolidCaretDown
+                  className={cn(
+                    "text-brand transition-transform duration-200 shrink-0",
+                    isOpen && "rotate-180",
+                  )}
+                />
+              </button>
+
+              {isOpen && (
+                <ul className="space-y-0.5 border-t border-border/80 bg-surface-white/60 p-1.5">
+                  <li>
+                    <Link
+                      to={pill.to}
+                      onClick={onNavigate}
+                      className={cn(
+                        "flex min-h-10 items-center justify-between rounded-lg px-3 py-2 text-xs font-bold transition-colors",
+                        currentPath === pill.to
+                          ? "bg-brand text-white"
+                          : "text-brand hover:bg-light-blue",
+                      )}
+                    >
+                      <span>Explore {pill.label} Overview</span>
+                      <ChevronRight className="size-3.5 opacity-70" />
+                    </Link>
+                  </li>
+                  {pill.items.map((item) => {
+                    if (item.comingSoon || (!item.to && item.action !== "apply-online")) {
+                      return (
+                        <li key={item.label}>
+                          <span className="block min-h-9 rounded-lg px-3 py-2 text-xs text-muted-foreground/80 italic">
+                            {item.label}
+                          </span>
+                        </li>
+                      );
+                    }
+                    if (item.action === "apply-online") {
+                      return (
+                        <li key={item.label}>
+                          <ApplyOnlineButton
+                            label={item.label}
+                            prefetch={false}
+                            {...(onNavigate ? { onBeforeApply: onNavigate } : {})}
+                            className="flex min-h-10 w-full cursor-pointer items-center justify-between rounded-lg px-3 py-2 text-xs font-bold text-brand hover:bg-light-blue transition-colors"
+                          />
+                        </li>
+                      );
+                    }
+                    const { to, hash } = splitHref(item.to!);
+                    const isItemActive = currentPath === to;
+                    return (
+                      <li key={item.label}>
+                        <Link
+                          to={to as "/"}
+                          {...(hash ? { hash } : {})}
+                          onClick={onNavigate}
+                          className={cn(
+                            "flex min-h-10 items-center justify-between rounded-lg px-3 py-2 text-xs transition-colors",
+                            isItemActive
+                              ? "bg-light-blue font-bold text-brand"
+                              : item.primary
+                                ? "font-bold text-navy hover:bg-light-blue/60 hover:text-brand"
+                                : "font-medium text-navy/90 hover:bg-light-blue/60 hover:text-brand",
+                          )}
+                        >
+                          <span className="truncate">{item.label}</span>
+                          {item.primary && !isItemActive && (
+                            <span className="text-[10px] text-muted-foreground">↗</span>
+                          )}
+                        </Link>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* 4. Quick Utility Links */}
+      <div className="space-y-1.5 pt-1">
+        <p className="px-1 text-[11px] font-extrabold tracking-wider text-muted-foreground uppercase">
+          Quick Links
+        </p>
+        <div className="grid grid-cols-2 gap-2">
+          <Link
+            to="/downloads"
+            onClick={onNavigate}
+            className="flex min-h-10 items-center gap-2 rounded-xl border border-border/80 bg-surface-white px-3 py-2 text-xs font-semibold text-navy hover:bg-light-blue/60 transition-colors"
+          >
+            <Download className="size-3.5 text-brand shrink-0" />
+            <span className="truncate">Downloads</span>
+          </Link>
+          <Link
+            to="/contact"
+            onClick={onNavigate}
+            className="flex min-h-10 items-center gap-2 rounded-xl border border-border/80 bg-surface-white px-3 py-2 text-xs font-semibold text-navy hover:bg-light-blue/60 transition-colors"
+          >
+            <Phone className="size-3.5 text-brand shrink-0" />
+            <span className="truncate">Contact</span>
+          </Link>
+        </div>
+      </div>
     </div>
   );
 }

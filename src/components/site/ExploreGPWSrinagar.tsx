@@ -17,7 +17,7 @@ function FeatureCard({
       <div
         className={cn(
           /* Landscape frame while stacked so the full scene reads; fills the column on md+ */
-          "relative aspect-[16/10] overflow-hidden bg-light-blue/40 md:aspect-auto md:h-full",
+          "relative aspect-[16/9] sm:aspect-[16/10] overflow-hidden bg-light-blue/40 md:aspect-auto md:h-full",
           card.imagePosition === "left" ? "order-1" : "order-2 sm:order-2",
         )}
       >
