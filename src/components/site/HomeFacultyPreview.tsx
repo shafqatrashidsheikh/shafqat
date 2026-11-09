@@ -113,7 +113,7 @@ export function HomeFacultyPreview() {
             to="/faculty"
             className="link-cta group shrink-0 rounded-md py-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
           >
-            <span>View More Faculty & Staff</span>
+            <span>View More</span>
             <ArrowRight
               className="size-4 transition-transform duration-200 group-hover:translate-x-0.5"
               aria-hidden="true"
@@ -200,6 +200,17 @@ export function HomeFacultyPreview() {
           })}
         </div>
 
+        {/* Centered Explore More Action */}
+        <div className="mt-8 flex justify-center" data-motion-from="up">
+          <Link
+            to="/faculty"
+            className="btn-primary inline-flex items-center gap-2 px-6 py-2.5 text-sm font-semibold shadow-xs"
+          >
+            <span>Explore More</span>
+            <ArrowRight className="size-4" aria-hidden="true" />
+          </Link>
+        </div>
+
         {/* Bottom CTA Bar */}
         <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4 rounded-2xl border border-border bg-surface p-5 sm:p-6 shadow-soft" data-motion-from="up">
           <div className="flex items-center gap-3.5">
@@ -217,8 +228,8 @@ export function HomeFacultyPreview() {
           </div>
 
           <div className="flex w-full sm:w-auto items-center gap-2.5 shrink-0">
-            <Link to="/faculty" className="btn-primary w-full sm:w-auto text-xs sm:text-sm">
-              <span>Explore More Faculty & Staff</span>
+            <Link to="/faculty" className="btn-secondary w-full sm:w-auto text-xs sm:text-sm">
+              <span>View More</span>
               <ArrowRight className="size-4" aria-hidden="true" />
             </Link>
           </div>
