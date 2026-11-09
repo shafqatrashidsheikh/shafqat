@@ -216,7 +216,7 @@ function RootShell({ children }: { children: ReactNode }) {
         <style
           dangerouslySetInnerHTML={{
             __html:
-            "html:has(.story-loader) .site-shell>:not(.story-loader){visibility:hidden!important;pointer-events:none!important}html:has(.story-loader),html:has(.story-loader) body{overflow:hidden!important;background:var(--background,#eaf0fa)}html{scrollbar-gutter:stable}",
+            "html:has(.story-loader) .site-shell>:not(.story-loader){visibility:hidden!important;pointer-events:none!important}html:has(.story-loader),html:has(.story-loader) body{overflow:hidden!important;background:var(--background,#eaf0fa)}html,body{scrollbar-width:none!important;-ms-overflow-style:none!important}html::-webkit-scrollbar,body::-webkit-scrollbar,*::-webkit-scrollbar{display:none!important;width:0!important;height:0!important}",
           }}
         />
       </head>

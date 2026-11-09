@@ -87,7 +87,7 @@ function LibraryPage() {
                   height={photo.height}
                   loading="lazy"
                   decoding="async"
-                  className="aspect-[4/3] size-full object-cover"
+                  className="aspect-[16/9] sm:aspect-[16/10] md:aspect-[4/3] size-full object-cover"
                 />
               </figure>
             ))}

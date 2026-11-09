@@ -39,18 +39,34 @@ export function OfflineRunnerGame({ className }: { className?: string }) {
 
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    let cssW = Math.min(560, canvas.parentElement?.clientWidth || 560);
+    const measureWidth = () => {
+      const parentW = canvas.parentElement?.clientWidth;
+      if (parentW && parentW > 0) return Math.min(560, parentW);
+      if (typeof window !== "undefined") return Math.min(560, Math.max(240, window.innerWidth - 64));
+      return 320;
+    };
+
+    let cssW = measureWidth();
     const cssH = 188;
 
     const resize = () => {
-      cssW = Math.min(560, canvas.parentElement?.clientWidth || 560);
+      cssW = measureWidth();
       canvas.width = Math.floor(cssW * dpr);
       canvas.height = Math.floor(cssH * dpr);
-      canvas.style.width = `${cssW}px`;
+      canvas.style.width = "100%";
+      canvas.style.maxWidth = `${cssW}px`;
       canvas.style.height = `${cssH}px`;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     };
     resize();
+
+    let ro: ResizeObserver | null = null;
+    if (typeof ResizeObserver !== "undefined" && canvas.parentElement) {
+      ro = new ResizeObserver(() => {
+        resize();
+      });
+      ro.observe(canvas.parentElement);
+    }
 
     const groundY = cssH - 28;
     let playerY = 0;
@@ -480,11 +496,12 @@ export function OfflineRunnerGame({ className }: { className?: string }) {
       }
 
       if (!running && !dead) {
+        const boxW = Math.min(236, cssW - 24);
         ctx.fillStyle = "rgba(23,54,93,0.78)";
-        roundRect(ctx, cssW / 2 - 118, cssH / 2 - 22, 236, 40, 12);
+        roundRect(ctx, cssW / 2 - boxW / 2, cssH / 2 - 20, boxW, 40, 12);
         ctx.fill();
         ctx.fillStyle = "#F8FAFF";
-        ctx.font = "700 13px system-ui, sans-serif";
+        ctx.font = cssW < 360 ? "700 11px system-ui, sans-serif" : "700 13px system-ui, sans-serif";
         ctx.textAlign = "center";
         ctx.fillText(CONNECTION_ERROR_COPY.gameReady, cssW / 2, cssH / 2 + 4);
       }
@@ -493,10 +510,10 @@ export function OfflineRunnerGame({ className }: { className?: string }) {
         ctx.fillStyle = "rgba(234,242,255,0.55)";
         ctx.fillRect(0, 0, cssW, cssH);
         ctx.fillStyle = "#17365D";
-        ctx.font = "800 16px system-ui, sans-serif";
+        ctx.font = cssW < 360 ? "800 14px system-ui, sans-serif" : "800 16px system-ui, sans-serif";
         ctx.textAlign = "center";
         ctx.fillText(quip, cssW / 2, cssH / 2 - 8);
-        ctx.font = "600 12px system-ui, sans-serif";
+        ctx.font = cssW < 360 ? "600 11px system-ui, sans-serif" : "600 12px system-ui, sans-serif";
         ctx.fillStyle = "#5F6B7A";
         ctx.fillText(CONNECTION_ERROR_COPY.gameRetry, cssW / 2, cssH / 2 + 16);
       }
@@ -512,19 +529,20 @@ export function OfflineRunnerGame({ className }: { className?: string }) {
       window.removeEventListener("keydown", onKey);
       window.removeEventListener("resize", resize);
       canvas.removeEventListener("pointerdown", onPointer);
+      if (ro) ro.disconnect();
     };
   }, []);
 
   return (
     <div className={cn("connection-dash w-full", className)}>
       <div className="flex items-center justify-between gap-3">
-        <div>
-          <p className="text-[11px] font-bold tracking-[0.16em] text-brand uppercase">
+        <div className="min-w-0 flex-1">
+          <p className="text-[11px] font-bold tracking-[0.16em] text-brand uppercase truncate">
             {CONNECTION_ERROR_COPY.gameTitle}
           </p>
-          <p className="mt-0.5 text-[11px] text-muted-foreground">Double-jump enabled · grab the stars</p>
+          <p className="mt-0.5 text-[11px] text-muted-foreground truncate">Double-jump enabled · grab the stars</p>
         </div>
-        <div className="rounded-full border border-border bg-surface-white px-3 py-1 font-mono text-[11px] font-semibold text-navy shadow-soft">
+        <div className="rounded-full border border-border bg-surface-white px-2.5 py-1 font-mono text-[11px] font-semibold text-navy shadow-soft shrink-0">
           HI {String(best).padStart(4, "0")}
           {status !== "ready" ? ` · ${String(score).padStart(4, "0")}` : null}
         </div>

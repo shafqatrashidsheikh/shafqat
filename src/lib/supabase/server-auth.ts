@@ -1,4 +1,5 @@
-import { createServerClient, type SupabaseClient } from "@supabase/ssr";
+import { createServerClient } from "@supabase/ssr";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { getCookies, setCookie, setResponseHeader } from "@tanstack/react-start/server";
 import { env } from "@/lib/env";
 

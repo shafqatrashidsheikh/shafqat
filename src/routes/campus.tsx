@@ -94,7 +94,7 @@ function Campus() {
                 key={img.alt}
                 data-motion-from={index === 0 ? "left" : "right"}
                 data-motion-visual="true"
-                className="min-h-[18rem] min-w-0 overflow-hidden rounded-2xl border border-border bg-light-blue/40 shadow-soft transition-[border-color,box-shadow] duration-300 hover:border-brand/30 sm:min-h-[20rem] md:h-full md:min-h-0"
+                className="aspect-[16/9] sm:aspect-[16/10] md:aspect-auto min-w-0 overflow-hidden rounded-2xl border border-border bg-light-blue/40 shadow-soft transition-[border-color,box-shadow] duration-300 hover:border-brand/30 md:h-full"
               >
                 <img
                   src={img.src}

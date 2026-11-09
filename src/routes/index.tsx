@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useRef, type CSSProperties } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { ArrowRight, BriefcaseBusiness, Users, type LucideIcon } from "lucide-react";
 import collegeHeroImg from "@/assets/college-hero.jpg";
 import { ApplyOnlineButton } from "@/components/site/ApplyOnlineButton";
@@ -8,6 +8,8 @@ import { Counter } from "@/components/site/Counter";
 import { ExploreGPWSrinagar } from "@/components/site/ExploreGPWSrinagar";
 import { HomeFacilitiesRail } from "@/components/site/HomeFacilitiesRail";
 import { HomeProgrammesRail } from "@/components/site/HomeProgrammesRail";
+import { HeroNotifications } from "@/components/site/HeroNotifications";
+import { HeroImageCarousel } from "@/components/site/HeroImageCarousel";
 import { ImportantAnnouncements } from "@/components/site/ImportantAnnouncements";
 import { InstituteSpotlights } from "@/components/site/InstituteSpotlights";
 import { NewsAndEvents } from "@/components/site/NewsAndEvents";
@@ -57,6 +59,31 @@ function Home() {
   const heroImageRef = useRef<HTMLDivElement>(null);
   useSubtleParallax(heroImageRef);
 
+  const [heroHeight, setHeroHeight] = useState<number | undefined>(undefined);
+
+  useEffect(() => {
+    const el = heroImageRef.current;
+    if (!el) return;
+
+    const syncHeight = () => {
+      if (window.innerWidth >= 1024) {
+        setHeroHeight(el.offsetHeight);
+      } else {
+        setHeroHeight(undefined);
+      }
+    };
+
+    syncHeight();
+    const ro = new ResizeObserver(syncHeight);
+    ro.observe(el);
+    window.addEventListener("resize", syncHeight);
+
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", syncHeight);
+    };
+  }, []);
+
   const sections = { ...getStaticPageSections(), ...homepage.sections };
   const hero = sections["hero"];
   const about = sections["home_about"];
@@ -97,52 +124,23 @@ function Home() {
     <>
       {/* HERO */}
       <section className="hero-nav-gap section-misty">
-        <div className="container-page grid min-w-0 grid-cols-1 items-center gap-6 pb-6 sm:gap-8 sm:pb-8 lg:grid-cols-2 lg:gap-14 lg:pb-12">
-          <div className="min-w-0 order-1">
-            <span
-              className="reveal inline-flex w-fit items-center rounded-[11px] border border-border bg-surface-white px-4 py-1.5 text-xs font-semibold tracking-[0.16em] text-brand uppercase"
-              style={{ "--reveal-delay": "0ms" } as CSSProperties}
-            >
-              {hero?.eyebrow ?? `Established ${INSTITUTE.established}`}
-            </span>
-            <h1
-              className="reveal mt-5 max-w-xl text-balance font-brand text-[clamp(1.875rem,5vw+0.5rem,3rem)] font-extrabold text-navy"
-              style={{ "--reveal-delay": "90ms" } as CSSProperties}
-              aria-label="Government Polytechnic for Women, Srinagar"
-            >
-              {hero?.title ?? "Government Polytechnic for Women, Srinagar"}
-            </h1>
-            <p
-              className="reveal mt-4 max-w-lg text-base leading-relaxed text-foreground sm:text-lg"
-              style={{ "--reveal-delay": "180ms" } as CSSProperties}
-            >
-              {hero?.body ?? INSTITUTE.tagline}
-            </p>
-            <div
-              className="reveal mt-6 flex w-full max-w-lg flex-col gap-3 sm:mt-8 sm:w-auto sm:flex-row sm:flex-wrap"
-              style={{ "--reveal-delay": "270ms" } as CSSProperties}
-            >
-              <ApplyOnlineButton className="btn-primary group w-full sm:w-auto">
-                Apply Now
-                <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
-              </ApplyOnlineButton>
-              <Link to="/academics" className="btn-secondary w-full sm:w-auto">
-                Explore Programs
-              </Link>
-            </div>
-          </div>
-          <div
+        <div className="container-page grid min-w-0 grid-cols-1 items-start gap-5 pb-6 sm:gap-7 sm:pb-8 lg:grid-cols-2 lg:gap-10 xl:gap-14 lg:pb-12">
+          {/* Image Carousel — Left */}
+          <HeroImageCarousel
             ref={heroImageRef}
-            className="reveal-hero-image order-2 min-w-0 overflow-hidden rounded-3xl border border-border bg-light-blue/30 shadow-raised will-change-transform lg:order-2"
+            className="reveal-hero-image order-1 min-w-0 h-fit self-start will-change-transform lg:order-1"
             style={{ "--reveal-delay": "360ms" } as CSSProperties}
+          />
+
+          {/* Notifications — Right */}
+          <div
+            className="min-w-0 order-2 flex flex-col h-[320px] min-[400px]:h-[350px] sm:h-[380px] md:h-[420px] lg:h-auto"
+            style={heroHeight ? { height: `${heroHeight}px` } : undefined}
           >
-            <img
-              src={collegeHeroImg}
-              alt="Government Polytechnic for Women, Srinagar campus building"
-              width={1024}
-              height={768}
-              fetchPriority="high"
-              className="aspect-[4/3] h-auto w-full object-cover object-center"
+            <HeroNotifications
+              liveNotices={siteChrome.liveNotices?.notices}
+              items={homepage.announcements}
+              className="h-full"
             />
           </div>
         </div>
