@@ -1,4 +1,6 @@
+import { Link } from "@tanstack/react-router";
 import {
+  ArrowRight,
   BookOpen,
   Download,
   ExternalLink,
@@ -15,9 +17,12 @@ import type {
   DepartmentFacultyStaff,
   TableSchemaType,
 } from "@/lib/department-faculty-data";
+import { departmentDetailPath } from "@/lib/departments-data";
 
 interface Props {
   data: DepartmentFacultyStaff;
+  idPrefix?: string;
+  showProgrammeLink?: boolean;
 }
 
 function getInitials(name: string): string {
@@ -436,33 +441,50 @@ function renderMobileCard(member: DepartmentFacultyMember, schema: TableSchemaTy
 /**
  * Main Faculty & Staff Section with HOD, Faculty Table and Non-Teaching Staff
  */
-export function DepartmentFacultyStaffSection({ data }: Props) {
-  const { hod, faculty, nonTeachingStaff, departmentName, tableSchema } = data;
+export function DepartmentFacultyStaffSection({
+  data,
+  idPrefix,
+  showProgrammeLink = false,
+}: Props) {
+  const { hod, faculty, nonTeachingStaff, departmentName, tableSchema, departmentSlug } = data;
   const initials = getInitials(hod.name);
+  const sectionId = idPrefix ? `${idPrefix}-faculty-information` : "faculty-information";
+  const headingId = idPrefix ? `${idPrefix}-heading` : "faculty-information-heading";
 
   return (
     <section
-      id="faculty-information"
-      aria-labelledby="faculty-information-heading"
+      id={sectionId}
+      aria-labelledby={headingId}
       className="scroll-mt-24 space-y-6 pt-2"
     >
-      {/* Anchor alias for #faculty-staff */}
-      <span id="faculty-staff" className="scroll-mt-24 block" aria-hidden="true" />
+      {/* Anchor alias for in-page linking */}
+      {!idPrefix ? <span id="faculty-staff" className="scroll-mt-24 block" aria-hidden="true" /> : null}
 
       {/* Main Section Header */}
-      <div className="border-b border-border/80 pb-3">
-        <p className="text-[11px] font-semibold tracking-[0.14em] text-brand uppercase">
-          Department Directory
-        </p>
-        <h2
-          id="faculty-information-heading"
-          className="mt-1 font-display text-[1.25rem] font-extrabold text-navy md:text-[1.375rem]"
-        >
-          Faculty Information
-        </h2>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Head of Department, teaching faculty members and technical staff of {departmentName}.
-        </p>
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between border-b border-border/80 pb-3">
+        <div>
+          <p className="text-[11px] font-semibold tracking-[0.14em] text-brand uppercase">
+            {departmentName} Directory
+          </p>
+          <h2
+            id={headingId}
+            className="mt-1 font-display text-[1.25rem] font-extrabold text-navy md:text-[1.375rem]"
+          >
+            Faculty & Staff Information
+          </h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Head of Department, teaching faculty members and technical staff of {departmentName}.
+          </p>
+        </div>
+        {showProgrammeLink ? (
+          <Link
+            to={departmentDetailPath(departmentSlug)}
+            className="link-cta mt-2 sm:mt-0 w-fit shrink-0 text-xs sm:text-sm"
+          >
+            <span>View Programme</span>
+            <ArrowRight className="size-3.5" aria-hidden="true" />
+          </Link>
+        ) : null}
       </div>
 
       {/* 1. Head of Department (HOD) Section */}
