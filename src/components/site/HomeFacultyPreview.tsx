@@ -17,6 +17,7 @@ interface FacultyPreviewItem {
   departmentSlug: string;
   experience?: string;
   specialization?: string;
+  profileImage?: string;
 }
 
 const FEATURED_FACULTY: readonly FacultyPreviewItem[] = [
@@ -27,6 +28,7 @@ const FEATURED_FACULTY: readonly FacultyPreviewItem[] = [
     departmentSlug: COMPUTER_ENGINEERING_FACULTY_STAFF.departmentSlug,
     experience: "7+ Years",
     specialization: "Operating Systems, Python, Networking & Software",
+    profileImage: COMPUTER_ENGINEERING_FACULTY_STAFF.hod.profileImage,
   },
   {
     name: OMCA_FACULTY_STAFF.hod.name,
@@ -35,6 +37,7 @@ const FEATURED_FACULTY: readonly FacultyPreviewItem[] = [
     departmentSlug: OMCA_FACULTY_STAFF.departmentSlug,
     experience: "22+ Years",
     specialization: "Stenography, Management & Modern Office Practices",
+    profileImage: OMCA_FACULTY_STAFF.hod.profileImage,
   },
   {
     name: FOOD_TECH_FACULTY_STAFF.hod.name,
@@ -43,6 +46,7 @@ const FEATURED_FACULTY: readonly FacultyPreviewItem[] = [
     departmentSlug: FOOD_TECH_FACULTY_STAFF.departmentSlug,
     experience: "Ph.D · 2+ Years",
     specialization: "Food Preservation, Quality Assurance & Processing",
+    profileImage: FOOD_TECH_FACULTY_STAFF.hod.profileImage,
   },
   {
     name: GARMENT_FACULTY_STAFF.hod.name,
@@ -51,6 +55,7 @@ const FEATURED_FACULTY: readonly FacultyPreviewItem[] = [
     departmentSlug: GARMENT_FACULTY_STAFF.departmentSlug,
     experience: "20+ Years",
     specialization: "Fashion Illustration, Pattern Making & Design",
+    profileImage: GARMENT_FACULTY_STAFF.hod.profileImage,
   },
   {
     name: TEXTILE_FACULTY_STAFF.hod.name,
@@ -59,6 +64,7 @@ const FEATURED_FACULTY: readonly FacultyPreviewItem[] = [
     departmentSlug: TEXTILE_FACULTY_STAFF.departmentSlug,
     experience: "Senior Faculty",
     specialization: "Weaving Mechanisms, Fabric Structure & Fibre Science",
+    profileImage: TEXTILE_FACULTY_STAFF.hod.profileImage,
   },
   {
     name: TRAVEL_TOURISM_FACULTY_STAFF.hod.name,
@@ -67,6 +73,7 @@ const FEATURED_FACULTY: readonly FacultyPreviewItem[] = [
     departmentSlug: TRAVEL_TOURISM_FACULTY_STAFF.departmentSlug,
     experience: "Senior Faculty",
     specialization: "Tour Operations, Travel Geography & Hospitality",
+    profileImage: TRAVEL_TOURISM_FACULTY_STAFF.hod.profileImage,
   },
 ];
 
@@ -106,7 +113,7 @@ export function HomeFacultyPreview() {
             to="/faculty"
             className="link-cta group shrink-0 rounded-md py-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"
           >
-            <span>View All Faculty & Staff</span>
+            <span>View More Faculty & Staff</span>
             <ArrowRight
               className="size-4 transition-transform duration-200 group-hover:translate-x-0.5"
               aria-hidden="true"
@@ -138,9 +145,23 @@ export function HomeFacultyPreview() {
                   </div>
 
                   <div className="mt-4 flex items-center gap-3.5">
-                    <div className="flex size-11 shrink-0 items-center justify-center rounded-xl border border-brand/20 bg-light-blue font-display text-sm font-extrabold text-brand">
-                      {initials}
-                    </div>
+                    {member.profileImage ? (
+                      <img
+                        src={member.profileImage}
+                        alt={member.name}
+                        width={44}
+                        height={44}
+                        className="size-11 shrink-0 rounded-xl object-cover border border-border"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <div
+                        className="flex size-11 shrink-0 items-center justify-center rounded-xl border border-brand/20 bg-light-blue font-display text-sm font-extrabold text-brand"
+                        aria-hidden="true"
+                      >
+                        {initials}
+                      </div>
+                    )}
                     <div className="min-w-0">
                       <h3 className="font-display text-base font-bold text-navy truncate">
                         {member.name}
@@ -197,7 +218,7 @@ export function HomeFacultyPreview() {
 
           <div className="flex w-full sm:w-auto items-center gap-2.5 shrink-0">
             <Link to="/faculty" className="btn-primary w-full sm:w-auto text-xs sm:text-sm">
-              <span>Explore Faculty Directory</span>
+              <span>Explore More Faculty & Staff</span>
               <ArrowRight className="size-4" aria-hidden="true" />
             </Link>
           </div>
