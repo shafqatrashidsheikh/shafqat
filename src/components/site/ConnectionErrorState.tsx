@@ -85,11 +85,11 @@ export function ConnectionErrorState({
             </p>
           ) : null}
 
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-            <button type="button" onClick={onRetry} className="connection-offline-try">
+          <div className="mt-6 flex w-full flex-col sm:flex-row items-center justify-center gap-2.5 sm:gap-3">
+            <button type="button" onClick={onRetry} className="connection-offline-try w-full sm:w-auto">
               {CONNECTION_ERROR_COPY.retry}
             </button>
-            <Link to="/" className="connection-offline-home">
+            <Link to="/" className="connection-offline-home w-full sm:w-auto text-center">
               {CONNECTION_ERROR_COPY.home}
             </Link>
           </div>

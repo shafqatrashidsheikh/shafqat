@@ -7,7 +7,7 @@ import type { DbExploreCard, DbPageSection, PageSectionsMap } from "@/lib/supaba
 export const EXPLORE_IMAGE_BY_KEY: Record<string, string> = {
   "campus-entrance": CAMPUS_IMAGES.entrance,
   "computer-lab": CAMPUS_IMAGES.computerLab,
-  "electrical-lab": CAMPUS_IMAGES.electricalLab,
+  "electrical-lab": CAMPUS_IMAGES.electronicsLabStudents,
   "electronics-lab-students": CAMPUS_IMAGES.electronicsLabStudents,
   "computer-lab-students": CAMPUS_IMAGES.computerLabStudents,
   "smart-classroom-students": CAMPUS_IMAGES.smartClassroomStudents,

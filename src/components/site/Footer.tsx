@@ -209,7 +209,7 @@ export function Footer({ institute = INSTITUTE, navLinks = [] }: FooterProps) {
                 <ul className="mt-3 space-y-2 text-sm">
                   {academicLinks.map((link) => (
                     <li key={link.label}>
-                      <Link to={link.to} className="footer-nav-link">
+                      <Link to={link.to as "/"} className="footer-nav-link">
                         {link.label}
                       </Link>
                     </li>
@@ -224,7 +224,7 @@ export function Footer({ institute = INSTITUTE, navLinks = [] }: FooterProps) {
                 <ul className="mt-3 space-y-2 text-sm">
                   {FOOTER_EXPLORE_LINKS.map((link) => (
                     <li key={link.label}>
-                      <Link to={link.to} className="footer-nav-link">
+                      <Link to={link.to as "/"} className="footer-nav-link">
                         {link.label}
                       </Link>
                     </li>
@@ -251,8 +251,8 @@ export function Footer({ institute = INSTITUTE, navLinks = [] }: FooterProps) {
       </div>
 
       <div className="border-t border-on-dark/10 bg-[color-mix(in_srgb,#000_22%,var(--deep-blue))]">
-        <div className="container-page flex flex-col gap-2 py-3.5 text-xs text-on-dark/65 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
-          <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1">
+        <div className="container-page flex flex-col gap-2.5 py-3.5 text-xs text-on-dark/75 sm:flex-row sm:items-center sm:justify-between sm:gap-4 pr-16 sm:pr-20">
+          <div className="flex min-w-0 flex-wrap items-center gap-x-3.5 gap-y-1">
             {mandatory.map((item) => (
               <Link key={item.label} to={item.to} className="transition-colors hover:text-on-dark">
                 {item.label}
@@ -260,8 +260,8 @@ export function Footer({ institute = INSTITUTE, navLinks = [] }: FooterProps) {
             ))}
           </div>
 
-          <p className="shrink-0 text-on-dark/70">
-            © {new Date().getFullYear()} {institute.shortName}. All rights reserved.
+          <p className="shrink-0 text-on-dark/80 font-medium">
+            © {new Date().getFullYear()} Government Polytechnic for Women, Srinagar. All Rights Reserved.
           </p>
         </div>
       </div>

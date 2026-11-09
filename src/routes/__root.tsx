@@ -7,6 +7,7 @@ import {
   useRouterState,
   HeadContent,
   Scripts,
+  type ErrorComponentProps,
 } from "@tanstack/react-router";
 import { useCallback, useEffect, useState, type ReactNode } from "react";
 
@@ -76,7 +77,7 @@ function NotFoundComponent() {
   );
 }
 
-function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
+function ErrorComponent({ error, reset }: ErrorComponentProps) {
   console.error(error);
   const router = useRouter();
   const networkLike = isNetworkLikeError(error);
@@ -100,11 +101,13 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
     return () => window.removeEventListener("online", onOnline);
   }, [networkLike, reset, router]);
 
+  const detailMessage = error instanceof Error ? error.message : error != null ? String(error) : undefined;
+
   return (
     <div className="min-w-0 overflow-x-hidden bg-background">
       <ConnectionErrorState
         onRetry={retry}
-        detail={import.meta.env.DEV ? error.message : undefined}
+        detail={import.meta.env.DEV ? detailMessage : undefined}
         {...(networkLike
           ? {}
           : {
@@ -216,7 +219,7 @@ function RootShell({ children }: { children: ReactNode }) {
         <style
           dangerouslySetInnerHTML={{
             __html:
-            "html:has(.story-loader) .site-shell>:not(.story-loader){visibility:hidden!important;pointer-events:none!important}html:has(.story-loader),html:has(.story-loader) body{overflow:hidden!important;background:var(--background,#eaf0fa)}html{scrollbar-gutter:stable}",
+            "html:has(.story-loader) .site-shell>:not(.story-loader){visibility:hidden!important;pointer-events:none!important}html:has(.story-loader),html:has(.story-loader) body{overflow:hidden!important;background:var(--background,#eaf0fa)}html,body{scrollbar-width:none!important;-ms-overflow-style:none!important}html::-webkit-scrollbar,body::-webkit-scrollbar,*::-webkit-scrollbar{display:none!important;width:0!important;height:0!important}",
           }}
         />
       </head>

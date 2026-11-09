@@ -205,7 +205,7 @@ export const cmaBootstrapCms = createServerFn({ method: "POST" })
           dept_label: prog.categoryLabel,
           duration: prog.duration,
           eligibility: prog.eligibility,
-          seats: prog.seats ?? "",
+          seats: ("seats" in prog ? String((prog as { seats?: unknown }).seats ?? "") : ""),
           stream: prog.stream,
           overview: prog.overview,
           sort_order: GPW_DEPARTMENTS.find((d) => d.slug === prog.slug)?.sortOrder ?? 0,
