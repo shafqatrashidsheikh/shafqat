@@ -1,16 +1,12 @@
 "use client";
 
 import { useNavigate, useRouterState } from "@tanstack/react-router";
-import { ChevronLeft } from "lucide-react";
 import { useEffect, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent } from "react";
 import { cn } from "@/lib/utils";
 
 const STORAGE_KEY = "gpw-back-btn-pos";
 const DRAG_THRESHOLD_PX = 5;
-const EDGE_PAD = 14;
-// Header is sticky at top (~70-80px tall). Floating button must NEVER go under the header or behind the logo!
-const HEADER_CLEARANCE_PX = 88;
-const BOTTOM_SAFE_PAD = 24;
+const EDGE_PAD = 12;
 
 type Pos = { x: number; y: number };
 
@@ -21,11 +17,10 @@ function isHomePath(pathname: string): boolean {
 
 function clampPos(x: number, y: number, width: number, height: number): Pos {
   const maxX = Math.max(EDGE_PAD, window.innerWidth - width - EDGE_PAD);
-  const minY = HEADER_CLEARANCE_PX;
-  const maxY = Math.max(minY, window.innerHeight - height - EDGE_PAD - BOTTOM_SAFE_PAD);
+  const maxY = Math.max(EDGE_PAD, window.innerHeight - height - EDGE_PAD);
   return {
     x: Math.min(maxX, Math.max(EDGE_PAD, x)),
-    y: Math.min(maxY, Math.max(minY, y)),
+    y: Math.min(maxY, Math.max(EDGE_PAD, y)),
   };
 }
 
@@ -50,18 +45,7 @@ function writeStoredPos(pos: Pos) {
 }
 
 function defaultPos(width: number, height: number): Pos {
-  const targetX = EDGE_PAD + 4;
-  const targetY = Math.max(HEADER_CLEARANCE_PX, window.innerHeight - height - 36);
-  return clampPos(targetX, targetY, width, height);
-}
-
-function sanitizePos(pos: Pos | null, width: number, height: number): Pos {
-  if (!pos) return defaultPos(width, height);
-  // If previously stuck behind the logo / header area, kick it out to safe defaultPos!
-  if (pos.y < HEADER_CLEARANCE_PX || (pos.x < 260 && pos.y < 120)) {
-    return defaultPos(width, height);
-  }
-  return clampPos(pos.x, pos.y, width, height);
+  return clampPos(EDGE_PAD + 4, window.innerHeight - height - EDGE_PAD - 4, width, height);
 }
 
 /**
@@ -85,13 +69,12 @@ export function SiteBackLink({ className }: { className?: string }) {
 
   useEffect(() => {
     setReady(true);
-    const approxW = 84;
+    const approxW = 72;
     const approxH = 40;
     const stored = readStoredPos();
-    const next = sanitizePos(stored, approxW, approxH);
+    const next = stored ? clampPos(stored.x, stored.y, approxW, approxH) : defaultPos(approxW, approxH);
     posRef.current = next;
     setPos(next);
-    writeStoredPos(next);
   }, []);
 
   useEffect(() => {
@@ -260,7 +243,6 @@ export function SiteBackLink({ className }: { className?: string }) {
       onPointerUp={endPointer}
       onPointerCancel={endPointer}
     >
-      <ChevronLeft className="size-3.5 shrink-0" aria-hidden="true" strokeWidth={2.5} />
       <span>Back</span>
     </button>
   );

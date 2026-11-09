@@ -38,7 +38,6 @@ import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as ApiJkboteAdmissionDatesRouteImport } from './routes/api/jkbote-admission-dates'
 import { Route as ApiJkboteAdmissionStatusRouteImport } from './routes/api/jkbote-admission-status'
 import { Route as ApiJkboteNoticesRouteImport } from './routes/api/jkbote-notices'
-import { Route as ApiLatestNoticesRouteImport } from './routes/api/latest-notices'
 import { Route as AuthCallbackRouteImport } from './routes/auth/callback'
 import { Route as PortalIndexRouteImport } from './routes/portal/index'
 import { Route as StudentIndexRouteImport } from './routes/student/index'
@@ -197,11 +196,6 @@ const ApiJkboteNoticesRoute = ApiJkboteNoticesRouteImport.update({
   path: '/api/jkbote-notices',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiLatestNoticesRoute = ApiLatestNoticesRouteImport.update({
-  id: '/api/latest-notices',
-  path: '/api/latest-notices',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AuthCallbackRoute = AuthCallbackRouteImport.update({
   id: '/auth/callback',
   path: '/auth/callback',
@@ -288,7 +282,6 @@ export interface FileRoutesByFullPath {
   '/api/jkbote-admission-dates': typeof ApiJkboteAdmissionDatesRoute
   '/api/jkbote-admission-status': typeof ApiJkboteAdmissionStatusRoute
   '/api/jkbote-notices': typeof ApiJkboteNoticesRoute
-  '/api/latest-notices': typeof ApiLatestNoticesRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/student/onboarding': typeof StudentOnboardingRoute
   '/student/pending': typeof StudentPendingRoute
@@ -331,7 +324,6 @@ export interface FileRoutesByTo {
   '/api/jkbote-admission-dates': typeof ApiJkboteAdmissionDatesRoute
   '/api/jkbote-admission-status': typeof ApiJkboteAdmissionStatusRoute
   '/api/jkbote-notices': typeof ApiJkboteNoticesRoute
-  '/api/latest-notices': typeof ApiLatestNoticesRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/student/onboarding': typeof StudentOnboardingRoute
   '/student/pending': typeof StudentPendingRoute
@@ -375,7 +367,6 @@ export interface FileRoutesById {
   '/api/jkbote-admission-dates': typeof ApiJkboteAdmissionDatesRoute
   '/api/jkbote-admission-status': typeof ApiJkboteAdmissionStatusRoute
   '/api/jkbote-notices': typeof ApiJkboteNoticesRoute
-  '/api/latest-notices': typeof ApiLatestNoticesRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/student/onboarding': typeof StudentOnboardingRoute
   '/student/pending': typeof StudentPendingRoute
@@ -420,7 +411,6 @@ export interface FileRouteTypes {
     | '/api/jkbote-admission-dates'
     | '/api/jkbote-admission-status'
     | '/api/jkbote-notices'
-    | '/api/latest-notices'
     | '/auth/callback'
     | '/student/onboarding'
     | '/student/pending'
@@ -463,7 +453,6 @@ export interface FileRouteTypes {
     | '/api/jkbote-admission-dates'
     | '/api/jkbote-admission-status'
     | '/api/jkbote-notices'
-    | '/api/latest-notices'
     | '/auth/callback'
     | '/student/onboarding'
     | '/student/pending'
@@ -506,7 +495,6 @@ export interface FileRouteTypes {
     | '/api/jkbote-admission-dates'
     | '/api/jkbote-admission-status'
     | '/api/jkbote-notices'
-    | '/api/latest-notices'
     | '/auth/callback'
     | '/student/onboarding'
     | '/student/pending'
@@ -550,7 +538,6 @@ export interface RootRouteChildren {
   ApiJkboteAdmissionDatesRoute: typeof ApiJkboteAdmissionDatesRoute
   ApiJkboteAdmissionStatusRoute: typeof ApiJkboteAdmissionStatusRoute
   ApiJkboteNoticesRoute: typeof ApiJkboteNoticesRoute
-  ApiLatestNoticesRoute: typeof ApiLatestNoticesRoute
   AuthCallbackRoute: typeof AuthCallbackRoute
   StudentOnboardingRoute: typeof StudentOnboardingRoute
   StudentPendingRoute: typeof StudentPendingRoute
@@ -770,13 +757,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiJkboteNoticesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/latest-notices': {
-      id: '/api/latest-notices'
-      path: '/api/latest-notices'
-      fullPath: '/api/latest-notices'
-      preLoaderRoute: typeof ApiLatestNoticesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/auth/callback': {
       id: '/auth/callback'
       path: '/auth/callback'
@@ -886,7 +866,6 @@ const rootRouteChildren: RootRouteChildren = {
   ApiJkboteAdmissionDatesRoute: ApiJkboteAdmissionDatesRoute,
   ApiJkboteAdmissionStatusRoute: ApiJkboteAdmissionStatusRoute,
   ApiJkboteNoticesRoute: ApiJkboteNoticesRoute,
-  ApiLatestNoticesRoute: ApiLatestNoticesRoute,
   AuthCallbackRoute: AuthCallbackRoute,
   StudentOnboardingRoute: StudentOnboardingRoute,
   StudentPendingRoute: StudentPendingRoute,

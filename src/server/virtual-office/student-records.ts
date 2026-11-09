@@ -41,7 +41,7 @@ export const studentGetAcademicRecord = createServerFn({ method: "GET" })
     }
 
     const departmentId = ctx.profile.department_id;
-    const semester = ("semester" in ctx.profile ? (ctx.profile as { semester?: unknown }).semester : null) ?? null;
+    const semester = ctx.profile.semester ?? null;
 
     let subjects: StudentAcademicRecord["subjects"] = [];
     if (departmentId) {

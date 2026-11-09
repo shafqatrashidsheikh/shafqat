@@ -165,9 +165,8 @@
   html {
     width: 100%;
     max-width: 100%;
-    overflow-x: clip;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
+    overflow-x: hidden;
+    height: 100%;
   }
 
   body {
@@ -178,9 +177,7 @@
     min-height: 100svh;
     display: flex;
     flex-direction: column;
-    overflow-x: clip;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
+    overflow-x: hidden;
     background-color: var(--background);
     color: var(--foreground);
     font-family: var(--font-sans);
@@ -283,7 +280,7 @@
   /* Sized frames (aspect boxes / fill parents) keep explicit height */
   img.h-full,
   img.size-full,
-  .size-full>img,
+  .size-full > img,
   [class*="aspect-"] img,
   .college-logo-img {
     height: 100%;
@@ -323,19 +320,38 @@
     color: var(--deep-blue);
   }
 
-  /* Hide scrollbars across all browsers — seamless clean edge */
-  html,
-  body {
-    scrollbar-width: none !important;
-    -ms-overflow-style: none !important;
+  /* Clean professional scrollbars — hide arrows, prevent side gap */
+  html {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) var(--surface-white);
   }
 
-  html::-webkit-scrollbar,
-  body::-webkit-scrollbar,
-  *::-webkit-scrollbar {
+  html::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  html::-webkit-scrollbar-button {
+    display: none !important;
     width: 0 !important;
     height: 0 !important;
-    display: none !important;
+  }
+
+  html::-webkit-scrollbar-track {
+    background: var(--surface-white);
+  }
+
+  html::-webkit-scrollbar-thumb {
+    background-color: var(--border);
+    border-radius: 9999px;
+    border: 2px solid var(--surface-white);
+  }
+
+  html::-webkit-scrollbar-thumb:hover {
+    background-color: var(--primary-blue);
+  }
+
+  html::-webkit-scrollbar-corner {
+    background: var(--surface-white);
   }
 }
 
@@ -434,11 +450,9 @@
 @utility section-y {
   padding-block: clamp(2.5rem, 5vw, 3.5rem);
   background-color: var(--background);
-
   @media (min-width: 768px) {
     padding-block: clamp(3rem, 5vw, 4.5rem);
   }
-
   @media (min-width: 1024px) {
     padding-block: 5.5rem;
   }
@@ -485,7 +499,6 @@
   transition:
     background-color var(--transition-smooth),
     transform 180ms cubic-bezier(0.22, 0.61, 0.36, 1);
-
   &:active {
     transform: scale(0.985);
   }
@@ -510,7 +523,6 @@
     background-color var(--transition-smooth),
     color var(--transition-smooth),
     transform 180ms cubic-bezier(0.22, 0.61, 0.36, 1);
-
   &:active {
     transform: scale(0.985);
   }
@@ -526,15 +538,12 @@
   transition:
     color var(--transition-smooth),
     transform 180ms cubic-bezier(0.22, 0.61, 0.36, 1);
-
   &:hover {
     color: var(--deep-blue);
   }
-
   &:hover svg {
     transform: translateX(2px);
   }
-
   & svg {
     transition: transform 180ms cubic-bezier(0.22, 0.61, 0.36, 1);
   }
@@ -550,21 +559,17 @@
   line-height: 1.2;
   color: rgb(23 54 93 / 0.72);
   transition: color var(--transition-fast);
-
   &:hover,
   &:focus-visible {
     color: var(--deep-blue);
   }
-
   & svg {
     transition: transform var(--transition-fast);
   }
-
   &:hover svg,
   &:focus-visible svg {
     transform: translateX(-3px);
   }
-
   &:focus-visible {
     outline: none;
     border-radius: 0.25rem;
@@ -572,18 +577,14 @@
       0 0 0 2px var(--background),
       0 0 0 4px var(--primary-blue);
   }
-
   @media (max-width: 639px) {
     font-size: 0.75rem;
   }
-
   @media (prefers-reduced-motion: reduce) {
     transition: none;
-
     & svg {
       transition: none;
     }
-
     &:hover svg,
     &:focus-visible svg {
       transform: none;
@@ -593,7 +594,6 @@
 
 @utility hero-nav-gap {
   padding-top: clamp(0.5rem, 2vw, 0.75rem);
-
   @media (min-width: 768px) {
     padding-top: 0.5rem;
   }
@@ -601,7 +601,6 @@
 
 @utility link-underline {
   position: relative;
-
   &::after {
     content: "";
     position: absolute;
@@ -612,7 +611,6 @@
     background: currentColor;
     transition: width var(--transition-smooth);
   }
-
   &:hover::after {
     width: 100%;
   }
@@ -665,7 +663,6 @@ html.js-motion.site-boot-done footer [data-motion="in"][data-motion-dir="scale"]
 }
 
 @media (max-width: 767px) {
-
   html.js-motion.site-boot-done main [data-motion="in"],
   html.js-motion.site-boot-done footer [data-motion="in"] {
     transform: translate3d(0, 14px, 0);
@@ -685,7 +682,6 @@ html.js-motion.site-boot-done footer [data-motion="in"][data-motion-dir="scale"]
       opacity: 0;
       transform: translateY(8px);
     }
-
     to {
       opacity: 1;
       transform: none;
@@ -693,7 +689,7 @@ html.js-motion.site-boot-done footer [data-motion="in"][data-motion-dir="scale"]
   }
 }
 
-html.js-motion.site-boot-done main .announcement-scroll>li[data-motion="in"] {
+html.js-motion.site-boot-done main .announcement-scroll > li[data-motion="in"] {
   transform: translate3d(0, 12px, 0);
 }
 
@@ -717,7 +713,6 @@ html.js-motion footer nav a:hover {
     opacity: 0;
     transform: translateY(18px);
   }
-
   to {
     opacity: 1;
     transform: none;
@@ -729,7 +724,6 @@ html.js-motion footer nav a:hover {
     opacity: 0;
     transform: scale(0.98);
   }
-
   to {
     opacity: 1;
     transform: none;
@@ -740,7 +734,6 @@ html.js-motion footer nav a:hover {
   from {
     transform: translate3d(0, 0, 0);
   }
-
   to {
     transform: translate3d(-50%, 0, 0);
   }
@@ -823,59 +816,8 @@ html.js-motion footer nav a:hover {
   from {
     transform: translate3d(0, 0, 0);
   }
-
   to {
     transform: translate3d(-50%, 0, 0);
-  }
-}
-
-/* Hero campus images — continuous horizontal scrolling marquee */
-.hero-image-marquee-viewport {
-  width: 100%;
-  max-width: 100%;
-  min-width: 0;
-  contain: inline-size;
-  overflow: hidden;
-}
-
-.hero-image-marquee-track {
-  display: flex;
-  width: max-content;
-  max-width: none;
-  flex-wrap: nowrap;
-  animation: hero-images-marquee-x 32s linear infinite;
-  will-change: transform;
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .hero-image-marquee-viewport:hover .hero-image-marquee-track {
-    animation-play-state: paused;
-  }
-}
-
-@media (hover: none) {
-  .hero-image-marquee-viewport:active .hero-image-marquee-track {
-    animation-play-state: paused;
-  }
-}
-
-.hero-image-marquee-viewport:focus-within .hero-image-marquee-track {
-  animation-play-state: paused;
-}
-
-@keyframes hero-images-marquee-x {
-  from {
-    transform: translate3d(0, 0, 0);
-  }
-
-  to {
-    transform: translate3d(-50%, 0, 0);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .hero-image-marquee-track {
-    animation: none !important;
   }
 }
 
@@ -930,53 +872,6 @@ html.js-motion footer nav a:hover {
   background: linear-gradient(to top, var(--color-surface-white, #fff) 15%, transparent);
 }
 
-.hero-notifications-viewport::before,
-.hero-notifications-viewport::after,
-.hero-notifications-viewport.is-animating::before,
-.hero-notifications-viewport.is-animating::after {
-  display: none !important;
-  content: none !important;
-  height: 0 !important;
-  opacity: 0 !important;
-}
-
-.hero-notifications-viewport {
-  max-height: none !important;
-  overflow-y: auto !important;
-  scrollbar-width: none !important;
-  -ms-overflow-style: none !important;
-  touch-action: pan-y;
-  overscroll-behavior-y: contain;
-  -webkit-mask-image: linear-gradient(to bottom,
-      transparent 0%,
-      black 24px,
-      black calc(100% - 24px),
-      transparent 100%);
-  mask-image: linear-gradient(to bottom,
-      transparent 0%,
-      black 24px,
-      black calc(100% - 24px),
-      transparent 100%);
-}
-
-.hero-notifications-viewport::-webkit-scrollbar {
-  display: none !important;
-  width: 0 !important;
-  height: 0 !important;
-}
-
-.hero-notifications-viewport .announcement-vertical-track {
-  animation: none !important;
-  transform: none !important;
-  will-change: auto !important;
-}
-
-/* Pause scrolling on hover so users can comfortably read or click notifications */
-.hero-notifications-viewport:hover .announcement-vertical-track,
-.announcement-vertical-viewport:hover .announcement-vertical-track {
-  animation-play-state: paused !important;
-}
-
 .announcement-vertical-track {
   animation: announcement-vertical var(--announcement-vertical-duration, 48s) linear infinite;
   will-change: transform;
@@ -988,7 +883,7 @@ html.js-motion footer nav a:hover {
   }
 }
 
-.announcement-vertical-viewport:has(:focus-visible) .announcement-vertical-track {
+.announcement-vertical-viewport:focus-within .announcement-vertical-track {
   animation-play-state: paused;
 }
 
@@ -996,7 +891,6 @@ html.js-motion footer nav a:hover {
   from {
     transform: translate3d(0, 0, 0);
   }
-
   to {
     transform: translate3d(0, -50%, 0);
   }
@@ -1061,7 +955,6 @@ html.js-motion footer nav a:hover {
   from {
     transform: translate3d(0, 0, 0);
   }
-
   to {
     transform: translate3d(0, -50%, 0);
   }
@@ -1126,7 +1019,6 @@ html.js-motion footer nav a:hover {
   from {
     transform: translate3d(0, 0, 0);
   }
-
   to {
     transform: translate3d(0, -50%, 0);
   }
@@ -1137,7 +1029,6 @@ html.js-motion footer nav a:hover {
     opacity: 0;
     transform: translate3d(-50%, -50%, 0) scale(0.96);
   }
-
   to {
     opacity: 1;
     transform: translate3d(-50%, -50%, 0) scale(1);
@@ -1149,7 +1040,6 @@ html.js-motion footer nav a:hover {
     opacity: 1;
     transform: translate3d(-50%, -50%, 0) scale(1);
   }
-
   to {
     opacity: 0;
     transform: translate3d(-50%, -50%, 0) scale(0.97);
@@ -1161,7 +1051,6 @@ html.js-motion footer nav a:hover {
     opacity: 0;
     transform: translate3d(-50%, calc(-50% + 14px), 0) scale(0.98);
   }
-
   to {
     opacity: 1;
     transform: translate3d(-50%, -50%, 0) scale(1);
@@ -1173,7 +1062,6 @@ html.js-motion footer nav a:hover {
     opacity: 1;
     transform: translate3d(-50%, -50%, 0) scale(1);
   }
-
   to {
     opacity: 0;
     transform: translate3d(-50%, calc(-50% - 10px), 0) scale(0.98);
@@ -1185,7 +1073,6 @@ html.js-motion footer nav a:hover {
     opacity: 0;
     transform: translate3d(-50%, -50%, 0) scale(0.96);
   }
-
   to {
     opacity: 1;
     transform: translate3d(-50%, -50%, 0) scale(1);
@@ -1197,7 +1084,6 @@ html.js-motion footer nav a:hover {
     opacity: 0;
     transform: translate3d(-50%, -50%, 0);
   }
-
   to {
     opacity: 1;
     transform: translate3d(-50%, -50%, 0);
@@ -1209,7 +1095,6 @@ html.js-motion footer nav a:hover {
     opacity: 0;
     transform: translate3d(0, 6px, 0);
   }
-
   to {
     opacity: 1;
     transform: translate3d(0, 0, 0);
@@ -1220,7 +1105,6 @@ html.js-motion footer nav a:hover {
   from {
     opacity: 0;
   }
-
   to {
     opacity: 1;
   }
@@ -1265,9 +1149,8 @@ html.js-motion footer nav a:hover {
 
 /* Cursor hover — soft zoom / pop (fine pointers only; header crest stays clipped) */
 @media (hover: hover) and (pointer: fine) {
-
-  /* Logo popup occurs ONLY when hovering directly on the logo/seal, never when hovering on the college name */
-  .college-logo-wrap:not(.college-logo-wrap--static):hover {
+  .college-logo-wrap:not(.college-logo-wrap--static):hover,
+  a:is(:hover, :focus-visible) .college-logo-wrap:not(.college-logo-wrap--static) {
     z-index: 5;
     transform: scale(1.06);
     box-shadow:
@@ -1275,13 +1158,15 @@ html.js-motion footer nav a:hover {
       0 10px 24px color-mix(in srgb, var(--deep-blue) 28%, transparent);
   }
 
-  .header-brand-seal .college-logo-wrap:not(.college-logo-wrap--static):hover {
+  .header-brand-seal .college-logo-wrap:not(.college-logo-wrap--static):hover,
+  .header-brand-seal a:is(:hover, :focus-visible) .college-logo-wrap:not(.college-logo-wrap--static),
+  a.header-brand-seal:is(:hover, :focus-visible) .college-logo-wrap:not(.college-logo-wrap--static) {
     transform: scale(1.03);
     box-shadow: 0 0 0 1.5px color-mix(in srgb, var(--primary-blue) 32%, transparent);
   }
 
   .college-logo-wrap:not(.college-logo-wrap--static):hover .college-logo-img,
-  .header-brand-seal .college-logo-wrap:not(.college-logo-wrap--static):hover .college-logo-img {
+  a:is(:hover, :focus-visible) .college-logo-wrap:not(.college-logo-wrap--static) .college-logo-img {
     transform: scale(1.03);
   }
 
@@ -1291,7 +1176,6 @@ html.js-motion footer nav a:hover {
 }
 
 @media (prefers-reduced-motion: reduce) {
-
   .college-logo-wrap,
   .college-logo-img {
     transition: none;
@@ -1306,6 +1190,10 @@ html.js-motion footer nav a:hover {
 }
 
 /* ——— Institutional GPWS preloader ——— */
+html {
+  scrollbar-gutter: stable;
+}
+
 html.story-loader-lock,
 html.story-loader-lock body,
 html:has(.story-loader),
@@ -1325,8 +1213,8 @@ html:has(.story-loader)::-webkit-scrollbar {
  * Keep the real site covered until the loader unmounts, then briefly while
  * ScrollReveal arms the first entrance wave (avoids blank opacity-0 flash).
  */
-html:has(.story-loader) .site-shell> :not(.story-loader),
-html.site-arming .site-shell> :not(.story-loader) {
+html:has(.story-loader) .site-shell > :not(.story-loader),
+html.site-arming .site-shell > :not(.story-loader) {
   visibility: hidden !important;
   pointer-events: none !important;
 }
@@ -1563,7 +1451,7 @@ html.site-arming .site-shell> :not(.story-loader) {
   z-index: 1;
 }
 
-.admissions-timeline__item>div {
+.admissions-timeline__item > div {
   min-width: 0;
 }
 
@@ -1580,7 +1468,7 @@ html.site-arming .site-shell> :not(.story-loader) {
   pointer-events: none;
 }
 
-.gpw-assistant-root>* {
+.gpw-assistant-root > * {
   pointer-events: auto;
 }
 
@@ -1843,29 +1731,24 @@ html.site-arming .site-shell> :not(.story-loader) {
   animation-delay: 0ms;
   height: 45%;
 }
-
 .gpw-composer-wave[data-active="true"] i:nth-child(2) {
   animation-delay: 120ms;
   height: 85%;
 }
-
 .gpw-composer-wave[data-active="true"] i:nth-child(3) {
   animation-delay: 240ms;
   height: 60%;
 }
-
 .gpw-composer-wave[data-active="true"] i:nth-child(4) {
   animation-delay: 360ms;
   height: 95%;
 }
 
 @keyframes gpw-composer-wave {
-
   0%,
   100% {
     transform: scaleY(0.45);
   }
-
   50% {
     transform: scaleY(1);
   }
@@ -2346,12 +2229,10 @@ html.site-arming .site-shell> :not(.story-loader) {
 .gpw-live-pulse[data-state="idle"] i:nth-child(5) {
   height: 0.3rem;
 }
-
 .gpw-live-pulse[data-state="idle"] i:nth-child(2),
 .gpw-live-pulse[data-state="idle"] i:nth-child(4) {
   height: 0.5rem;
 }
-
 .gpw-live-pulse[data-state="idle"] i:nth-child(3) {
   height: 0.7rem;
 }
@@ -2366,17 +2247,14 @@ html.site-arming .site-shell> :not(.story-loader) {
 .gpw-live-pulse[data-state="speaking"] i:nth-child(2) {
   animation-delay: 0.08s;
 }
-
 .gpw-live-pulse[data-state="listening"] i:nth-child(3),
 .gpw-live-pulse[data-state="speaking"] i:nth-child(3) {
   animation-delay: 0.16s;
 }
-
 .gpw-live-pulse[data-state="listening"] i:nth-child(4),
 .gpw-live-pulse[data-state="speaking"] i:nth-child(4) {
   animation-delay: 0.24s;
 }
-
 .gpw-live-pulse[data-state="listening"] i:nth-child(5),
 .gpw-live-pulse[data-state="speaking"] i:nth-child(5) {
   animation-delay: 0.32s;
@@ -2388,12 +2266,10 @@ html.site-arming .site-shell> :not(.story-loader) {
 }
 
 @keyframes gpw-live-bar {
-
   0%,
   100% {
     transform: scaleY(0.45);
   }
-
   50% {
     transform: scaleY(1.35);
   }
@@ -2406,12 +2282,10 @@ html.site-arming .site-shell> :not(.story-loader) {
 }
 
 @keyframes gpw-assistant-mic-pulse {
-
   0%,
   100% {
     box-shadow: 0 0 0 0 color-mix(in srgb, var(--primary-blue) 40%, transparent);
   }
-
   50% {
     box-shadow: 0 0 0 5px color-mix(in srgb, var(--primary-blue) 0%, transparent);
   }
@@ -2441,26 +2315,22 @@ html.site-arming .site-shell> :not(.story-loader) {
 }
 
 @keyframes gpw-assistant-float {
-
   0%,
   100% {
     transform: translateY(0);
   }
-
   50% {
     transform: translateY(-3px);
   }
 }
 
 @keyframes gpw-assistant-typing {
-
   0%,
   80%,
   100% {
     opacity: 0.35;
     transform: translateY(0);
   }
-
   40% {
     opacity: 1;
     transform: translateY(-2px);
@@ -2530,7 +2400,6 @@ html.site-arming .site-shell> :not(.story-loader) {
     opacity: 0;
     transform: translate3d(0, 6px, 0);
   }
-
   to {
     opacity: 1;
     transform: translate3d(0, 0, 0);
@@ -2705,9 +2574,9 @@ html.site-arming .site-shell> :not(.story-loader) {
 
 .header-brand-seal-orbit-text {
   fill: var(--deep-blue);
-  font-size: 6.25px;
+  font-size: 7.25px;
   font-weight: 650;
-  letter-spacing: 0.09em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
 }
 
@@ -2723,66 +2592,11 @@ html.site-arming .site-shell> :not(.story-loader) {
   }
 }
 
-/* Underline hover for header navigation links (clean underline without background box) */
-.nav-link-underline {
-  position: relative !important;
-  background-color: transparent !important;
-  background: transparent !important;
-}
-
-.nav-link-underline::after {
-  content: "";
-  position: absolute;
-  bottom: 1px;
-  left: 0.75rem;
-  right: 0.75rem;
-  height: 1.5px;
-  background-color: var(--primary-blue, #2457a6);
-  transform: scaleX(0);
-  transform-origin: center;
-  transition: transform 200ms cubic-bezier(0, 0, 0.2, 1);
-  border-radius: 1px;
-  pointer-events: none;
-}
-
-.nav-link-underline:hover::after,
-.nav-link-underline:focus-visible::after,
-.nav-link-underline[data-open="true"]::after,
-.nav-link-underline[data-active="true"]::after {
-  transform: scaleX(1);
-}
-
-/* Center dropdown card perfectly under each header navigation button */
-.nav-dropdown-center {
-  position: absolute !important;
-  top: calc(100% + 0.35rem) !important;
-  left: 50% !important;
-  right: auto !important;
-  transform: translate(-50%, 0);
-  margin-left: 0 !important;
-  margin-right: 0 !important;
-  transition: opacity 200ms ease-out, transform 200ms ease-out, visibility 200ms ease-out;
-}
-
-.nav-dropdown-center[data-state="closed"] {
-  transform: translate(-50%, -6px) !important;
-  opacity: 0 !important;
-  visibility: hidden !important;
-  pointer-events: none !important;
-}
-
-.nav-dropdown-center[data-state="open"] {
-  transform: translate(-50%, 0) !important;
-  opacity: 1 !important;
-  visibility: visible !important;
-  pointer-events: auto !important;
-}
-
 /* ——— Responsive safeguards ——— */
 #main,
 .site-shell,
 header.site-header,
-.site-header>div,
+.site-header > div,
 footer,
 .site-footer {
   min-width: 0;
@@ -2796,14 +2610,13 @@ footer,
 
 /* Mobile: clip horizontal bleed. Desktop: allow nav dropdowns to paint outside. */
 header.site-header,
-.site-header>div {
+.site-header > div {
   overflow-x: clip;
 }
 
 @media (min-width: 1280px) {
-
   header.site-header,
-  .site-header>div {
+  .site-header > div {
     overflow: visible;
   }
 }
@@ -2863,7 +2676,7 @@ header.site-header,
 
 .site-back-btn--float {
   position: fixed;
-  z-index: 65;
+  z-index: 55;
   touch-action: none;
   user-select: none;
   -webkit-user-select: none;
@@ -2953,13 +2766,11 @@ header.site-header,
 }
 
 @keyframes connection-offline-breathe {
-
   0%,
   100% {
     opacity: 0.45;
     transform: scale(0.96);
   }
-
   50% {
     opacity: 1;
     transform: scale(1);
@@ -2967,61 +2778,51 @@ header.site-header,
 }
 
 @keyframes connection-offline-float {
-
   0%,
   100% {
     transform: translateY(0);
   }
-
   50% {
     transform: translateY(-8px);
   }
 }
 
 @keyframes connection-offline-bob {
-
   0%,
   100% {
     transform: translateY(0) rotate(-2deg);
   }
-
   50% {
     transform: translateY(-6px) rotate(2deg);
   }
 }
 
 @keyframes connection-offline-ghost {
-
   0%,
   100% {
     transform: translateY(0);
   }
-
   50% {
     transform: translateY(-7px);
   }
 }
 
 @keyframes connection-offline-bubble {
-
   0%,
   100% {
     transform: translateY(0) scale(1);
   }
-
   50% {
     transform: translateY(-4px) scale(1.03);
   }
 }
 
 @keyframes connection-offline-pulse {
-
   0%,
   100% {
     opacity: 1;
     box-shadow: 0 0 0 0 rgba(197, 34, 31, 0.45);
   }
-
   50% {
     opacity: 0.65;
     box-shadow: 0 0 0 6px rgba(197, 34, 31, 0);
@@ -3131,12 +2932,9 @@ header.site-header,
   display: block;
   cursor: pointer;
   user-select: none;
-  touch-action: none;
-  max-width: 100%;
 }
 
 @media (prefers-reduced-motion: reduce) {
-
   .connection-offline-ghost,
   .connection-offline-float-a,
   .connection-offline-float-b,
@@ -3202,7 +3000,6 @@ header.site-header,
 
 /* ——— Desktop-only hover micro-interactions ——— */
 @media (hover: hover) and (pointer: fine) {
-
   .card-premium:hover,
   html.js-motion.site-boot-done main [data-motion="in"].motion-visible.card-premium:hover {
     transform: translateY(-4px);
@@ -3235,7 +3032,6 @@ header.site-header,
 }
 
 @media (prefers-reduced-motion: reduce) {
-
   html.js-motion main [data-motion="in"],
   html.js-motion footer [data-motion="in"],
   html.js-motion.site-boot-done main [data-motion="in"],

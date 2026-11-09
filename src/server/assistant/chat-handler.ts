@@ -255,7 +255,7 @@ export async function handleChatPost(request: Request): Promise<Response> {
               return null;
             });
       return Response.json({
-        content: resolveCapabilityReply(capability, language, liveForCap as any),
+        content: resolveCapabilityReply(capability, language, liveForCap),
       });
     }
     return Response.json({
@@ -307,11 +307,11 @@ export async function handleChatPost(request: Request): Promise<Response> {
 
   const directAnswerHint = image
     ? "The student attached an image. Describe only what is visible, relate it to GPW Srinagar when relevant, and do not invent unpublished institute facts from the photo."
-    : resultIntent && Boolean(liveForResult)
+    : resultIntent && liveForResult
       ? buildResultSystemHint(
           resultIntent,
-          (liveForResult as any).allNoticesForMatching,
-          (liveForResult as any).fetchedAt,
+          liveForResult.allNoticesForMatching,
+          liveForResult.fetchedAt,
         )
       : hostelHint
         ? hostelHint

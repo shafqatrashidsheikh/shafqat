@@ -85,12 +85,12 @@ export function PortalDashboard({
 
       if (canApprove && !missingDepartment) {
         const rows = await portalListPendingStudents({ data: { accessToken } });
-        setPending(rows as unknown as PendingStudent[]);
+        setPending(rows as PendingStudent[]);
       }
 
       if (isPrincipal) {
         const hodRows = await portalListHods({ data: { accessToken } });
-        setHods(hodRows as unknown as PortalUser[]);
+        setHods(hodRows as PortalUser[]);
       }
     } catch (err) {
       setError(portalErrorMessage(err));

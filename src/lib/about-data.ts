@@ -6,6 +6,9 @@
 export const ABOUT_INTRO =
   "Established in 1986, Government Polytechnic for Women, Srinagar is a government technical institution dedicated to women’s technical education and skill development in Jammu & Kashmir.";
 
+export const ABOUT_HISTORY_INTRO =
+  "Established in 1986, Government Polytechnic for Women, Srinagar stands as a pioneering institution in Jammu & Kashmir, dedicated to advancing women’s technical education, practical competence, and socioeconomic empowerment.";
+
 export type AboutTimelineItem = {
   label: string;
   title: string;
@@ -15,23 +18,75 @@ export type AboutTimelineItem = {
 export const ABOUT_HISTORY_TIMELINE: AboutTimelineItem[] = [
   {
     label: "1986",
-    title: "Foundation",
-    body: "Government Polytechnic for Women, Srinagar established.",
+    title: "Foundation & Pioneer Establishment",
+    body: "Government Polytechnic for Women, Srinagar was established in 1986 at Bemina, Srinagar, as the first dedicated government technical institute in Jammu & Kashmir exclusively for women, aimed at fostering technical competence and self-reliance.",
   },
   {
     label: "Early years",
-    title: "Women-focused technical education",
-    body: "The institution began with women-focused technical and vocational programmes and developed as a dedicated technical institution.",
+    title: "Women-Focused Technical Education",
+    body: "The institution commenced with specialized diploma and technician programmes designed to introduce women to emerging engineering and applied vocational fields, supported by dedicated laboratories and workshops.",
   },
   {
-    label: "Institutional development",
-    title: "Tech Edu-III",
-    body: "Tech Edu-III, supported through a World Bank-assisted project, contributed to improvements in infrastructure, curriculum development, staff development, quality improvement and institutional networking.",
+    label: "Institutional growth",
+    title: "World Bank Assisted Tech Edu-III Project",
+    body: "Under the World Bank-assisted Technical Education Project (Tech Edu-III), the polytechnic underwent major institutional strengthening, modernizing laboratories, updating curricula, enhancing staff development, and upgrading institutional networking.",
+  },
+  {
+    label: "Milestones & recognition",
+    title: "Regional Recognition & Modernization",
+    body: "The institute was twice honoured with the prestigious Best Polytechnic Award by NITTTR Chandigarh (in 2005 and 2013) for excellence in North India, and became the first polytechnic in the Union Territory of J&K to establish the Institutional Student Management System (i-SMS).",
   },
   {
     label: "Today",
-    title: "Eight diploma programmes",
-    body: "The institute offers 8 three-year diploma programmes across engineering, technology, healthcare, food, textiles, garments, office applications and travel\u00A0&\u00A0tourism.",
+    title: "Eight Diploma Programmes & Innovation",
+    body: "Today, GPW Srinagar offers 8 three-year AICTE-approved diploma programmes across engineering, healthcare, applied sciences, design, and management, complemented by an active incubation centre and strategic industry partnerships.",
+  },
+];
+
+export const ABOUT_MISSION_INTRO =
+  "To provide high-quality, need-based technical education, practical skills, and holistic professional development that prepare women for leadership, career excellence, and lifelong learning.";
+
+export const ABOUT_MISSION_ITEMS: AboutTimelineItem[] = [
+  {
+    label: "Quality education",
+    title: "Need-Based Technical Education",
+    body: "Delivering flexible, industry-relevant technician and diploma education rooted in academic rigor, modern curricula, and continuous educational quality improvement.",
+  },
+  {
+    label: "Practical mastery",
+    title: "Hands-On Practical & Laboratory Skills",
+    body: "Emphasizing intensive practical training, workshop practice, and laboratory workflows across modern facilities to ensure students acquire real-world technical competence.",
+  },
+  {
+    label: "Industry readiness",
+    title: "Industry-Institute Linkages & Exposure",
+    body: "Fostering active collaborations with industrial, technical, and healthcare partners through internships, industrial visits, expert lectures, and guided mentoring.",
+  },
+  {
+    label: "Holistic growth",
+    title: "Professional Ethics & Career Development",
+    body: "Nurturing discipline, professional ethics, communication skills, and self-confidence, preparing women graduates for successful careers, entrepreneurship, and higher education.",
+  },
+];
+
+export const ABOUT_VISION_INTRO =
+  "To empower women through transformative technical education, innovation, and career opportunities, nurturing confident professionals who contribute meaningfully to industry, society, and the nation.";
+
+export const ABOUT_VISION_ITEMS: AboutTimelineItem[] = [
+  {
+    label: "Women empowerment",
+    title: "Empowering Women Through Technology",
+    body: "Nurturing empowered, self-reliant women professionals by expanding access to high-caliber technical education and breaking gender barriers in engineering and technology.",
+  },
+  {
+    label: "Innovation & inquiry",
+    title: "Fostering Innovation & Creative Thinking",
+    body: "Cultivating an inspiring academic environment that encourages creativity, critical inquiry, digital literacy, and practical problem-solving to meet modern technological challenges.",
+  },
+  {
+    label: "Career pathways",
+    title: "Pathways to Professional Leadership",
+    body: "Opening robust pathways for sustainable employment, technical entrepreneurship, and lifelong career growth, enabling women to lead and excel in diverse technological fields.",
   },
 ];
 

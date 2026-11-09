@@ -105,7 +105,7 @@ function FacilityCard({
         Bemina campus
       </p>
       <Link
-        to={href as "/"}
+        to={href}
         draggable={false}
         tabIndex={ariaHidden ? -1 : undefined}
         className="link-cta mt-5 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2"

@@ -52,7 +52,7 @@ export function getStaticHomepageData(): HomepageData {
       dept: p.categoryLabel,
       duration: p.duration,
       eligibility: p.eligibility,
-      seats: ("seats" in p ? String((p as { seats?: unknown }).seats ?? "") : ""),
+      seats: p.seats ?? "",
       stream: p.stream,
       overview: p.overview,
     })),
