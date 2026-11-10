@@ -11,7 +11,13 @@ import { HOME_FAQS } from "@/lib/site-data";
 type FaqItem = { q: string; a: string };
 
 /** Homepage FAQ block — heading rail on the left, answers filling the page width. */
-export function HomeFaqs({ items }: { items?: FaqItem[] }) {
+export function HomeFaqs({
+  items,
+  admissionsEnabled = true,
+}: {
+  items?: FaqItem[];
+  admissionsEnabled?: boolean;
+}) {
   const list = items && items.length > 0 ? items : HOME_FAQS;
   return (
     <section aria-labelledby="home-faqs-heading" className="section-misty section-y !pt-0">
@@ -30,13 +36,15 @@ export function HomeFaqs({ items }: { items?: FaqItem[] }) {
             Common queries about eligibility, programme duration, syllabus and official notices.
           </p>
           <div className="mt-5 flex flex-wrap gap-x-6 gap-y-3">
-            <Link to="/admissions" className="link-cta group w-fit">
-              Admission details
-              <ArrowRight
-                className="size-4 transition-transform duration-200 group-hover:translate-x-0.5"
-                aria-hidden="true"
-              />
-            </Link>
+            {admissionsEnabled && (
+              <Link to="/admissions" className="link-cta group w-fit">
+                Admission details
+                <ArrowRight
+                  className="size-4 transition-transform duration-200 group-hover:translate-x-0.5"
+                  aria-hidden="true"
+                />
+              </Link>
+            )}
             <Link to="/contact" className="link-cta group w-fit">
               Ask the institute
               <ArrowRight

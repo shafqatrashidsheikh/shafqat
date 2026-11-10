@@ -1,4 +1,6 @@
-import { Link } from "@tanstack/react-router";
+import { Link, getRouteApi } from "@tanstack/react-router";
+
+const rootRoute = getRouteApi("__root__");
 import {
   ArrowRight,
   Award,
@@ -24,6 +26,9 @@ const FACT_CARD =
 const CONTENT_CARD = "card-premium p-4 sm:p-5";
 
 export function DepartmentDetailContent({ department }: { department: GpwDepartment }) {
+  const siteChrome = rootRoute.useLoaderData();
+  const admissionsEnabled = siteChrome?.admissionsEnabled !== false;
+
   const learningAreas =
     department.learningAreas?.length > 0 ? department.learningAreas : department.careerAreas;
   const careerPathways =
@@ -79,9 +84,11 @@ export function DepartmentDetailContent({ department }: { department: GpwDepartm
           </dl>
 
           <div className="mt-4 flex w-full flex-col items-stretch justify-center gap-3 sm:mt-5 sm:flex-row sm:flex-wrap sm:items-center">
-            <Link to="/admissions" className="btn-primary w-full sm:w-auto">
-              Admission Information
-            </Link>
+            {admissionsEnabled && (
+              <Link to="/admissions" className="btn-primary w-full sm:w-auto">
+                Admission Information
+              </Link>
+            )}
             <Link to="/academics" hash="programs" className="btn-primary w-full sm:w-auto">
               View All Programmes
             </Link>
@@ -182,13 +189,15 @@ export function DepartmentDetailContent({ department }: { department: GpwDepartm
               {PROGRAMME_ADMISSION_NOTE}
             </p>
             <div className="mt-5 flex w-full flex-col gap-3 sm:flex-row sm:flex-wrap">
-              <Link to="/admissions" className="btn-primary group w-full sm:w-auto">
-                View Admission Information
-                <ArrowRight
-                  className="size-4 transition-transform group-hover:translate-x-0.5"
-                  aria-hidden="true"
-                />
-              </Link>
+              {admissionsEnabled && (
+                <Link to="/admissions" className="btn-primary group w-full sm:w-auto">
+                  View Admission Information
+                  <ArrowRight
+                    className="size-4 transition-transform group-hover:translate-x-0.5"
+                    aria-hidden="true"
+                  />
+                </Link>
+              )}
               <Link to="/downloads" className="btn-secondary w-full sm:w-auto">
                 Syllabus &amp; Downloads
               </Link>

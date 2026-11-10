@@ -1,6 +1,9 @@
 import { useCallback, useEffect, useState } from "react";
-import { Link } from "@tanstack/react-router";
+import { Link, useRouter } from "@tanstack/react-router";
 import { LogOut } from "lucide-react";
+import { toast } from "sonner";
+import { Toaster } from "@/components/ui/sonner";
+import { Switch } from "@/components/ui/switch";
 import { AdminAboutPanel } from "@/components/admin/AdminAboutPanel";
 import { AdminContactPanel } from "@/components/admin/AdminContactPanel";
 import { AdminOverviewPanel } from "@/components/admin/AdminOverviewPanel";
@@ -10,10 +13,11 @@ import { AdminPrincipalPanel } from "@/components/admin/AdminPrincipalPanel";
 import { AdminResourcePanel, AdminTabsShell, TabsContent } from "@/components/admin/AdminResourcePanel";
 import { AdminUsersPanel } from "@/components/admin/AdminUsersPanel";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { Tabs, TabsContent as SubTabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { fetchAdmissionsAdmin, fetchDepartments, fetchEvents, fetchExploreCards, fetchHomepageBlocks, fetchMediaAssets, fetchNotices, fetchPageSections, fetchPrograms } from "@/server/cda/content";
 import { fetchAdminHealth, fetchAdminOverview, type AdminOverviewCounts } from "@/server/cda/overview";
-import { fetchSiteExtendedAdmin } from "@/server/cda/site-extended";
+import { fetchAdmissionVisibility, fetchSiteExtendedAdmin } from "@/server/cda/site-extended";
 import { cmaBootstrapCms } from "@/server/cma/bootstrap";
 import {
   cmaCreateExploreCard,
@@ -80,6 +84,7 @@ import {
   cmaUpdateInstituteSettings,
   cmaUpdateNavLink,
   cmaUpdatePrincipal,
+  cmaUpdateAdmissionVisibility,
 } from "@/server/cma/site-extended";
 import type {
   DbExploreCard,
@@ -118,6 +123,7 @@ type AdminDashboardProps = {
 
 export function AdminDashboard({ accessToken, profileName, profileRole, onSignOut }: AdminDashboardProps) {
   const token = { accessToken };
+  const router = useRouter();
 
   const [notices, setNotices] = useState<DbNotice[]>([]);
   const [events, setEvents] = useState<DbEvent[]>([]);
@@ -133,6 +139,8 @@ export function AdminDashboard({ accessToken, profileName, profileRole, onSignOu
   const [admissions, setAdmissions] = useState<Awaited<ReturnType<typeof fetchAdmissionsAdmin>> | null>(null);
   const [overview, setOverview] = useState<AdminOverviewCounts | null>(null);
   const [siteExtended, setSiteExtended] = useState<Awaited<ReturnType<typeof fetchSiteExtendedAdmin>> | null>(null);
+  const [admissionsEnabled, setAdmissionsEnabled] = useState<boolean>(true);
+  const [togglingAdmissions, setTogglingAdmissions] = useState<boolean>(false);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [bootstrapMessage, setBootstrapMessage] = useState<string | null>(null);
@@ -142,7 +150,7 @@ export function AdminDashboard({ accessToken, profileName, profileRole, onSignOu
     setLoading(true);
     setLoadError(null);
     try {
-      const [n, e, d, p, blocks, adm, sections, cards, media, counts, extended, health] = await Promise.all([
+      const [n, e, d, p, blocks, adm, sections, cards, media, counts, extended, health, admVisibility] = await Promise.all([
         fetchNotices({ data: token }),
         fetchEvents({ data: token }),
         fetchDepartments({ data: token }),
@@ -155,6 +163,7 @@ export function AdminDashboard({ accessToken, profileName, profileRole, onSignOu
         fetchAdminOverview({ data: token }),
         fetchSiteExtendedAdmin({ data: token }).catch(() => null),
         fetchAdminHealth({ data: token }),
+        fetchAdmissionVisibility().catch(() => true),
       ]);
       setNotices(n as DbNotice[]);
       setEvents(e as DbEvent[]);
@@ -172,6 +181,7 @@ export function AdminDashboard({ accessToken, profileName, profileRole, onSignOu
       setMediaAssets(media as DbMediaAsset[]);
       setOverview(counts);
       setSiteExtended(extended);
+      setAdmissionsEnabled(admVisibility);
       if (!health.ok && health.error) {
         setLoadError(health.error);
       }
@@ -181,6 +191,33 @@ export function AdminDashboard({ accessToken, profileName, profileRole, onSignOu
       setLoading(false);
     }
   }, [accessToken]);
+
+  const handleToggleAdmissions = async (enabled: boolean) => {
+    setTogglingAdmissions(true);
+    try {
+      await cmaUpdateAdmissionVisibility({ data: { accessToken, enabled } });
+      setAdmissionsEnabled(enabled);
+      if (typeof window !== "undefined") {
+        try {
+          localStorage.setItem("gpw_admission_enabled", String(enabled));
+          document.cookie = `gpw_admission_enabled=${enabled}; path=/; max-age=31536000; SameSite=Lax`;
+        } catch {
+          // ignore storage error
+        }
+      }
+      toast.success(
+        enabled
+          ? "Admission is now ON — visible across public navigation, homepage, and links."
+          : "Admission is now OFF — cleanly hidden from public navigation, homepage, and links."
+      );
+      await router.invalidate();
+      await loadAll();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to toggle admission visibility");
+    } finally {
+      setTogglingAdmissions(false);
+    }
+  };
 
   const runBootstrap = async () => {
     setBootstrapBusy(true);
@@ -261,6 +298,8 @@ export function AdminDashboard({ accessToken, profileName, profileRole, onSignOu
               healthError={loadError}
               bootstrapMessage={bootstrapMessage}
               bootstrapBusy={bootstrapBusy}
+              admissionsEnabled={admissionsEnabled}
+              onToggleAdmissions={handleToggleAdmissions}
               onBootstrap={() => void runBootstrap()}
               onRefresh={() => void loadAll()}
             />
@@ -541,7 +580,47 @@ export function AdminDashboard({ accessToken, profileName, profileRole, onSignOu
             />
           </TabsContent>
 
-          <TabsContent value="admissions">
+          <TabsContent value="admissions" className="space-y-6">
+            <div className="rounded-2xl border border-border bg-surface-white p-6 shadow-soft">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div className="space-y-1">
+                  <div className="flex flex-wrap items-center gap-2.5">
+                    <h3 className="font-display text-lg font-bold text-navy">
+                      Admission Public Visibility
+                    </h3>
+                    <span
+                      className={cn(
+                        "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold",
+                        admissionsEnabled
+                          ? "border border-emerald-300 bg-emerald-50 text-emerald-800"
+                          : "border border-amber-300 bg-amber-50 text-amber-800",
+                      )}
+                    >
+                      {admissionsEnabled ? "ON (Visible to Public)" : "OFF (Hidden from Public)"}
+                    </span>
+                  </div>
+                  <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
+                    Control whether the Admission feature is exposed across the website. When turned{" "}
+                    <strong className="text-navy">ON</strong>, Admission appears in navigation, the mobile
+                    menu, homepage CTA, and public links. When turned{" "}
+                    <strong className="text-navy">OFF</strong>, Admission is cleanly hidden from the
+                    public UI without breaking any layouts or leaving empty menu items.
+                  </p>
+                </div>
+                <div className="flex shrink-0 items-center gap-3 rounded-xl border border-border/80 bg-light-blue/40 px-4 py-3">
+                  <span className="text-sm font-semibold text-navy">
+                    {admissionsEnabled ? "Admission ON" : "Admission OFF"}
+                  </span>
+                  <Switch
+                    checked={admissionsEnabled}
+                    disabled={togglingAdmissions}
+                    onCheckedChange={handleToggleAdmissions}
+                    aria-label="Toggle admission public visibility"
+                  />
+                </div>
+              </div>
+            </div>
+
             {cycle && (
               <AdminResourcePanel
                 title={`Admission cycle — ${cycle.title}`}
@@ -925,6 +1004,7 @@ export function AdminDashboard({ accessToken, profileName, profileRole, onSignOu
             <AdminUsersPanel accessToken={accessToken} />
           </TabsContent>
         </AdminTabsShell>
+        <Toaster />
       </div>
     </div>
   );

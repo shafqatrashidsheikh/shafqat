@@ -1,4 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, getRouteApi } from "@tanstack/react-router";
+
+const rootRoute = getRouteApi("__root__");
 import { ArrowRight } from "lucide-react";
 import { PageHeader } from "@/components/site/PageHeader";
 import { GPW_DEPARTMENTS } from "@/lib/departments-data";
@@ -35,6 +37,12 @@ const PUBLIC_PAGES = [
 ];
 
 function MandatoryDisclosuresPage() {
+  const siteChrome = rootRoute.useLoaderData();
+  const admissionsEnabled = siteChrome?.admissionsEnabled !== false;
+  const publicPages = PUBLIC_PAGES.filter(
+    (item) => admissionsEnabled || item.to !== "/admissions",
+  );
+
   return (
     <>
       <PageHeader
@@ -129,7 +137,7 @@ function MandatoryDisclosuresPage() {
               Related public pages
             </h2>
             <ul className="mt-5 grid gap-2 sm:grid-cols-2">
-              {PUBLIC_PAGES.map((item) => (
+              {publicPages.map((item) => (
                 <li key={item.to}>
                   <Link
                     to={item.to}

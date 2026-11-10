@@ -1,4 +1,4 @@
-import { fetchHeaderNav, fetchInstituteSettings, fetchNavLinks } from "@/server/cda/site-extended";
+import { fetchAdmissionVisibility, fetchHeaderNav, fetchInstituteSettings, fetchNavLinks } from "@/server/cda/site-extended";
 import { fetchLiveJkboteNotices } from "@/server/cda/jkbote-notices";
 import {
   INSTITUTE,
@@ -18,14 +18,21 @@ export type SiteChromeData = {
   headerNav: HeaderCtaPill[];
   navLinks: DbNavLink[];
   liveNotices: JkboteCachePayload | null;
+  admissionsEnabled: boolean;
 };
 
 /** Prefer current official Academics menu — drop legacy Programmes/Departments split from CMS. */
-function normalizeHeaderNav(nav: HeaderCtaPill[]): HeaderCtaPill[] {
+function normalizeHeaderNav(nav: HeaderCtaPill[], admissionsEnabled: boolean = true): HeaderCtaPill[] {
+  let filtered = nav;
+  if (!admissionsEnabled) {
+    filtered = filtered.filter(
+      (p) => p.label !== "Admissions" && p.to !== "/admissions",
+    );
+  }
   const academicsCanonical = HEADER_CTA_PILLS.find((p) => p.label === "Academics");
-  if (!academicsCanonical) return nav;
+  if (!academicsCanonical) return filtered;
 
-  return nav.map((pill) => {
+  return filtered.map((pill) => {
     if (pill.label !== "Academics") return pill;
     return {
       ...pill,
@@ -53,17 +60,22 @@ function canonicalFooterGroup(
  * Keep utility/header CMS rows, but always publish the official footer link sets.
  * Prevents empty Quick Links / mandatory bar when CMS only has utility_strip rows.
  */
-function normalizeNavLinks(links: DbNavLink[]): DbNavLink[] {
+function normalizeNavLinks(links: DbNavLink[], admissionsEnabled: boolean = true): DbNavLink[] {
+  const footerQuick = admissionsEnabled
+    ? FOOTER_QUICK_LINKS
+    : FOOTER_QUICK_LINKS.filter((l) => (l.to as string) !== "/admissions");
+
   const preserved = links.filter(
     (l) =>
       l.link_group !== "footer_quick" &&
       l.link_group !== "footer_academic" &&
-      l.link_group !== "footer_mandatory",
+      l.link_group !== "footer_mandatory" &&
+      (admissionsEnabled || (l.href !== "/admissions" && l.label !== "Admissions")),
   );
 
   return [
     ...preserved,
-    ...canonicalFooterGroup("footer_quick", FOOTER_QUICK_LINKS),
+    ...canonicalFooterGroup("footer_quick", footerQuick),
     ...canonicalFooterGroup("footer_academic", FOOTER_ACADEMIC_LINKS),
     ...canonicalFooterGroup("footer_mandatory", FOOTER_MANDATORY_LINKS),
   ];
@@ -82,11 +94,12 @@ function utilityAsNavLinks(): DbNavLink[] {
 
 export async function loadSiteChrome(): Promise<SiteChromeData> {
   try {
-    const [institute, headerNav, navLinks, liveNotices] = await Promise.all([
+    const [institute, headerNav, navLinks, liveNotices, admissionsEnabled] = await Promise.all([
       fetchInstituteSettings(),
       fetchHeaderNav(),
       fetchNavLinks(),
       fetchLiveJkboteNotices({ data: { limit: 20 } }).catch(() => null),
+      fetchAdmissionVisibility().catch(() => true),
     ]);
 
     const resolvedNav = headerNav?.length ? headerNav : [...HEADER_CTA_PILLS];
@@ -94,16 +107,18 @@ export async function loadSiteChrome(): Promise<SiteChromeData> {
 
     return {
       institute: institute ?? INSTITUTE,
-      headerNav: normalizeHeaderNav(resolvedNav),
-      navLinks: normalizeNavLinks(resolvedLinks),
+      headerNav: normalizeHeaderNav(resolvedNav, admissionsEnabled),
+      navLinks: normalizeNavLinks(resolvedLinks, admissionsEnabled),
       liveNotices,
+      admissionsEnabled,
     };
   } catch {
     return {
       institute: INSTITUTE,
       headerNav: [...HEADER_CTA_PILLS],
-      navLinks: normalizeNavLinks(utilityAsNavLinks()),
+      navLinks: normalizeNavLinks(utilityAsNavLinks(), true),
       liveNotices: null,
+      admissionsEnabled: true,
     };
   }
 }

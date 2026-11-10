@@ -7,7 +7,6 @@ import {
   useRouterState,
   HeadContent,
   Scripts,
-  type ErrorComponentProps,
 } from "@tanstack/react-router";
 import { useCallback, useEffect, useState, type ReactNode } from "react";
 
@@ -77,7 +76,7 @@ function NotFoundComponent() {
   );
 }
 
-function ErrorComponent({ error, reset }: ErrorComponentProps) {
+function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   console.error(error);
   const router = useRouter();
   const networkLike = isNetworkLikeError(error);
@@ -101,13 +100,11 @@ function ErrorComponent({ error, reset }: ErrorComponentProps) {
     return () => window.removeEventListener("online", onOnline);
   }, [networkLike, reset, router]);
 
-  const detailMessage = error instanceof Error ? error.message : error != null ? String(error) : undefined;
-
   return (
     <div className="min-w-0 overflow-x-hidden bg-background">
       <ConnectionErrorState
         onRetry={retry}
-        detail={import.meta.env.DEV ? detailMessage : undefined}
+        detail={import.meta.env.DEV ? error.message : undefined}
         {...(networkLike
           ? {}
           : {

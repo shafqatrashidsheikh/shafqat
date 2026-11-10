@@ -83,7 +83,16 @@ function FeatureCard({
 /** Steady institutional carousel speed — px per second (target band: 35–50) */
 const EXPLORE_MARQUEE_PX_PER_SEC = 42;
 
-export function ExploreGPWSrinagar({ cards = EXPLORE_CARDS }: { cards?: ExploreCard[] }) {
+export function ExploreGPWSrinagar({
+  cards = EXPLORE_CARDS,
+  admissionsEnabled = true,
+}: {
+  cards?: ExploreCard[];
+  admissionsEnabled?: boolean;
+}) {
+  const visibleCards = cards.filter(
+    (c) => admissionsEnabled || (c.id !== "admissions" && c.category?.toLowerCase() !== "admissions"),
+  );
   const [headerVisible, setHeaderVisible] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
   const trackRef = useRef<HTMLDivElement>(null);
@@ -129,7 +138,7 @@ export function ExploreGPWSrinagar({ cards = EXPLORE_CARDS }: { cards?: ExploreC
     };
   }, [reducedMotion]);
 
-  const loopCards = [...cards, ...cards];
+  const loopCards = [...visibleCards, ...visibleCards];
 
   return (
     <section
@@ -151,8 +160,17 @@ export function ExploreGPWSrinagar({ cards = EXPLORE_CARDS }: { cards?: ExploreC
             Explore GPW Srinagar
           </h2>
           <p className="mt-4 w-full min-w-0 max-w-3xl hyphens-none text-pretty text-base leading-relaxed text-muted-foreground">
-            A focused path through academics, campus life, admissions and careers at{" "}
-            <KeepTogether>GPW Srinagar.</KeepTogether>
+            {admissionsEnabled ? (
+              <>
+                A focused path through academics, campus life, admissions and careers at{" "}
+                <KeepTogether>GPW Srinagar.</KeepTogether>
+              </>
+            ) : (
+              <>
+                A focused path through academics, campus life and careers at{" "}
+                <KeepTogether>GPW Srinagar.</KeepTogether>
+              </>
+            )}
           </p>
         </div>
 

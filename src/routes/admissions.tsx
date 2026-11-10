@@ -103,6 +103,54 @@ function QuietLink({
 
 function Admissions() {
   const data = Route.useLoaderData();
+
+  if (data.admissionsEnabled === false) {
+    return (
+      <div className="bg-background">
+        <PageHeader
+          compact
+          crumb="Admissions"
+          title="Admissions Notice"
+          intro="Information regarding admission sessions and academic enrollment."
+          titleClassName="max-w-none"
+        />
+        <div className="container-page py-16 sm:py-20 text-center">
+          <div className="mx-auto max-w-xl rounded-2xl border border-border bg-surface-white p-8 sm:p-10 shadow-soft">
+            <span className="inline-flex rounded-full border border-amber-300 bg-amber-50 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-amber-800">
+              Admissions Inactive
+            </span>
+            <h2 className="mt-4 font-display text-2xl font-bold text-navy sm:text-3xl">
+              Admissions Are Currently Closed
+            </h2>
+            <p className="mt-3.5 text-sm leading-relaxed text-muted-foreground sm:text-base">
+              The admission cycle is not actively accepting applications at this time. Please check the official institute notices for forthcoming admission schedules or explore our academic programmes.
+            </p>
+            <div className="mt-8 flex flex-wrap justify-center gap-3">
+              <Link
+                to="/"
+                className="inline-flex items-center justify-center rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-brand-deep"
+              >
+                Institute Home
+              </Link>
+              <Link
+                to="/academics"
+                className="inline-flex items-center justify-center rounded-lg border border-border bg-surface px-5 py-2.5 text-sm font-medium text-navy transition-colors hover:bg-light-blue"
+              >
+                Explore Programmes
+              </Link>
+              <Link
+                to="/updates/notices"
+                className="inline-flex items-center justify-center rounded-lg border border-border bg-surface px-5 py-2.5 text-sm font-medium text-navy transition-colors hover:bg-light-blue"
+              >
+                View Notices
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   const defaults = getStaticAdmissionCycle();
   const cycle = data.cycle ?? defaults;
 
