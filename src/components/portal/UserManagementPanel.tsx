@@ -68,12 +68,12 @@ export function UserManagementPanel({
 
       if (canCreateHod) {
         const hodRows = await portalListHods({ data: { accessToken } });
-        setHods(hodRows as PortalUser[]);
+        setHods(hodRows as unknown as PortalUser[]);
       }
 
       if (canCreateHod || canCreateStaff) {
         const userRows = await portalListDepartmentUsers({ data: { accessToken } });
-        const allUsers = userRows as PortalUser[];
+        const allUsers = userRows as unknown as PortalUser[];
         if (isScopedToDepartment) {
           setStaff(allUsers.filter((u) => u.role === "staff"));
         } else {

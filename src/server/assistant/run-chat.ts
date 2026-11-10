@@ -92,7 +92,7 @@ export async function runAssistantChat(messages: ChatMessage[]): Promise<string>
               console.warn("[GPWS Assistant] Live JKBOTE context unavailable:", error);
               return null;
             });
-      return resolveCapabilityReply(capability, language, liveForCap);
+      return resolveCapabilityReply(capability, language, liveForCap as any);
     }
     return resolveCapabilityReply(capability, language);
   }

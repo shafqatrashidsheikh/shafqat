@@ -8,6 +8,7 @@ import { getSupabaseServer } from "@/lib/supabase/server";
 import { requireAdmin } from "@/server/cma/auth";
 import { loadMediaUrlMap } from "@/server/cda/content";
 import { mapDbDepartmentToGpw, resolveAssetImage } from "@/lib/departments-cms";
+import { readAdmissionSettingCache } from "@/server/cda/admission-setting-cache";
 import type {
   DbAboutBlock,
   DbCampusFacilityItem,
@@ -82,6 +83,42 @@ export const fetchInstituteSettings = createServerFn({ method: "GET" }).handler(
       return data.value as InstituteSettings;
     } catch {
       return INSTITUTE;
+    }
+  },
+);
+
+/** CDA — admission feature public visibility (ON/OFF) */
+export const fetchAdmissionVisibility = createServerFn({ method: "GET" }).handler(
+  async (): Promise<boolean> => {
+    const fallback = readAdmissionSettingCache();
+    if (!isSupabaseConfigured()) return fallback;
+
+    try {
+      const supabase = getSupabaseServer();
+      const { data, error } = await supabase
+        .from("site_settings")
+        .select("value")
+        .eq("setting_key", "admission_feature")
+        .maybeSingle();
+
+      if (!error && data?.value && typeof (data.value as { enabled?: unknown }).enabled === "boolean") {
+        return Boolean((data.value as { enabled: boolean }).enabled);
+      }
+
+      const { data: cycle } = await supabase
+        .from("admission_cycles")
+        .select("is_active")
+        .order("year", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (cycle && typeof cycle.is_active === "boolean") {
+        return cycle.is_active;
+      }
+
+      return fallback;
+    } catch {
+      return fallback;
     }
   },
 );

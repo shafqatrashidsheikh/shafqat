@@ -1,6 +1,7 @@
 import type { AdminOverviewCounts } from "@/server/cda/overview";
 import { PortalStatCard } from "@/components/portal/portal-ui";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 type AdminOverviewPanelProps = {
   counts: AdminOverviewCounts | null;
@@ -8,6 +9,8 @@ type AdminOverviewPanelProps = {
   healthError: string | null;
   bootstrapMessage: string | null;
   bootstrapBusy: boolean;
+  admissionsEnabled?: boolean;
+  onToggleAdmissions?: (enabled: boolean) => void;
   onBootstrap: () => void;
   onRefresh: () => void;
 };
@@ -32,6 +35,8 @@ export function AdminOverviewPanel({
   healthError,
   bootstrapMessage,
   bootstrapBusy,
+  admissionsEnabled = true,
+  onToggleAdmissions,
   onBootstrap,
   onRefresh,
 }: AdminOverviewPanelProps) {
@@ -39,6 +44,39 @@ export function AdminOverviewPanel({
 
   return (
     <div className="space-y-6">
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border bg-surface-white p-4 sm:p-5 shadow-soft">
+        <div className="flex flex-wrap items-center gap-3">
+          <span className="font-display text-sm font-bold text-navy">
+            Admission Public Status:
+          </span>
+          <span
+            className={cn(
+              "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold",
+              admissionsEnabled
+                ? "border border-emerald-300 bg-emerald-50 text-emerald-800"
+                : "border border-amber-300 bg-amber-50 text-amber-800",
+            )}
+          >
+            {admissionsEnabled ? "ON (Visible to Public)" : "OFF (Hidden from Public)"}
+          </span>
+          <span className="text-xs text-muted-foreground hidden sm:inline">
+            {admissionsEnabled
+              ? "Admission option is visible in navigation & public UI"
+              : "Admission option is hidden across public UI"}
+          </span>
+        </div>
+        {onToggleAdmissions && (
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => onToggleAdmissions(!admissionsEnabled)}
+            className="text-xs font-semibold"
+          >
+            Turn Admission {admissionsEnabled ? "OFF" : "ON"}
+          </Button>
+        )}
+      </div>
       {healthError && (
         <div className="rounded-xl border border-red/30 bg-red/5 px-4 py-3 text-sm text-red">
           <p className="font-semibold">Could not load CMS data</p>

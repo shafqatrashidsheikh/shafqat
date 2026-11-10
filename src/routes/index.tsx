@@ -9,15 +9,21 @@ import { ExploreGPWSrinagar } from "@/components/site/ExploreGPWSrinagar";
 import { HomeFacilitiesRail } from "@/components/site/HomeFacilitiesRail";
 import { HomeFacultyPreview } from "@/components/site/HomeFacultyPreview";
 import { HomeProgrammesRail } from "@/components/site/HomeProgrammesRail";
+import { ImportantAnnouncements } from "@/components/site/ImportantAnnouncements";
+import { InstituteSpotlights } from "@/components/site/InstituteSpotlights";
 import { NewsAndEvents } from "@/components/site/NewsAndEvents";
 import { CAMPUS_FACILITIES } from "@/lib/campus-data";
 import { GPW_DEPARTMENTS } from "@/lib/departments-data";
 import { getStaticPageSections } from "@/lib/site-content";
 import { INSTITUTE, resolveGlanceStats } from "@/lib/site-data";
 import { useSubtleParallax } from "@/hooks/useSubtleParallax";
+import { navLinksByGroup } from "@/lib/loaders/site-chrome";
 import { loadHomepageData } from "@/lib/loaders/homepage";
 import { fetchPrincipalProfile } from "@/server/cda/site-extended";
 import { cn } from "@/lib/utils";
+import { getRouteApi } from "@tanstack/react-router";
+
+const rootRoute = getRouteApi("__root__");
 
 export const Route = createFileRoute("/")({
   loader: async () => {
@@ -47,6 +53,8 @@ export const Route = createFileRoute("/")({
 
 function Home() {
   const { homepage, principal } = Route.useLoaderData();
+  const siteChrome = rootRoute.useLoaderData();
+  const utilityQuickLinks = navLinksByGroup(siteChrome.navLinks, "utility_strip");
   const heroImageRef = useRef<HTMLDivElement>(null);
   useSubtleParallax(heroImageRef);
 
@@ -56,10 +64,17 @@ function Home() {
   const admissionsCta = sections["admissions_cta"];
   const studentLife = sections["student_life"];
   const placement = sections["placement_blurb"];
+  const admissionsEnabled = siteChrome.admissionsEnabled !== false;
 
-  const exploreCards =
+  const rawCards =
     homepage.exploreCards.length > 0
-      ? homepage.exploreCards.map((c) => ({
+      ? homepage.exploreCards
+      : undefined;
+
+  const exploreCards = rawCards
+    ? rawCards
+        .filter((c) => admissionsEnabled || (c.id !== "admissions" && c.category?.toLowerCase() !== "admissions"))
+        .map((c) => ({
           id: c.id,
           category: c.category,
           title: c.title,
@@ -72,7 +87,7 @@ function Home() {
           ...(c.imageObjectClass ? { imageObjectClass: c.imageObjectClass } : {}),
           ...(c.priority ? { priority: true as const } : {}),
         }))
-      : undefined;
+    : undefined;
 
   /** Official 8 diploma programmes — updated verified data */
   const programs = GPW_DEPARTMENTS.map((d) => ({
@@ -115,13 +130,22 @@ function Home() {
               className="reveal mt-6 flex w-full max-w-lg flex-col gap-3 sm:mt-8 sm:w-auto sm:flex-row sm:flex-wrap"
               style={{ "--reveal-delay": "270ms" } as CSSProperties}
             >
-              <ApplyOnlineButton className="btn-primary group w-full sm:w-auto">
-                Apply Now
-                <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
-              </ApplyOnlineButton>
-              <Link to="/academics" className="btn-secondary w-full sm:w-auto">
-                Explore Programs
-              </Link>
+              {admissionsEnabled ? (
+                <>
+                  <ApplyOnlineButton className="btn-primary group w-full sm:w-auto">
+                    Apply Now
+                    <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
+                  </ApplyOnlineButton>
+                  <Link to="/academics" className="btn-secondary w-full sm:w-auto">
+                    Explore Programs
+                  </Link>
+                </>
+              ) : (
+                <Link to="/academics" className="btn-primary group w-full sm:w-auto">
+                  Explore Programs
+                  <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
+                </Link>
+              )}
             </div>
           </div>
           <div
@@ -140,6 +164,9 @@ function Home() {
           </div>
         </div>
       </section>
+
+      <InstituteSpotlights items={homepage.spotlights} />
+      <ImportantAnnouncements items={homepage.announcements} quickLinks={utilityQuickLinks} />
 
       {/* ABOUT + PRINCIPAL'S CORNER */}
       <section className="section-misty section-y !pt-0 !pb-8 md:!pb-10 lg:!pb-10">
@@ -193,7 +220,11 @@ function Home() {
         </div>
       </section>
 
-      {exploreCards ? <ExploreGPWSrinagar cards={exploreCards} /> : <ExploreGPWSrinagar />}
+      {exploreCards ? (
+        <ExploreGPWSrinagar cards={exploreCards} admissionsEnabled={admissionsEnabled} />
+      ) : (
+        <ExploreGPWSrinagar admissionsEnabled={admissionsEnabled} />
+      )}
 
       {/* ACADEMICS / PROGRAMS — official programmes in a horizontal rail */}
       <HomeProgrammesRail programmes={programs} />
@@ -218,35 +249,37 @@ function Home() {
       </section>
 
       {/* ADMISSIONS CTA */}
-      <section className="section-misty section-y !pt-0">
-        <div className="container-page">
-          <div
-            className="card-premium mx-auto max-w-3xl p-8 text-center lg:p-10"
-            data-motion-from="up"
-          >
-            <SectionHead
-              eyebrow={admissionsCta?.eyebrow ?? "Admissions"}
-              title={admissionsCta?.title ?? "Start Your Journey at GPW Srinagar"}
-              centered
-            />
-            <p className="mx-auto mt-4 max-w-xl text-pretty text-base leading-relaxed text-muted-foreground">
-              {admissionsCta?.body ??
-                "Explore eligibility, the admission process and key dates. Detailed rules and documents are available on the admissions page."}
-            </p>
-            <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:justify-center">
-              <Link
-                to={admissionsCta?.cta_href ?? "/admissions"}
-                className="btn-primary w-full sm:w-auto"
-              >
-                {admissionsCta?.cta_label ?? "View Admissions"}
-              </Link>
-              <Link to="/contact" className="btn-secondary w-full sm:w-auto">
-                Contact Us
-              </Link>
+      {admissionsEnabled && (
+        <section className="section-misty section-y !pt-0">
+          <div className="container-page">
+            <div
+              className="card-premium mx-auto max-w-3xl p-8 text-center lg:p-10"
+              data-motion-from="up"
+            >
+              <SectionHead
+                eyebrow={admissionsCta?.eyebrow ?? "Admissions"}
+                title={admissionsCta?.title ?? "Start Your Journey at GPW Srinagar"}
+                centered
+              />
+              <p className="mx-auto mt-4 max-w-xl text-pretty text-base leading-relaxed text-muted-foreground">
+                {admissionsCta?.body ??
+                  "Explore eligibility, the admission process and key dates. Detailed rules and documents are available on the admissions page."}
+              </p>
+              <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:justify-center">
+                <Link
+                  to={admissionsCta?.cta_href ?? "/admissions"}
+                  className="btn-primary w-full sm:w-auto"
+                >
+                  {admissionsCta?.cta_label ?? "View Admissions"}
+                </Link>
+                <Link to="/contact" className="btn-secondary w-full sm:w-auto">
+                  Contact Us
+                </Link>
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* STUDENT LIFE + PLACEMENT */}
       <section className="section-misty section-y !pt-0">

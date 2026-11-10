@@ -2,6 +2,7 @@ import { getStaticAdmissionsData, getStaticHomepageData } from "@/lib/supabase/f
 import { emptyAdmissionDateRows, JKBOTE_ADMISSION_PORTAL_URL } from "@/lib/jkbote-admission-dates";
 import type { JkboteAdmissionDatesPayload } from "@/lib/jkbote-admission-dates";
 import { fetchAdmissionsData } from "@/server/cda/content";
+import { fetchAdmissionVisibility } from "@/server/cda/site-extended";
 import { fetchHomepageData } from "@/server/cda/homepage";
 import { fetchJkboteAdmissionDates } from "@/server/cda/jkbote-admission-dates";
 
@@ -27,7 +28,7 @@ function emptyLiveDates(): JkboteAdmissionDatesPayload {
 }
 
 export async function loadAdmissionsData() {
-  const [admissions, liveDates] = await Promise.all([
+  const [admissions, liveDates, admissionsEnabled] = await Promise.all([
     fetchAdmissionsData().catch((error) => {
       console.error("[admissions loader] fetch failed, using static fallback:", error);
       return getStaticAdmissionsData();
@@ -36,10 +37,12 @@ export async function loadAdmissionsData() {
       console.error("[admissions loader] JKBOTE dates fetch failed:", error);
       return emptyLiveDates();
     }),
+    fetchAdmissionVisibility().catch(() => true),
   ]);
 
   return {
     ...admissions,
     liveDates,
+    admissionsEnabled,
   };
 }

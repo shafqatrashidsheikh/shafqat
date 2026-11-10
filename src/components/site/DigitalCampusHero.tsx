@@ -10,7 +10,11 @@ import { cn } from "@/lib/utils";
  * Signature digital hero — editorial typography + subtle technical depth.
  * Uses real campus media as atmosphere, not a static full-bleed photo hero.
  */
-export function DigitalCampusHero() {
+export function DigitalCampusHero({
+  admissionsEnabled = true,
+}: {
+  admissionsEnabled?: boolean;
+} = {}) {
   return (
     <section
       aria-labelledby="digital-campus-hero-heading"
@@ -99,12 +103,14 @@ export function DigitalCampusHero() {
               Explore Programmes
               <ArrowUpRight className="size-4" aria-hidden="true" />
             </Link>
-            <ApplyOnlineButton
-              prefetch={false}
-              className="ml-0 text-sm font-semibold text-brand underline-offset-4 transition-colors hover:text-navy hover:underline sm:ml-2"
-            >
-              Apply for admission
-            </ApplyOnlineButton>
+            {admissionsEnabled && (
+              <ApplyOnlineButton
+                prefetch={false}
+                className="ml-0 text-sm font-semibold text-brand underline-offset-4 transition-colors hover:text-navy hover:underline sm:ml-2"
+              >
+                Apply for admission
+              </ApplyOnlineButton>
+            )}
           </div>
         </div>
 

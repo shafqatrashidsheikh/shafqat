@@ -1,6 +1,8 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireAdminWrite } from "@/server/cma/auth";
+import { isSupabaseConfigured } from "@/lib/env";
+import { writeAdmissionSettingCache } from "@/server/cda/admission-setting-cache";
 import type { InstituteSettings } from "@/lib/supabase/types";
 
 const tokenSchema = z.object({ accessToken: z.string().min(1) });
@@ -35,6 +37,40 @@ export const cmaUpdateInstituteSettings = createServerFn({ method: "POST" })
     });
     if (error) throw error;
     return { ok: true };
+  });
+
+export const cmaUpdateAdmissionVisibility = createServerFn({ method: "POST" })
+  .validator(
+    z.object({
+      accessToken: z.string().min(1),
+      enabled: z.boolean(),
+    }),
+  )
+  .handler(async ({ data }) => {
+    writeAdmissionSettingCache(data.enabled);
+
+    if (isSupabaseConfigured()) {
+      const { supabase } = await requireAdminWrite(data.accessToken);
+
+      await supabase.from("site_settings").upsert({
+        setting_key: "admission_feature",
+        value: { enabled: data.enabled, updated_at: new Date().toISOString() },
+      });
+
+      // Synchronize admission_cycles is_active
+      await supabase
+        .from("admission_cycles")
+        .update({ is_active: data.enabled })
+        .gte("year", 2000);
+
+      // Synchronize header navigation group for Admissions
+      await supabase
+        .from("header_nav_groups")
+        .update({ is_active: data.enabled })
+        .eq("label", "Admissions");
+    }
+
+    return { ok: true as const, enabled: data.enabled };
   });
 
 export const cmaUpdatePrincipal = createServerFn({ method: "POST" })
