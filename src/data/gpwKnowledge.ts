@@ -281,7 +281,7 @@ export function buildBaselineKnowledge(): Record<string, unknown> {
   },
   faculty: {
     summary:
-      "Faculty leadership and verified JKBOTE contacts are on /faculty. Computer Engineering official JKBOTE contact: Suhail Ahmad Nehvi, Lecturer (A/A). Do not invent unpublished HOD names.",
+      "Faculty leadership and verified JKBOTE contacts are on /faculty. Department faculty directories are available on their respective programme pages: Computer Engineering (/academics/departments/computer-engineering), Office Management & Computer Applications (/academics/departments/office-management-computer-applications), Textile Technology (/academics/departments/textile-technology), Garment Technology (/academics/departments/garment-technology), Travel & Tourism (/academics/departments/travel-tourism), and Food Technology (/academics/departments/food-technology).",
     page: "/faculty",
     externalOfficialSource: "https://admission.jkbote.ac.in/intake.html",
   },

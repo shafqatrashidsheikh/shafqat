@@ -7,6 +7,7 @@ import { PrincipalsCorner } from "@/components/site/PrincipalsCorner";
 import { Counter } from "@/components/site/Counter";
 import { ExploreGPWSrinagar } from "@/components/site/ExploreGPWSrinagar";
 import { HomeFacilitiesRail } from "@/components/site/HomeFacilitiesRail";
+import { HomeFacultyPreview } from "@/components/site/HomeFacultyPreview";
 import { HomeProgrammesRail } from "@/components/site/HomeProgrammesRail";
 import { ImportantAnnouncements } from "@/components/site/ImportantAnnouncements";
 import { InstituteSpotlights } from "@/components/site/InstituteSpotlights";
@@ -227,6 +228,9 @@ function Home() {
 
       {/* ACADEMICS / PROGRAMS — official programmes in a horizontal rail */}
       <HomeProgrammesRail programmes={programs} />
+
+      {/* FACULTY & STAFF PREVIEW */}
+      <HomeFacultyPreview />
 
       {/* FACILITIES / CAMPUS */}
       <section className="section-misty overflow-x-clip section-y !pt-0">

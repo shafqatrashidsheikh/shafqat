@@ -15,8 +15,18 @@ import { buildSyllabusDirectReply, detectSyllabusIntent } from "@/lib/assistant/
 import {
   buildComputerEngineeringFacultyReply,
   buildFacultySystemHint,
+  buildFoodTechFacultyReply,
+  buildGarmentFacultyReply,
+  buildOmcaFacultyReply,
+  buildTextileFacultyReply,
+  buildTourismFacultyReply,
   detectFacultyIntent,
   isComputerEngineeringFacultyAsk,
+  isFoodTechFacultyAsk,
+  isGarmentFacultyAsk,
+  isOmcaFacultyAsk,
+  isTextileFacultyAsk,
+  isTourismFacultyAsk,
 } from "@/lib/assistant/faculty-intent";
 import { resolveAssistantLanguage } from "@/lib/assistant/language-intent";
 import {
@@ -172,6 +182,11 @@ export async function handleChatPost(request: Request): Promise<Response> {
   const englishReply = language === "english";
   const syllabusIntent = detectSyllabusIntent(lastUserMessage);
   const cseFacultyAsk = isComputerEngineeringFacultyAsk(lastUserMessage);
+  const omcaFacultyAsk = isOmcaFacultyAsk(lastUserMessage);
+  const textileFacultyAsk = isTextileFacultyAsk(lastUserMessage);
+  const garmentFacultyAsk = isGarmentFacultyAsk(lastUserMessage);
+  const tourismFacultyAsk = isTourismFacultyAsk(lastUserMessage);
+  const foodTechFacultyAsk = isFoodTechFacultyAsk(lastUserMessage);
   const resultIntent = detectResultIntent(lastUserMessage);
   const hostelIntent = detectHostelIntent(lastUserMessage);
   const wantsImage = detectImageCreateIntent(lastUserMessage);
@@ -225,6 +240,21 @@ export async function handleChatPost(request: Request): Promise<Response> {
   }
   if (!image && cseFacultyAsk) {
     return Response.json({ content: buildComputerEngineeringFacultyReply() });
+  }
+  if (!image && omcaFacultyAsk) {
+    return Response.json({ content: buildOmcaFacultyReply() });
+  }
+  if (!image && textileFacultyAsk) {
+    return Response.json({ content: buildTextileFacultyReply() });
+  }
+  if (!image && garmentFacultyAsk) {
+    return Response.json({ content: buildGarmentFacultyReply() });
+  }
+  if (!image && tourismFacultyAsk) {
+    return Response.json({ content: buildTourismFacultyReply() });
+  }
+  if (!image && foodTechFacultyAsk) {
+    return Response.json({ content: buildFoodTechFacultyReply() });
   }
 
   /* Live campus weather — same Open-Meteo feed as the website footer. */
