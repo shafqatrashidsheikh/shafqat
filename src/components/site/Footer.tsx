@@ -209,7 +209,7 @@ export function Footer({ institute = INSTITUTE, navLinks = [] }: FooterProps) {
                 <ul className="mt-3 space-y-2 text-sm">
                   {academicLinks.map((link) => (
                     <li key={link.label}>
-                      <Link to={link.to} className="footer-nav-link">
+                      <Link to={link.to as "/"} className="footer-nav-link">
                         {link.label}
                       </Link>
                     </li>
@@ -224,7 +224,7 @@ export function Footer({ institute = INSTITUTE, navLinks = [] }: FooterProps) {
                 <ul className="mt-3 space-y-2 text-sm">
                   {FOOTER_EXPLORE_LINKS.map((link) => (
                     <li key={link.label}>
-                      <Link to={link.to} className="footer-nav-link">
+                      <Link to={link.to as "/"} className="footer-nav-link">
                         {link.label}
                       </Link>
                     </li>

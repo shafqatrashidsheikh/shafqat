@@ -28,10 +28,10 @@ type AdminResourcePanelProps<T extends { id: string }> = {
   title: string;
   rows: T[];
   fields: AdminField[];
-  onRefresh: () => Promise<void>;
-  onCreate: (payload: Record<string, unknown>) => Promise<void>;
-  onUpdate: (id: string, payload: Record<string, unknown>) => Promise<void>;
-  onDelete: (id: string) => Promise<void>;
+  onRefresh: () => Promise<unknown>;
+  onCreate: (payload: Record<string, unknown>) => Promise<unknown>;
+  onUpdate: (id: string, payload: Record<string, unknown>) => Promise<unknown>;
+  onDelete: (id: string) => Promise<unknown>;
   columns: { key: keyof T | string; label: string }[];
   mediaAssets?: DbMediaAsset[];
 };
