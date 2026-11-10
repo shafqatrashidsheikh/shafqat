@@ -8,7 +8,6 @@ import { Counter } from "@/components/site/Counter";
 import { ExploreGPWSrinagar } from "@/components/site/ExploreGPWSrinagar";
 import { HomeFacilitiesRail } from "@/components/site/HomeFacilitiesRail";
 import { HomeProgrammesRail } from "@/components/site/HomeProgrammesRail";
-import { InstituteSpotlights } from "@/components/site/InstituteSpotlights";
 import { NewsAndEvents } from "@/components/site/NewsAndEvents";
 import { CAMPUS_FACILITIES } from "@/lib/campus-data";
 import { GPW_DEPARTMENTS } from "@/lib/departments-data";
@@ -60,18 +59,18 @@ function Home() {
   const exploreCards =
     homepage.exploreCards.length > 0
       ? homepage.exploreCards.map((c) => ({
-        id: c.id,
-        category: c.category,
-        title: c.title,
-        description: c.description,
-        cta: c.cta,
-        href: c.href,
-        image: c.image,
-        imageAlt: c.imageAlt,
-        imagePosition: c.imagePosition,
-        ...(c.imageObjectClass ? { imageObjectClass: c.imageObjectClass } : {}),
-        ...(c.priority ? { priority: true as const } : {}),
-      }))
+          id: c.id,
+          category: c.category,
+          title: c.title,
+          description: c.description,
+          cta: c.cta,
+          href: c.href,
+          image: c.image,
+          imageAlt: c.imageAlt,
+          imagePosition: c.imagePosition,
+          ...(c.imageObjectClass ? { imageObjectClass: c.imageObjectClass } : {}),
+          ...(c.priority ? { priority: true as const } : {}),
+        }))
       : undefined;
 
   /** Official 8 diploma programmes — updated verified data */
@@ -140,8 +139,6 @@ function Home() {
           </div>
         </div>
       </section>
-
-      <InstituteSpotlights items={homepage.spotlights} />
 
       {/* ABOUT + PRINCIPAL'S CORNER */}
       <section className="section-misty section-y !pt-0 !pb-8 md:!pb-10 lg:!pb-10">
