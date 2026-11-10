@@ -176,7 +176,7 @@ function FacultyPage() {
                     className={`min-h-10 whitespace-nowrap rounded-xl border px-4 py-2 text-xs sm:text-sm font-medium transition-all duration-200 ${
                       isActive
                         ? "border-brand bg-brand text-primary-foreground shadow-xs"
-                        : "border-border/60 bg-surface/70 text-navy hover:border-brand/35 hover:bg-light-blue/40"
+                        : "border-border/40 bg-surface/70 text-navy hover:border-brand/30 hover:bg-light-blue/40"
                     }`}
                   >
                     {tab.label}
@@ -203,7 +203,7 @@ function FacultyPage() {
 
             {/* Additional departments info */}
             {activeTab === "all" ? (
-              <div className="rounded-2xl border border-border/50 bg-surface/80 p-6 sm:p-7 transition-all duration-200">
+              <div className="rounded-2xl border border-border/40 bg-surface/80 p-6 sm:p-7 transition-all duration-200">
                 <div className="flex items-start gap-4">
                   <div className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-light-blue text-brand">
                     <Building2 className="size-5" aria-hidden="true" />
