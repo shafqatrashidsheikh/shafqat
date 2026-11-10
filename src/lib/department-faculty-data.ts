@@ -11,6 +11,7 @@ export interface DepartmentHod {
   contact: string;
   email?: string;
   message?: string;
+  profileImage?: string;
 }
 
 export interface DepartmentFacultyMember {
@@ -20,6 +21,7 @@ export interface DepartmentFacultyMember {
   qualification?: string;
   specialization?: string;
   experience: string;
+  profileImage?: string;
 }
 
 export interface NonTeachingStaffMember {
@@ -27,6 +29,7 @@ export interface NonTeachingStaffMember {
   name: string;
   experience: string;
   designation: string;
+  profileImage?: string;
 }
 
 export type TableSchemaType =
