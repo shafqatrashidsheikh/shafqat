@@ -459,22 +459,22 @@ function FacultyProfileCard({
   const initials = getInitials(member.name);
 
   return (
-    <article className="group flex flex-col justify-between rounded-xl border border-border/80 bg-surface p-5 transition-[border-color,box-shadow] duration-200 hover:border-brand/40 hover:shadow-xs">
+    <article className="group flex flex-col justify-between rounded-2xl border border-border/50 bg-surface/80 p-6 transition-all duration-200 hover:border-brand/30 hover:bg-surface hover:shadow-soft">
       <div>
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex items-center gap-3 min-w-0">
+        <div className="flex items-start justify-between gap-3.5">
+          <div className="flex items-center gap-3.5 min-w-0">
             {member.profileImage ? (
               <img
                 src={member.profileImage}
                 alt={member.name}
                 width={48}
                 height={48}
-                className="size-12 shrink-0 rounded-xl object-cover border border-border"
+                className="size-12 shrink-0 rounded-2xl object-cover"
                 loading="lazy"
               />
             ) : (
               <div
-                className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-light-blue text-brand font-display font-bold text-sm border border-brand/20 shadow-xs"
+                className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-light-blue text-brand font-display font-bold text-sm"
                 aria-hidden="true"
               >
                 {initials}
@@ -484,39 +484,41 @@ function FacultyProfileCard({
               <h4 className="font-display text-base font-bold text-navy leading-snug">
                 {member.name}
               </h4>
-              <p className="text-xs sm:text-sm font-semibold text-brand truncate">
+              <p className="mt-0.5 text-xs sm:text-sm font-medium text-brand truncate">
                 {member.designation}
               </p>
-              <p className="text-[11px] font-medium text-muted-foreground truncate">
+              <p className="mt-0.5 text-[11px] font-medium text-muted-foreground truncate">
                 {departmentName}
               </p>
             </div>
           </div>
 
-          <span className="shrink-0 inline-flex items-center gap-1 rounded-md bg-muted/70 px-2 py-0.5 text-xs font-medium text-navy/90">
+          <span className="shrink-0 inline-flex items-center gap-1 rounded-full bg-light-blue/60 px-2.5 py-0.5 text-[11px] font-medium text-brand">
             <Award className="size-3 text-brand" aria-hidden="true" />
             <span>{member.experience}</span>
           </span>
         </div>
 
-        <div className="mt-4 space-y-2 border-t border-border/60 pt-3 text-xs">
-          {member.qualification ? (
-            <div>
-              <span className="font-semibold text-navy">Qualification: </span>
-              <span className="text-muted-foreground">{member.qualification}</span>
-            </div>
-          ) : null}
-          {member.specialization ? (
-            <div>
-              <span className="font-semibold text-navy">
-                {tableSchema === "omca" ? "Specialisation: " : "Specialization: "}
-              </span>
-              <span className="leading-relaxed text-muted-foreground">
-                {member.specialization}
-              </span>
-            </div>
-          ) : null}
-        </div>
+        {(member.qualification || member.specialization) && (
+          <div className="mt-5 space-y-2 border-t border-border/40 pt-4 text-xs leading-relaxed">
+            {member.qualification ? (
+              <div>
+                <span className="font-semibold text-navy/90">Qualification: </span>
+                <span className="text-muted-foreground">{member.qualification}</span>
+              </div>
+            ) : null}
+            {member.specialization ? (
+              <div>
+                <span className="font-semibold text-navy/90">
+                  {tableSchema === "omca" ? "Specialisation: " : "Specialization: "}
+                </span>
+                <span className="text-muted-foreground">
+                  {member.specialization}
+                </span>
+              </div>
+            ) : null}
+          </div>
+        )}
       </div>
     </article>
   );
@@ -535,30 +537,30 @@ function NonTeachingStaffCard({
   const initials = getInitials(staff.name);
 
   return (
-    <article className="flex items-center justify-between gap-3 rounded-xl border border-border/80 bg-surface p-4 transition-colors hover:border-brand/35">
-      <div className="flex items-center gap-3 min-w-0">
+    <article className="flex items-center justify-between gap-4 rounded-2xl border border-border/50 bg-surface/80 p-5 transition-all duration-200 hover:border-brand/30 hover:bg-surface hover:shadow-soft">
+      <div className="flex items-center gap-3.5 min-w-0">
         {staff.profileImage ? (
           <img
             src={staff.profileImage}
             alt={staff.name}
             width={44}
             height={44}
-            className="size-11 shrink-0 rounded-xl object-cover border border-border"
+            className="size-11 shrink-0 rounded-2xl object-cover"
             loading="lazy"
           />
         ) : (
           <div
-            className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-light-blue text-brand font-display font-bold text-xs border border-brand/20 shadow-xs"
+            className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-light-blue text-brand font-display font-bold text-xs"
             aria-hidden="true"
           >
             {initials}
           </div>
         )}
         <div className="min-w-0">
-          <h4 className="font-display text-sm font-bold text-navy truncate">
+          <h4 className="font-display text-sm sm:text-base font-bold text-navy truncate">
             {staff.name}
           </h4>
-          <p className="text-xs font-semibold text-brand truncate">
+          <p className="text-xs font-medium text-brand truncate">
             {staff.designation}
           </p>
           <p className="text-[11px] text-muted-foreground truncate">
@@ -566,7 +568,7 @@ function NonTeachingStaffCard({
           </p>
         </div>
       </div>
-      <span className="shrink-0 inline-flex items-center gap-1 rounded-md bg-muted/70 px-2 py-0.5 text-xs font-medium text-navy/90">
+      <span className="shrink-0 inline-flex items-center gap-1 rounded-full bg-light-blue/60 px-2.5 py-0.5 text-[11px] font-medium text-brand">
         <Award className="size-3 text-brand" aria-hidden="true" />
         <span>{staff.experience}</span>
       </span>
@@ -599,7 +601,7 @@ export function DepartmentFacultyStaffSection({
       {!idPrefix ? <span id="faculty-staff" className="scroll-mt-24 block" aria-hidden="true" /> : null}
 
       {/* Main Section Header */}
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between border-b border-border/80 pb-3">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between border-b border-border/40 pb-4">
         <div>
           <p className="text-[11px] font-semibold tracking-[0.14em] text-brand uppercase">
             {departmentName} Directory
@@ -634,7 +636,7 @@ export function DepartmentFacultyStaffSection({
           </h3>
         </div>
 
-        <div className="rounded-xl border border-brand/25 bg-surface p-5 sm:p-6 transition-all duration-200 hover:border-brand/40">
+        <div className="rounded-2xl border border-border/50 bg-surface/90 p-6 sm:p-7 transition-all duration-200 hover:border-brand/30 hover:bg-surface hover:shadow-soft">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-start gap-4">
               {hod.profileImage ? (
@@ -643,11 +645,11 @@ export function DepartmentFacultyStaffSection({
                   alt={hod.name}
                   width={56}
                   height={56}
-                  className="size-14 shrink-0 rounded-xl object-cover border border-brand/30 shadow-xs"
+                  className="size-14 shrink-0 rounded-2xl object-cover"
                   loading="lazy"
                 />
               ) : (
-                <div className="flex size-14 shrink-0 items-center justify-center rounded-xl bg-brand/10 text-brand font-display font-extrabold text-xl">
+                <div className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-light-blue text-brand font-display font-extrabold text-xl">
                   {initials}
                 </div>
               )}
@@ -656,7 +658,7 @@ export function DepartmentFacultyStaffSection({
                   <h4 className="font-display text-lg font-bold text-navy sm:text-xl">
                     {hod.name}
                   </h4>
-                  <span className="inline-flex items-center rounded-md bg-brand/10 px-2.5 py-0.5 text-xs font-semibold text-brand">
+                  <span className="inline-flex items-center rounded-full bg-light-blue/70 px-2.5 py-0.5 text-xs font-semibold text-brand">
                     {hod.designation}
                   </span>
                 </div>
@@ -669,7 +671,7 @@ export function DepartmentFacultyStaffSection({
             <div className="flex flex-wrap items-center gap-3 pt-2 sm:pt-0 sm:shrink-0">
               <a
                 href={`tel:${hod.contact.replace(/\s+/g, "")}`}
-                className="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-3.5 py-2 text-xs sm:text-sm font-semibold text-navy transition-colors hover:border-brand hover:bg-light-blue hover:text-brand"
+                className="inline-flex items-center gap-2 rounded-full border border-border/50 bg-surface px-4 py-2 text-xs sm:text-sm font-medium text-navy transition-colors hover:border-brand/40 hover:bg-light-blue/40 hover:text-brand"
                 title={`Call ${hod.name}`}
               >
                 <Phone className="size-3.5 sm:size-4 text-brand" aria-hidden="true" />
@@ -678,7 +680,7 @@ export function DepartmentFacultyStaffSection({
               {hod.email ? (
                 <a
                   href={`mailto:${hod.email}`}
-                  className="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-3.5 py-2 text-xs sm:text-sm font-semibold text-navy transition-colors hover:border-brand hover:bg-light-blue hover:text-brand"
+                  className="inline-flex items-center gap-2 rounded-full border border-border/50 bg-surface px-4 py-2 text-xs sm:text-sm font-medium text-navy transition-colors hover:border-brand/40 hover:bg-light-blue/40 hover:text-brand"
                   title={`Email ${hod.name}`}
                 >
                   <Mail className="size-3.5 sm:size-4 text-brand" aria-hidden="true" />
@@ -704,11 +706,11 @@ export function DepartmentFacultyStaffSection({
           </div>
 
           {/* Clean View Mode Toggle */}
-          <div className="flex items-center gap-1 rounded-lg border border-border bg-surface p-1 self-start sm:self-auto">
+          <div className="flex items-center gap-1 rounded-xl border border-border/50 bg-surface/80 p-1 self-start sm:self-auto">
             <button
               type="button"
               onClick={() => setViewMode("profiles")}
-              className={`inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-semibold transition-colors ${
+              className={`inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-semibold transition-colors ${
                 viewMode === "profiles"
                   ? "bg-brand text-primary-foreground shadow-xs"
                   : "text-muted-foreground hover:text-navy"
@@ -721,7 +723,7 @@ export function DepartmentFacultyStaffSection({
             <button
               type="button"
               onClick={() => setViewMode("table")}
-              className={`inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-semibold transition-colors ${
+              className={`inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-semibold transition-colors ${
                 viewMode === "table"
                   ? "bg-brand text-primary-foreground shadow-xs"
                   : "text-muted-foreground hover:text-navy"
@@ -736,7 +738,7 @@ export function DepartmentFacultyStaffSection({
 
         {viewMode === "profiles" ? (
           /* Profile Cards Layout */
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
             {faculty.map((member) => (
               <FacultyProfileCard
                 key={member.sNo}
@@ -785,7 +787,7 @@ export function DepartmentFacultyStaffSection({
           </div>
 
           {viewMode === "profiles" ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
               {nonTeachingStaff.map((staff) => (
                 <NonTeachingStaffCard
                   key={staff.sNo}

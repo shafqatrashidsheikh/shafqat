@@ -140,7 +140,7 @@ function FacultyPage() {
 
           {/* Department Faculty Directory */}
           <section aria-labelledby="department-directory-heading" className="space-y-6" data-motion-from="up">
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between border-b border-border/80 pb-4">
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between border-b border-border/40 pb-5">
               <div>
                 <p className="font-display text-xs font-semibold tracking-[0.2em] text-brand uppercase">
                   Academic Departments
@@ -173,10 +173,10 @@ function FacultyPage() {
                     role="tab"
                     aria-selected={isActive}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`min-h-10 whitespace-nowrap rounded-lg border px-3.5 text-xs sm:text-sm font-medium transition-[background-color,border-color,color,transform] duration-200 ${
+                    className={`min-h-10 whitespace-nowrap rounded-xl border px-4 py-2 text-xs sm:text-sm font-medium transition-all duration-200 ${
                       isActive
                         ? "border-brand bg-brand text-primary-foreground shadow-xs"
-                        : "border-border bg-surface-white text-navy hover:-translate-y-px hover:bg-light-blue"
+                        : "border-border/60 bg-surface/70 text-navy hover:border-brand/35 hover:bg-light-blue/40"
                     }`}
                   >
                     {tab.label}
@@ -186,11 +186,11 @@ function FacultyPage() {
             </div>
 
             {/* Department Faculty Rosters */}
-            <div className="space-y-12 pt-4">
+            <div className="space-y-16 pt-6">
               {visibleDepartments.map((deptData) => (
                 <div
                   key={deptData.departmentSlug}
-                  className="space-y-6 pb-12 border-b border-border/70 last:border-b-0 last:pb-0"
+                  className="space-y-8 pb-16 border-b border-border/40 last:border-b-0 last:pb-0"
                 >
                   <DepartmentFacultyStaffSection
                     data={deptData}
@@ -203,9 +203,9 @@ function FacultyPage() {
 
             {/* Additional departments info */}
             {activeTab === "all" ? (
-              <div className="rounded-2xl border border-border bg-surface p-5 sm:p-6 shadow-soft">
+              <div className="rounded-2xl border border-border/50 bg-surface/80 p-6 sm:p-7 transition-all duration-200">
                 <div className="flex items-start gap-4">
-                  <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-brand/10 text-brand">
+                  <div className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-light-blue text-brand">
                     <Building2 className="size-5" aria-hidden="true" />
                   </div>
                   <div>
