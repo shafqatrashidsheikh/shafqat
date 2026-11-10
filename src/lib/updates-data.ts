@@ -6,25 +6,6 @@
 
 export const JKBOTE_NOTICES_URL = "https://jkbote.ac.in/notice.php";
 
-/**
- * Converts Google Drive '/view' URLs to clean '/preview' URLs.
- * When opened in a new tab, this strips away Google Drive editor tools,
- * 'Edit with', 'Share', and account buttons, displaying a clean, professional PDF document.
- */
-export function toCleanNoticeUrl(url?: string): string {
-  if (!url) return JKBOTE_NOTICES_URL;
-  const trimmed = url.trim();
-  const driveFileMatch = trimmed.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
-  if (driveFileMatch && driveFileMatch[1]) {
-    return `https://drive.google.com/file/d/${driveFileMatch[1]}/preview`;
-  }
-  const driveIdMatch = trimmed.match(/[?&]id=([a-zA-Z0-9_-]+)/);
-  if (driveIdMatch && driveIdMatch[1]) {
-    return `https://drive.google.com/file/d/${driveIdMatch[1]}/preview`;
-  }
-  return trimmed;
-}
-
 export type NoticePriority = "Urgent" | "Important" | "General" | "New";
 export type UpdateCategory = "Admissions" | "Examination" | "Academics" | "General";
 export type UpdateChannel = "news" | "notice" | "circular";

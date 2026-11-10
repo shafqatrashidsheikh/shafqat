@@ -18,8 +18,8 @@ type HeaderProps = {
   headerNav?: HeaderCtaPill[];
 };
 
-const LOGO_SEAL_TEXT =
-  "Empowering women through quality technical education, practical learning and career-focused skills • ";
+const AFFILIATION_RING =
+  "Recognised by the J&K Government • Approved by AICTE • Affiliated to the Jammu & Kashmir Board of Technical Education (JKBOTE) • ";
 
 export function Header({ institute: _institute = INSTITUTE, headerNav }: HeaderProps) {
   const pills = headerNav ?? undefined;
@@ -35,28 +35,21 @@ export function Header({ institute: _institute = INSTITUTE, headerNav }: HeaderP
   }, []);
 
   return (
-    <header
-      className={cn(
-        "site-header sticky top-0 z-[60] w-full min-w-0 transition-all duration-300 ease-out xl:overflow-visible",
-        scrolled
-          ? "bg-surface-white/98 backdrop-blur-md border-b border-border/80 shadow-sm"
-          : "bg-transparent border-b border-transparent shadow-none",
-      )}
-    >
+    <header className="site-header sticky top-0 z-[60] w-full min-w-0 overflow-x-clip bg-background px-3 pt-2 sm:px-4 sm:pt-2.5 lg:px-5 xl:overflow-visible">
       <div
         className={cn(
-          "container-page flex w-full min-w-0 items-center justify-between gap-3 transition-[padding] duration-300 sm:gap-4 lg:gap-5 xl:overflow-visible",
-          scrolled ? "py-2 sm:py-2.5 xl:py-2.5" : "py-2.5 sm:py-3 xl:py-3.5",
+          "flex w-full min-w-0 items-center gap-2.5 overflow-x-clip rounded-2xl border border-border bg-surface-white px-2.5 shadow-soft transition-[box-shadow,padding] duration-300 sm:gap-4 sm:px-4 lg:gap-5 lg:px-5 xl:overflow-visible xl:px-6",
+          "py-2 sm:py-2.5 xl:py-3",
+          scrolled && "shadow-raised",
         )}
       >
-        {/* Official brand lockup (MVJCE layout) — crest with rotating seal orbit + structured institutional typography */}
-        <Link
-          to="/"
-          aria-label="Government Polytechnic for Women, Srinagar — Home"
-          className="group flex min-w-0 items-center gap-2.5 sm:gap-3.5 lg:gap-4 py-0.5 select-none"
-        >
-          {/* Official Emblem / Crest with rotating seal orbit */}
-          <div className="header-brand-seal shrink-0">
+        {/* Official brand lockup — crest + name, left */}
+        <div className="flex min-w-0 flex-1 items-center gap-3 sm:gap-3.5 lg:gap-4">
+          <Link
+            to="/"
+            aria-label="Government Polytechnic for Women, Srinagar — Home"
+            className="header-brand-seal shrink-0"
+          >
             <span className="header-brand-seal-orbit" aria-hidden="true">
               <svg viewBox="0 0 160 160" className="h-full w-full overflow-visible">
                 <defs>
@@ -68,36 +61,28 @@ export function Header({ institute: _institute = INSTITUTE, headerNav }: HeaderP
                 </defs>
                 <text className="header-brand-seal-orbit-text">
                   <textPath href={`#${orbitPathId}`} startOffset="0%">
-                    {LOGO_SEAL_TEXT}
+                    {AFFILIATION_RING}
+                    {AFFILIATION_RING}
                   </textPath>
                 </text>
               </svg>
             </span>
             <CollegeLogo variant={scrolled ? "header-compact" : "header"} priority />
-            <span className="sr-only">{LOGO_SEAL_TEXT.trim()}</span>
-          </div>
+            <span className="sr-only">{AFFILIATION_RING.trim()}</span>
+          </Link>
 
-          {/* Institutional Typography — Name & Since 1986 in uniform color */}
-          <div className="flex min-w-0 flex-col justify-center">
-            <span className="font-brand text-[12px] min-[390px]:text-[13px] sm:text-[15px] md:text-[16px] xl:text-[18px] font-extrabold tracking-tight text-navy leading-tight">
-              Government Polytechnic
+          <Link to="/" className="header-brand-copy min-w-0 py-0.5">
+            <span className="font-brand block min-w-0 text-[clamp(0.95rem,0.55vw+0.82rem,1.35rem)] leading-tight font-extrabold tracking-tight text-balance text-navy xl:whitespace-nowrap xl:text-[1.28rem] 2xl:text-[1.4rem]">
+              Government Polytechnic for Women
             </span>
-            <div className="flex items-baseline gap-1.5 sm:gap-2 mt-0.5">
-              <span className="font-brand text-[11px] min-[390px]:text-[12px] sm:text-[14px] md:text-[15px] xl:text-[16px] font-extrabold tracking-tight text-navy leading-tight">
-                for Women, Srinagar
-              </span>
-              <span className="text-[8.5px] min-[390px]:text-[9.5px] sm:text-[10.5px] font-bold tracking-wider text-muted-foreground uppercase leading-none shrink-0">
-                Since 1986
-              </span>
-            </div>
-          </div>
-        </Link>
+          </Link>
+        </div>
 
         {/* Nav — right */}
         <div className="flex shrink-0 items-center gap-2 sm:gap-2.5">
           <nav
             aria-label="Primary navigation"
-            className="hidden items-center gap-2.5 xl:flex 2xl:gap-3.5"
+            className="hidden items-center gap-1.5 xl:flex 2xl:gap-2"
           >
             <HeaderCtaPills {...(pills ? { pills } : {})} />
             <HeaderAuthButtons />
@@ -116,32 +101,15 @@ export function Header({ institute: _institute = INSTITUTE, headerNav }: HeaderP
             </SheetTrigger>
             <SheetContent
               side="right"
-              className="z-[70] flex h-full w-[min(100%-1rem,22rem)] max-w-[22rem] flex-col justify-between overflow-hidden border-border bg-surface-white p-0 shadow-2xl"
+              className="z-[70] w-[min(100%-1rem,20rem)] max-w-[20rem] overflow-y-auto border-border bg-surface-white p-0"
             >
-              {/* Drawer Top Branding Header */}
-              <div className="flex shrink-0 items-center justify-between border-b border-border px-4 py-3.5 pr-12">
-                <div className="flex items-center gap-2.5 min-w-0">
-                  <CollegeLogo variant="header-compact" priority />
-                  <div className="flex flex-col min-w-0">
-                    <SheetTitle className="font-brand text-xs min-[380px]:text-sm font-extrabold tracking-tight text-navy leading-tight truncate">
-                      GPW Srinagar
-                    </SheetTitle>
-                    <span className="text-[10px] text-muted-foreground font-semibold">
-                      Govt. Polytechnic for Women
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Scrollable Navigation Body */}
-              <div className="flex-1 overflow-y-auto">
-                <HeaderCtaMobileGroups pills={pills} onNavigate={() => setOpen(false)} />
-              </div>
-
-              {/* Bottom Auth & Portal Actions */}
-              <div className="shrink-0 border-t border-border bg-mist/50 p-3">
+              <SheetTitle className="border-b border-border px-5 py-4 font-display text-base font-bold text-navy">
+                Menu
+              </SheetTitle>
+              <HeaderCtaMobileGroups pills={pills} onNavigate={() => setOpen(false)} />
+              <div className="border-t border-border px-4 py-4">
                 <HeaderAuthButtons
-                  variant="mobile"
+                  className="w-full flex-col gap-2.5 [&>*]:w-full"
                   onNavigate={() => setOpen(false)}
                 />
               </div>

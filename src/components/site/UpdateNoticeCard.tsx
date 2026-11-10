@@ -1,7 +1,7 @@
 import { ExternalLink } from "lucide-react";
 import { AmpersandText } from "@/components/site/AmpersandText";
 import { safeHrefOr } from "@/lib/security/safe-url";
-import { JKBOTE_NOTICES_URL, toCleanNoticeUrl, type NoticePriority, type UpdateItem } from "@/lib/updates-data";
+import { JKBOTE_NOTICES_URL, type NoticePriority, type UpdateItem } from "@/lib/updates-data";
 
 const PRIORITY_STYLES: Record<NoticePriority, string> = {
   Urgent: "bg-red/10 text-red ring-1 ring-red/25",
@@ -19,17 +19,16 @@ export function UpdateNoticeCard({
   ariaHidden?: boolean;
   actionLabel?: string;
 }) {
-  const rawHref = safeHrefOr(item.fileUrl, JKBOTE_NOTICES_URL);
-  const cleanHref = toCleanNoticeUrl(rawHref);
+  const href = safeHrefOr(item.fileUrl, JKBOTE_NOTICES_URL);
 
   return (
     <a
-      href={cleanHref}
+      href={href}
       target="_blank"
       rel="noopener noreferrer"
       tabIndex={ariaHidden ? -1 : undefined}
       aria-hidden={ariaHidden}
-      className="group flex w-full flex-col items-start gap-3 rounded-2xl border border-border bg-surface px-4 py-4 text-left shadow-soft transition-colors hover:border-brand cursor-pointer sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:px-5"
+      className="group flex flex-col gap-3 rounded-2xl border border-border bg-surface px-4 py-4 shadow-soft transition-colors hover:border-brand sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:px-5"
     >
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-2 text-[11px] font-semibold">

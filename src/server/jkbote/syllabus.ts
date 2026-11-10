@@ -56,7 +56,7 @@ function extractPdfHrefs(html: string): string[] {
   let match: RegExpExecArray | null;
   while ((match = re.exec(html))) {
     try {
-      if (match[1]) hrefs.add(new URL(match[1], JKBOTE_HOME_URL).toString());
+      hrefs.add(new URL(match[1], JKBOTE_HOME_URL).toString());
     } catch {
       /* skip bad href */
     }

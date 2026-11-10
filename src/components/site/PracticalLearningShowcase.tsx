@@ -86,7 +86,7 @@ export function PracticalLearningShowcase() {
                   }
                 />
                 <figcaption className="border-t border-border bg-surface-white px-3 py-2 text-xs font-medium tracking-wide text-muted-foreground">
-                  {"caption" in item ? item.caption : (item as { caption?: string }).caption || item.alt}
+                  {item.caption}
                 </figcaption>
               </figure>
             ))}

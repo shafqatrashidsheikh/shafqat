@@ -176,7 +176,7 @@ export const GPW_DEPARTMENTS: readonly GpwDepartment[] = (
     ],
     careerAreas: [],
     image: {
-      src: CAMPUS_IMAGES.electronicsLabStudents,
+      src: CAMPUS_IMAGES.electricalLab,
       alt: "Electronics laboratory practical training at Government Polytechnic for Women, Srinagar",
     },
     sortOrder: 2,
