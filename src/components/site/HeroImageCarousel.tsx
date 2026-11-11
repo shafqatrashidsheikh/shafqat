@@ -2,11 +2,11 @@ import {
   forwardRef,
   useCallback,
   useEffect,
-  useRef,
   useState,
   type CSSProperties,
   type HTMLAttributes,
 } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { CAMPUS_IMAGES } from "@/lib/campus-images";
 import { cn } from "@/lib/utils";
 
@@ -122,13 +122,23 @@ export const HeroImageCarousel = forwardRef<HTMLDivElement, HeroImageCarouselPro
       }
     };
 
+    const prevSlide = useCallback(() => {
+      setCurrentIndex((prev) => {
+        if (prev <= 0) {
+          return total - 1;
+        }
+        return prev - 1;
+      });
+      setWithTransition(true);
+    }, [total]);
+
     return (
       <div
         ref={ref}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         className={cn(
-          "group relative aspect-[16/9] sm:aspect-[16/10] lg:aspect-[4/3] w-full overflow-hidden rounded-2xl sm:rounded-3xl border border-border bg-light-blue/30 shadow-raised select-none",
+          "group relative aspect-[16/9] sm:aspect-[16/9] md:aspect-[21/9] lg:aspect-[2.35/1] max-h-[460px] sm:max-h-[500px] w-full overflow-hidden rounded-2xl sm:rounded-3xl border border-border bg-light-blue/30 shadow-raised select-none",
           className,
         )}
         style={style}
@@ -169,6 +179,51 @@ export const HeroImageCarousel = forwardRef<HTMLDivElement, HeroImageCarouselPro
               </div>
             );
           })}
+        </div>
+
+        {/* Previous / Next Arrow Controls on Hover */}
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            prevSlide();
+          }}
+          className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 size-9 sm:size-10 rounded-full bg-black/40 hover:bg-black/70 text-white backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10 focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+          aria-label="Previous image"
+        >
+          <ChevronLeft className="size-5 sm:size-6" />
+        </button>
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            advanceSlide();
+          }}
+          className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 size-9 sm:size-10 rounded-full bg-black/40 hover:bg-black/70 text-white backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10 focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+          aria-label="Next image"
+        >
+          <ChevronRight className="size-5 sm:size-6" />
+        </button>
+
+        {/* Slide Indicator Dots */}
+        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 z-10 px-2.5 py-1 rounded-full bg-black/45 backdrop-blur-sm">
+          {HERO_CAMPUS_SLIDES.map((_, i) => (
+            <button
+              key={i}
+              type="button"
+              onClick={() => {
+                setWithTransition(true);
+                setCurrentIndex(i);
+              }}
+              className={cn(
+                "h-1.5 rounded-full transition-all duration-300 focus-visible:outline-none",
+                (currentIndex % total) === i
+                  ? "w-5 bg-white shadow-sm"
+                  : "w-1.5 bg-white/50 hover:bg-white/80",
+              )}
+              aria-label={`Go to slide ${i + 1}`}
+            />
+          ))}
         </div>
       </div>
     );

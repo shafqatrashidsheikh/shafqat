@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { useRef, type CSSProperties } from "react";
 import { ArrowRight, BriefcaseBusiness, Users, type LucideIcon } from "lucide-react";
 import { ApplyOnlineButton } from "@/components/site/ApplyOnlineButton";
 import { PrincipalsCorner } from "@/components/site/PrincipalsCorner";
@@ -10,7 +10,6 @@ import { HomeFacultyPreview } from "@/components/site/HomeFacultyPreview";
 import { HomeProgrammesRail } from "@/components/site/HomeProgrammesRail";
 import { HeroImageCarousel } from "@/components/site/HeroImageCarousel";
 import { HeroNotifications } from "@/components/site/HeroNotifications";
-import { ImportantAnnouncements } from "@/components/site/ImportantAnnouncements";
 import { NewsAndEvents } from "@/components/site/NewsAndEvents";
 import { CAMPUS_FACILITIES } from "@/lib/campus-data";
 import { GPW_DEPARTMENTS } from "@/lib/departments-data";
@@ -58,31 +57,6 @@ function Home() {
   const heroImageRef = useRef<HTMLDivElement>(null);
   useSubtleParallax(heroImageRef);
 
-  const [heroHeight, setHeroHeight] = useState<number | undefined>(undefined);
-
-  useEffect(() => {
-    const el = heroImageRef.current;
-    if (!el) return;
-
-    const syncHeight = () => {
-      if (window.innerWidth >= 1024) {
-        setHeroHeight(el.offsetHeight);
-      } else {
-        setHeroHeight(undefined);
-      }
-    };
-
-    syncHeight();
-    const ro = new ResizeObserver(syncHeight);
-    ro.observe(el);
-    window.addEventListener("resize", syncHeight);
-
-    return () => {
-      ro.disconnect();
-      window.removeEventListener("resize", syncHeight);
-    };
-  }, []);
-
   const sections = { ...getStaticPageSections(), ...homepage.sections };
   const hero = sections["hero"];
   const about = sections["home_about"];
@@ -128,31 +102,33 @@ function Home() {
 
   return (
     <>
-      {/* HERO */}
+      {/* HERO — FULL WIDTH CAMPUS IMAGES CAROUSEL */}
       <section className="hero-nav-gap section-misty">
-        <div className="container-page grid min-w-0 grid-cols-1 items-start gap-5 pb-6 sm:gap-7 sm:pb-8 lg:grid-cols-2 lg:gap-10 xl:gap-14 lg:pb-12">
-          {/* Image Carousel — Left */}
+        <div className="container-page pb-6 sm:pb-8 lg:pb-8">
           <HeroImageCarousel
             ref={heroImageRef}
-            className="reveal-hero-image order-1 min-w-0 h-fit self-start will-change-transform lg:order-1"
-            style={{ "--reveal-delay": "360ms" } as CSSProperties}
+            className="reveal-hero-image w-full will-change-transform"
+            style={{ "--reveal-delay": "200ms" } as CSSProperties}
           />
+        </div>
+      </section>
 
-          {/* Notifications — Right */}
+      {/* LATEST NOTIFICATIONS & ANNOUNCEMENTS (BELOW HERO) */}
+      <section aria-label="Latest notifications and announcements" className="section-misty">
+        <div className="container-page pb-10 lg:pb-12">
           <div
-            className="min-w-0 order-2 flex flex-col h-[320px] min-[400px]:h-[350px] sm:h-[380px] md:h-[420px] lg:h-auto"
-            style={heroHeight ? { height: `${heroHeight}px` } : undefined}
+            className="card-premium overflow-hidden p-4 sm:p-6 lg:p-7 shadow-raised border border-border bg-surface-white"
+            data-motion-from="up"
           >
             <HeroNotifications
               liveNotices={siteChrome.liveNotices?.notices}
               items={homepage.announcements}
-              className="h-full"
+              quickLinks={utilityQuickLinks}
+              className="h-[360px] sm:h-[400px]"
             />
           </div>
         </div>
       </section>
-
-      <ImportantAnnouncements items={homepage.announcements} quickLinks={utilityQuickLinks} />
 
       {/* ABOUT + PRINCIPAL'S CORNER */}
       <section className="section-misty section-y !pt-0 !pb-8 md:!pb-10 lg:!pb-10">
