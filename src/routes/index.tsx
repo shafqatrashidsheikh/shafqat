@@ -102,20 +102,18 @@ function Home() {
 
   return (
     <>
-      {/* HERO — FULL WIDTH CAMPUS IMAGES CAROUSEL */}
-      <section className="hero-nav-gap !pt-0 section-misty">
-        <div className="w-full max-w-[1920px] mx-auto px-4 sm:px-10 lg:px-[100px] pt-0 pb-8 lg:pb-[100px]">
-          <HeroImageCarousel
-            ref={heroImageRef}
-            className="reveal-hero-image w-full will-change-transform rounded-none border-0 shadow-none"
-            style={{ "--reveal-delay": "200ms" } as CSSProperties}
-          />
-        </div>
+      {/* HERO — FULL BLEED EDGE-TO-EDGE CAMPUS IMAGES */}
+      <section className="w-full min-w-full overflow-hidden pt-0 pb-[100px] bg-background">
+        <HeroImageCarousel
+          ref={heroImageRef}
+          className="reveal-hero-image w-full min-w-full will-change-transform rounded-none border-0 shadow-none"
+          style={{ "--reveal-delay": "100ms" } as CSSProperties}
+        />
       </section>
 
       {/* LATEST NOTIFICATIONS & ANNOUNCEMENTS (BELOW HERO) */}
       <section aria-label="Latest notifications and announcements" className="section-misty">
-        <div className="container-page pb-10 lg:pb-12">
+        <div className="container-page pb-[100px]">
           <div
             className="card-premium overflow-hidden p-4 sm:p-6 lg:p-7 shadow-raised border border-border bg-surface-white"
             data-motion-from="up"

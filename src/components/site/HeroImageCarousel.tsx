@@ -138,7 +138,7 @@ export const HeroImageCarousel = forwardRef<HTMLDivElement, HeroImageCarouselPro
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         className={cn(
-          "group relative aspect-[16/9] sm:aspect-[16/9] md:aspect-[21/9] lg:aspect-[2.35/1] max-h-[480px] sm:max-h-[540px] w-full overflow-hidden rounded-none border-0 shadow-none bg-transparent select-none",
+          "group relative aspect-[16/9] sm:aspect-[16/9] md:aspect-[21/9] lg:aspect-[2.35/1] min-h-[340px] sm:min-h-[440px] md:min-h-[520px] lg:min-h-[600px] max-h-[720px] w-full overflow-hidden rounded-none border-0 bg-light-blue/30 shadow-none select-none",
           className,
         )}
         style={style}
@@ -174,7 +174,7 @@ export const HeroImageCarousel = forwardRef<HTMLDivElement, HeroImageCarouselPro
                   fetchPriority={index === 0 ? "high" : "auto"}
                   loading={index === 0 ? "eager" : "lazy"}
                   decoding="async"
-                  className="h-full w-full object-cover object-center pointer-events-none rounded-none"
+                  className="h-full w-full object-cover object-center pointer-events-none"
                 />
               </div>
             );
@@ -188,7 +188,7 @@ export const HeroImageCarousel = forwardRef<HTMLDivElement, HeroImageCarouselPro
             e.stopPropagation();
             prevSlide();
           }}
-          className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 size-9 sm:size-10 rounded-full bg-black/40 hover:bg-black/70 text-white backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10 focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+          className="absolute left-4 sm:left-6 lg:left-8 top-1/2 -translate-y-1/2 size-10 sm:size-12 rounded-full bg-black/40 hover:bg-black/70 text-white backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10 focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
           aria-label="Previous image"
         >
           <ChevronLeft className="size-5 sm:size-6" />
@@ -199,14 +199,14 @@ export const HeroImageCarousel = forwardRef<HTMLDivElement, HeroImageCarouselPro
             e.stopPropagation();
             advanceSlide();
           }}
-          className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 size-9 sm:size-10 rounded-full bg-black/40 hover:bg-black/70 text-white backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10 focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+          className="absolute right-4 sm:right-6 lg:right-8 top-1/2 -translate-y-1/2 size-10 sm:size-12 rounded-full bg-black/40 hover:bg-black/70 text-white backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10 focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
           aria-label="Next image"
         >
           <ChevronRight className="size-5 sm:size-6" />
         </button>
 
         {/* Slide Indicator Dots */}
-        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 z-10 px-2.5 py-1 rounded-full bg-black/45 backdrop-blur-sm">
+        <div className="absolute bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2 z-10 px-3 py-1.5 rounded-full bg-black/45 backdrop-blur-sm">
           {HERO_CAMPUS_SLIDES.map((_, i) => (
             <button
               key={i}
@@ -216,10 +216,10 @@ export const HeroImageCarousel = forwardRef<HTMLDivElement, HeroImageCarouselPro
                 setCurrentIndex(i);
               }}
               className={cn(
-                "h-1.5 rounded-full transition-all duration-300 focus-visible:outline-none",
+                "h-1.5 sm:h-2 rounded-full transition-all duration-300 focus-visible:outline-none",
                 (currentIndex % total) === i
-                  ? "w-5 bg-white shadow-sm"
-                  : "w-1.5 bg-white/50 hover:bg-white/80",
+                  ? "w-6 sm:w-7 bg-white shadow-sm"
+                  : "w-1.5 sm:w-2 bg-white/50 hover:bg-white/80",
               )}
               aria-label={`Go to slide ${i + 1}`}
             />
