@@ -1,4 +1,5 @@
 import { CAMPUS_IMAGES } from "@/lib/campus-images";
+import { DEPARTMENT_IMAGES, getDepartmentImage } from "@/lib/department-images";
 
 export type ProgramCategory =
   | "Engineering & Technology"
@@ -76,9 +77,10 @@ type DepartmentDraft = Omit<GpwDepartment, "practicalLearning" | "careerAreas"> 
 
 function finalizeDepartment(dept: DepartmentDraft): GpwDepartment {
   const { image, ...rest } = dept;
+  const resolvedImage = image ?? getDepartmentImage(dept.slug);
   return {
     ...rest,
-    ...(image ? { image } : {}),
+    ...(resolvedImage ? { image: resolvedImage } : {}),
     practicalLearning: dept.practicalLearning || joinPractical(dept.practicalPoints),
     careerAreas: dept.careerAreas?.length ? dept.careerAreas : dept.learningAreas,
   };

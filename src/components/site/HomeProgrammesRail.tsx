@@ -10,6 +10,7 @@ export type ProgrammeRailItem = {
   duration: string;
   overview: string;
   slug: string;
+  image?: { src: string; alt: string };
 };
 
 /** Steady institutional carousel speed — px per second (target band: 35–50) */
@@ -117,6 +118,16 @@ function ProgrammeCard({
       aria-hidden={ariaHidden}
       className="card-premium group flex w-[min(82%,20rem)] shrink-0 flex-col p-5 transition-[border-color,box-shadow,transform] duration-300 hover:-translate-y-0.5 hover:border-brand/40 hover:shadow-raised sm:w-[19.5rem] sm:p-6 lg:w-[21rem]"
     >
+      {programme.image ? (
+        <div className="relative mb-4 aspect-[16/10] w-full overflow-hidden rounded-xl border border-border/60 bg-slate-100 shadow-2xs">
+          <img
+            src={programme.image.src}
+            alt={programme.image.alt}
+            className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
+            loading="lazy"
+          />
+        </div>
+      ) : null}
       <p className="text-[11px] font-semibold tracking-[0.14em] text-brand uppercase">
         {programme.categoryLabel}
       </p>

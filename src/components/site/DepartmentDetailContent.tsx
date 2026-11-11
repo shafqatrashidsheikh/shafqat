@@ -109,7 +109,17 @@ export function DepartmentDetailContent({ department }: { department: GpwDepartm
           <div id="about-department" className="scroll-mt-24 space-y-7 md:space-y-8">
             <section aria-labelledby="programme-overview-heading">
               <SectionHeading id="programme-overview-heading">Programme Overview</SectionHeading>
-              <p className="mt-3 w-full text-sm leading-[1.7] text-muted-foreground sm:text-[0.95rem]">
+              {department.image ? (
+                <div className="mt-4 aspect-[16/9] sm:aspect-[21/9] w-full overflow-hidden rounded-2xl border border-border/60 bg-slate-100 shadow-xs">
+                  <img
+                    src={department.image.src}
+                    alt={department.image.alt}
+                    className="size-full object-cover"
+                    loading="lazy"
+                  />
+                </div>
+              ) : null}
+              <p className="mt-3.5 w-full text-sm leading-[1.7] text-muted-foreground sm:text-[0.95rem]">
                 {department.overview}
               </p>
             </section>

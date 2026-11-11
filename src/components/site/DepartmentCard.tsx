@@ -44,11 +44,27 @@ export function DepartmentCard({ department, className }: DepartmentCardProps) {
         className,
       )}
     >
-      <span className="inline-flex size-11 shrink-0 items-center justify-center rounded-xl border border-border/80 bg-light-blue text-brand transition-[background-color,color,transform] duration-300 group-hover:scale-105 group-hover:bg-brand group-hover:text-white">
-        <Icon className="size-5" aria-hidden="true" />
-      </span>
+      {department.image ? (
+        <div className="relative mb-4 aspect-[16/10] w-full overflow-hidden rounded-xl border border-border/60 bg-slate-100 shadow-2xs">
+          <img
+            src={department.image.src}
+            alt={department.image.alt}
+            className="size-full object-cover transition-transform duration-500 group-hover:scale-105"
+            loading="lazy"
+          />
+          <div className="absolute top-2.5 left-2.5">
+            <span className="inline-flex size-9 items-center justify-center rounded-lg border border-white/40 bg-white/95 text-brand shadow-xs backdrop-blur-xs transition-[background-color,color] duration-300 group-hover:bg-brand group-hover:text-white">
+              <Icon className="size-4" aria-hidden="true" />
+            </span>
+          </div>
+        </div>
+      ) : (
+        <span className="inline-flex size-11 shrink-0 items-center justify-center rounded-xl border border-border/80 bg-light-blue text-brand transition-[background-color,color,transform] duration-300 group-hover:scale-105 group-hover:bg-brand group-hover:text-white">
+          <Icon className="size-5" aria-hidden="true" />
+        </span>
+      )}
 
-      <h3 className="mt-5 min-w-0 hyphens-none font-display text-base font-bold leading-snug text-navy sm:text-lg">
+      <h3 className={cn("min-w-0 hyphens-none font-display text-base font-bold leading-snug text-navy sm:text-lg", !department.image && "mt-5")}>
         <AmpersandText>{department.name}</AmpersandText>
       </h3>
 

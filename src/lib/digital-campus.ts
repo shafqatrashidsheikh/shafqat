@@ -1,5 +1,6 @@
 import { CAMPUS_FACILITIES } from "@/lib/campus-data";
 import { CAMPUS_IMAGES } from "@/lib/campus-images";
+import { DEPARTMENT_IMAGES } from "@/lib/department-images";
 import { GPW_DEPARTMENTS, type GpwDepartment } from "@/lib/departments-data";
 
 /** Homepage programme explorer order — verified GPW diploma programmes only */
@@ -52,23 +53,29 @@ export const CAMPUS_EXPLORER_LOCATIONS: CampusExplorerLocation[] = CAMPUS_FACILI
 );
 
 function facilityMedia(name: string): { src: string; alt: string } | undefined {
-  if (/Computer Engineering|OMCA/i.test(name)) {
-    return {
-      src: CAMPUS_IMAGES.computerLabStudents,
-      alt: "Students in the computer laboratory at Government Polytechnic for Women, Srinagar",
-    };
+  if (/Computer Engineering/i.test(name)) {
+    return DEPARTMENT_IMAGES["computer-engineering"];
+  }
+  if (/OMCA|Office Management/i.test(name)) {
+    return DEPARTMENT_IMAGES["office-management-computer-applications"];
   }
   if (/Electronics/i.test(name)) {
-    return {
-      src: CAMPUS_IMAGES.electronicsLabStudents,
-      alt: "Students in the electronics laboratory at Government Polytechnic for Women, Srinagar",
-    };
+    return DEPARTMENT_IMAGES["electronics-communication-engineering"];
   }
   if (/Medical/i.test(name)) {
-    return {
-      src: CAMPUS_IMAGES.microscopeLab,
-      alt: "Laboratory practical session at Government Polytechnic for Women, Srinagar",
-    };
+    return DEPARTMENT_IMAGES["medical-lab-technology"];
+  }
+  if (/Food/i.test(name)) {
+    return DEPARTMENT_IMAGES["food-technology"];
+  }
+  if (/Garment/i.test(name)) {
+    return DEPARTMENT_IMAGES["garment-technology"];
+  }
+  if (/Textile/i.test(name)) {
+    return DEPARTMENT_IMAGES["textile-technology"];
+  }
+  if (/Travel|Tourism/i.test(name)) {
+    return DEPARTMENT_IMAGES["travel-tourism"];
   }
   if (/Smart Classroom/i.test(name)) {
     return {
@@ -76,7 +83,13 @@ function facilityMedia(name: string): { src: string; alt: string } | undefined {
       alt: "Smart classroom session at Government Polytechnic for Women, Srinagar",
     };
   }
-  if (/Workshop|Library|Auditorium|Food|Textile|Garment/i.test(name)) {
+  if (/Library/i.test(name)) {
+    return {
+      src: CAMPUS_IMAGES.libraryInterior,
+      alt: "Central Library reading hall at Government Polytechnic for Women, Srinagar",
+    };
+  }
+  if (/Workshop|Auditorium/i.test(name)) {
     return {
       src: CAMPUS_IMAGES.buildingWalkway,
       alt: "Campus facilities at Government Polytechnic for Women, Srinagar",

@@ -1,4 +1,5 @@
 import { CAMPUS_IMAGES } from "@/lib/campus-images";
+import { DEPARTMENT_IMAGES } from "@/lib/department-images";
 import type { ExploreCard } from "@/lib/explore-data";
 import { EXPLORE_CARDS } from "@/lib/explore-data";
 import { INSTITUTE } from "@/lib/site-data";
@@ -22,6 +23,11 @@ export const EXPLORE_IMAGE_BY_KEY: Record<string, string> = {
   "campus-building-walkway": CAMPUS_IMAGES.buildingWalkway,
   "placement-career-guidance": CAMPUS_IMAGES.placementCareerGuidance,
   "admissions-desk": CAMPUS_IMAGES.admissionsDesk,
+  "food-technology": DEPARTMENT_IMAGES["food-technology"].src,
+  "travel-tourism": DEPARTMENT_IMAGES["travel-tourism"].src,
+  "garment-technology": DEPARTMENT_IMAGES["garment-technology"].src,
+  "textile-technology": DEPARTMENT_IMAGES["textile-technology"].src,
+  "omca": DEPARTMENT_IMAGES["office-management-computer-applications"].src,
 };
 
 const EXPLORE_CARD_OVERRIDES: Record<

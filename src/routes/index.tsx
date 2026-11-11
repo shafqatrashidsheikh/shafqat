@@ -116,6 +116,7 @@ function Home() {
     duration: d.duration,
     overview: d.summary,
     slug: d.slug,
+    image: d.image,
   }));
 
   const stats = resolveGlanceStats(homepage.stats);
