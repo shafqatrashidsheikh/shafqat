@@ -196,9 +196,20 @@ export function DepartmentHodMessageSection({ data }: Props) {
 
       <div className="rounded-2xl border border-slate-200/80 bg-white p-6 sm:p-7 shadow-xs hover:shadow-sm transition-all duration-200">
         <div className="flex flex-col gap-5 sm:flex-row sm:items-start">
-          <div className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-light-blue text-brand font-display font-extrabold text-xl border border-brand/20 shadow-xs">
-            {initials}
-          </div>
+          {hod.profileImage ? (
+            <img
+              src={hod.profileImage}
+              alt={hod.name}
+              width={56}
+              height={56}
+              className="size-14 shrink-0 rounded-2xl object-cover object-top border border-amber-300/80 shadow-xs"
+              loading="lazy"
+            />
+          ) : (
+            <div className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-light-blue text-brand font-display font-extrabold text-xl border border-brand/20 shadow-xs">
+              {initials}
+            </div>
+          )}
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2.5">
               <h3 className="font-display text-lg font-bold text-[#0B1E36] sm:text-xl">
@@ -709,7 +720,7 @@ export function DepartmentFacultyStaffSection({
                   alt={hod.name}
                   width={120}
                   height={150}
-                  className="w-28 sm:w-32 h-36 sm:h-40 shrink-0 rounded-2xl object-cover border-2 border-amber-300/80 shadow-xs"
+                  className="w-28 sm:w-32 h-36 sm:h-40 shrink-0 rounded-2xl object-cover object-top border-2 border-amber-300/80 shadow-xs"
                   loading="lazy"
                 />
               ) : (

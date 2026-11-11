@@ -5,6 +5,13 @@
  * specifically by department slug. Easy to maintain and update.
  */
 
+import hodComputerEngineering from "@/assets/faculty/hod-computer-engineering.jpg";
+import hodOmca from "@/assets/faculty/hod-omca.jpg";
+import hodTextile from "@/assets/faculty/hod-textile-technology.jpg";
+import hodGarment from "@/assets/faculty/hod-garment-technology.jpg";
+import hodFoodTech from "@/assets/faculty/hod-food-technology.jpg";
+import hodTravelTourism from "@/assets/faculty/hod-travel-tourism.jpg";
+
 export interface DepartmentHod {
   name: string;
   designation: string;
@@ -59,6 +66,7 @@ export const COMPUTER_ENGINEERING_FACULTY_STAFF: DepartmentFacultyStaff = {
     designation: "In Charge / Head of Department",
     contact: "9858411446",
     email: "roshaanara@gmail.com",
+    profileImage: hodComputerEngineering,
     message:
       "Welcome to the Department of Computer Engineering at Government Polytechnic for Women, Srinagar. We prepare confident women technical professionals through hands-on laboratory instruction, modern programming curricula, databases, and networking technologies.",
   },
@@ -146,6 +154,7 @@ export const OMCA_FACULTY_STAFF: DepartmentFacultyStaff = {
     designation: "Head of Department",
     contact: "+91 88250 60365",
     email: "shabinabasu@gmail.com",
+    profileImage: hodOmca,
     message:
       "Welcome to the Department of Office Management & Computer Applications (OMCA) at Government Polytechnic for Women, Srinagar. In an increasingly automated and digital professional landscape, our diploma programme prepares young women with a balanced mastery of modern office administration, secretarial practices, stenography, computerized accounting, and business communication tools. Supported by dedicated and experienced faculty, our students graduate as self-assured, industry-ready professionals equipped to excel across corporate, governmental, and executive office environments.",
   },
@@ -203,6 +212,7 @@ export const TEXTILE_FACULTY_STAFF: DepartmentFacultyStaff = {
     designation: "Head of Department",
     contact: "+91 7006446534",
     email: "harishch@outlook.com",
+    profileImage: hodTextile,
     message:
       "Welcome to the Department of Textile Technology at Government Polytechnic for Women, Srinagar. Textile engineering blends scientific principles with artistic craftsmanship. Our curriculum provides rigorous training in yarn manufacturing, weaving mechanisms, fabric structure, testing, and modern textile processing. We are dedicated to grooming skilled women technocrats ready for dynamic careers in composite mills, testing laboratories, design studios, and industrial leadership.",
   },
@@ -241,6 +251,7 @@ export const GARMENT_FACULTY_STAFF: DepartmentFacultyStaff = {
     designation: "Head of Department",
     contact: "+91 96979 71503",
     email: "foziyayusufmir974@gmail.com",
+    profileImage: hodGarment,
     message:
       "Welcome to the Department of Garment Technology at Government Polytechnic for Women, Srinagar. In the fast-evolving apparel and fashion industry, our department emphasizes technical precision, basic pattern making, fashion illustration, computer-aided design (CAD), and garment production technology. We nurture creative flair alongside practical engineering skills so our graduates emerge as confident designers, production managers, and successful entrepreneurs.",
   },
@@ -298,6 +309,7 @@ export const TRAVEL_TOURISM_FACULTY_STAFF: DepartmentFacultyStaff = {
     designation: "Head of Department",
     contact: "+91 9419201594",
     email: "", // Not available in reference information; left blank as instructed
+    profileImage: hodTravelTourism,
     message:
       "Welcome to the Department of Travel & Tourism at Government Polytechnic for Women, Srinagar. Kashmir is world-renowned for its heritage and hospitality, making tourism a cornerstone of regional and global opportunity. Our programme trains students in airline ticketing, tour operations, travel geography, niche tourism, and hospitality management. We empower young women to become dynamic professionals and leaders across the global travel sector.",
   },
@@ -340,6 +352,7 @@ export const FOOD_TECH_FACULTY_STAFF: DepartmentFacultyStaff = {
     designation: "Head of Department",
     contact: "+91 6005734357",
     email: "syedanjum.0599@gmail.com",
+    profileImage: hodFoodTech,
     message:
       "Welcome to the Department of Food Technology at Government Polytechnic for Women, Srinagar. Food science and processing technology play a pivotal role in public health, nutrition, and modern agricultural industry. Our comprehensive diploma programme provides rigorous instruction in food preservation, quality assurance, laboratory testing, and modern food processing methods, preparing students for impactful careers in the food industry, research, and regulatory agencies.",
   },
