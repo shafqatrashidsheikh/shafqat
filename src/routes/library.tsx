@@ -11,7 +11,6 @@ import {
   Phone,
   Users,
 } from "lucide-react";
-import { CollegeLogo } from "@/components/site/CollegeLogo";
 import { CAMPUS_IMAGES } from "@/lib/campus-images";
 import { INSTITUTE } from "@/lib/site-data";
 
@@ -125,31 +124,7 @@ function LibraryPage() {
         </div>
 
         {/* Content Container */}
-        <div className="relative z-10 mx-auto max-w-7xl px-4 pt-6 pb-12 sm:px-6 sm:pt-8 sm:pb-16 lg:px-8 lg:pt-8 lg:pb-20">
-          {/* Top Institutional Header Ribbon */}
-          <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-200/60 pb-5 mb-8 sm:mb-12">
-            {/* Left Brand Lockup */}
-            <div className="flex items-center gap-3 select-none">
-              <CollegeLogo variant="header-compact" className="size-11 sm:size-12 shadow-sm rounded-full" />
-              <div className="flex flex-col">
-                <span className="font-brand text-sm sm:text-base font-extrabold text-[#0d2346] leading-tight">
-                  Government Polytechnic for Women
-                </span>
-                <span className="text-[10px] sm:text-[11px] font-semibold text-slate-500 uppercase tracking-[0.35em] mt-0.5">
-                  S r i n a g a r
-                </span>
-              </div>
-            </div>
-
-            {/* Right Tagline */}
-            <div className="hidden sm:flex items-center gap-2 text-slate-700">
-              <span className="font-serif italic text-xs sm:text-sm font-medium">
-                Read &bull; Learn &bull; Grow
-              </span>
-              <BookOpen className="size-4.5 text-[#0d2346]" aria-hidden="true" />
-            </div>
-          </div>
-
+        <div className="relative z-10 mx-auto max-w-7xl px-4 pt-10 pb-12 sm:px-6 sm:pt-14 sm:pb-16 lg:px-8 lg:pt-16 lg:pb-20">
           {/* Main Hero Grid */}
           <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-12 lg:gap-12">
             {/* Left Column: Title, Subtitle, CTA */}
