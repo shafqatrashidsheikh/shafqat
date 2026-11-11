@@ -138,7 +138,7 @@ export const HeroImageCarousel = forwardRef<HTMLDivElement, HeroImageCarouselPro
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         className={cn(
-          "group relative aspect-[16/9] sm:aspect-[16/9] md:aspect-[21/9] lg:aspect-[2.35/1] max-h-[460px] sm:max-h-[500px] w-full overflow-hidden rounded-2xl sm:rounded-3xl border border-border bg-light-blue/30 shadow-raised select-none",
+          "group relative aspect-[16/9] sm:aspect-[16/9] md:aspect-[21/9] lg:aspect-[2.35/1] max-h-[480px] sm:max-h-[540px] w-full overflow-hidden rounded-none border-0 shadow-none bg-transparent select-none",
           className,
         )}
         style={style}
@@ -174,7 +174,7 @@ export const HeroImageCarousel = forwardRef<HTMLDivElement, HeroImageCarouselPro
                   fetchPriority={index === 0 ? "high" : "auto"}
                   loading={index === 0 ? "eager" : "lazy"}
                   decoding="async"
-                  className="h-full w-full object-cover object-center pointer-events-none"
+                  className="h-full w-full object-cover object-center pointer-events-none rounded-none"
                 />
               </div>
             );

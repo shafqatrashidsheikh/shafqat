@@ -40,7 +40,7 @@ export function Header({ institute: _institute = INSTITUTE, headerNav }: HeaderP
         "site-header sticky top-0 z-[60] w-full min-w-0 transition-all duration-300 ease-out xl:overflow-visible",
         scrolled
           ? "bg-surface-white/98 backdrop-blur-md border-b border-border/80 shadow-sm"
-          : "bg-transparent border-b border-transparent shadow-none",
+          : "bg-surface-white/95 backdrop-blur-md border-b border-border/60 shadow-xs",
       )}
     >
       <div

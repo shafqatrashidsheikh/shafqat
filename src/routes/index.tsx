@@ -103,11 +103,11 @@ function Home() {
   return (
     <>
       {/* HERO — FULL WIDTH CAMPUS IMAGES CAROUSEL */}
-      <section className="hero-nav-gap section-misty">
-        <div className="container-page pb-6 sm:pb-8 lg:pb-8">
+      <section className="hero-nav-gap !pt-0 section-misty">
+        <div className="w-full max-w-[1920px] mx-auto px-4 sm:px-10 lg:px-[100px] pt-0 pb-8 lg:pb-[100px]">
           <HeroImageCarousel
             ref={heroImageRef}
-            className="reveal-hero-image w-full will-change-transform"
+            className="reveal-hero-image w-full will-change-transform rounded-none border-0 shadow-none"
             style={{ "--reveal-delay": "200ms" } as CSSProperties}
           />
         </div>
