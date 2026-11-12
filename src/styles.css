@@ -592,10 +592,10 @@
 }
 
 @utility hero-nav-gap {
-  padding-top: 0;
+  padding-top: clamp(0.5rem, 2vw, 0.75rem);
 
   @media (min-width: 768px) {
-    padding-top: 0;
+    padding-top: 0.5rem;
   }
 }
 

@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, Bell, Search, X } from "lucide-react";
+import { Bell, Search, X } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AmpersandText } from "@/components/site/AmpersandText";
 import { toCleanNoticeUrl, UPDATE_ITEMS } from "@/lib/updates-data";
@@ -167,19 +167,15 @@ function buildHeroNotices(
   });
 }
 
-export type HeroNotificationsProps = {
-  liveNotices?: LiveNotice[] | null;
-  items?: NotificationItem[];
-  quickLinks?: Array<{ label: string; href?: string; to?: string }>;
-  className?: string;
-};
-
 export function HeroNotifications({
   liveNotices,
   items,
-  quickLinks,
   className,
-}: HeroNotificationsProps) {
+}: {
+  liveNotices?: LiveNotice[] | null;
+  items?: NotificationItem[];
+  className?: string;
+}) {
   const [activeNotices, setActiveNotices] = useState<LiveNotice[] | null>(
     liveNotices ?? null,
   );
@@ -521,62 +517,24 @@ export function HeroNotifications({
           </div>
         ) : (
           <>
-            <div className="flex flex-col gap-1 min-w-0">
-              <div className="flex items-center gap-2 min-w-0">
-                <span className="grid size-7 place-items-center rounded-lg bg-brand/10 text-brand shrink-0">
-                  <Bell className="size-4" aria-hidden="true" />
-                </span>
-                <h2 className="font-display text-base sm:text-lg font-extrabold text-navy truncate">
-                  Latest Notifications
-                </h2>
-              </div>
-              {quickLinks && quickLinks.length > 0 && (
-                <nav
-                  aria-label="Notice quick links"
-                  className="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-xs pt-0.5"
-                >
-                  {quickLinks.map((link, i) => {
-                    const target = link.href ?? link.to ?? "/updates/notices";
-                    return (
-                      <span key={link.label} className="inline-flex items-center">
-                        {i > 0 && (
-                          <span className="mx-1 text-border" aria-hidden="true">
-                            ·
-                          </span>
-                        )}
-                        <Link
-                          to={target}
-                          className="font-medium text-brand hover:text-navy transition-colors"
-                        >
-                          {link.label}
-                        </Link>
-                      </span>
-                    );
-                  })}
-                </nav>
-              )}
+            <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+              <Bell className="size-4 shrink-0 text-brand" aria-hidden="true" />
+              <h2 className="font-display text-sm min-[380px]:text-base sm:text-lg font-extrabold text-navy truncate">
+                Latest Notifications
+              </h2>
             </div>
-            <div className="flex items-center gap-2 shrink-0 self-start sm:self-center">
-              <Link
-                to="/updates/notices"
-                className="link-cta text-xs sm:text-sm font-semibold text-brand hover:text-navy hidden sm:inline-flex items-center gap-1"
-              >
-                View all
-                <ArrowRight className="size-3.5" />
-              </Link>
-              <button
-                type="button"
-                onClick={() => {
-                  setSearchOpen(true);
-                  setTimeout(() => searchInputRef.current?.focus(), 50);
-                }}
-                aria-label="Search notifications"
-                title="Search notifications"
-                className="group inline-flex size-8 shrink-0 items-center justify-center rounded-lg text-navy/70 transition-colors hover:bg-light-blue hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40"
-              >
-                <Search className="size-4.5 transition-transform group-hover:scale-110" aria-hidden="true" />
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={() => {
+                setSearchOpen(true);
+                setTimeout(() => searchInputRef.current?.focus(), 50);
+              }}
+              aria-label="Search notifications"
+              title="Search notifications"
+              className="group inline-flex size-8 shrink-0 items-center justify-center rounded-lg text-navy/70 transition-colors hover:bg-light-blue hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40"
+            >
+              <Search className="size-4.5 transition-transform group-hover:scale-110" aria-hidden="true" />
+            </button>
           </>
         )}
       </div>
